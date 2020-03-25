@@ -1,0 +1,14 @@
+<launch> 
+
+    <node name="pointcloud_preprocessing" pkg="pointcloud_preprocessing" type="pointcloud_preprocessing">
+        <remap from="cloud_in" to="/camera/depth/color/points"/>
+        
+        <param name="cloudPreprocessing/rMax" value="255"/>
+        <param name="cloudPreprocessing/rMin" value="180"/>
+        <param name="cloudPreprocessing/gMax" value="150"/>
+        <param name="cloudPreprocessing/gMin" value="100"/>
+        <param name="cloudPreprocessing/bMax" value="0"/>
+        <param name="cloudPreprocessing/bMin" value="0"/>
+
+    </node>
+</launch> 
