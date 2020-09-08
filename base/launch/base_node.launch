@@ -1,0 +1,49 @@
+<launch>
+
+<!--Parameters for Kinematics -->
+    <arg name="FrontLength"         default="0.4"/>
+    <arg name="RearLength"          default="0.4"/>
+    <arg name="WheelDiameter"       default="0.1"/>
+    <arg name="AxesLength"          default="0.2"/>
+
+
+    <node name="base" pkg="base" type="base_node">
+        <param name="FrontLength"       value="$(arg FrontLength)"/>
+        <param name="RearLength"        value="$(arg RearLength)"/>
+        <param name="WheelDiameter"     value="$(arg WheelDiameter)"/>
+        <param name="AxesLength"        value="$(arg AxesLength)"/>
+
+        <!--remap from="/Engine/ActualSpeed"            to=""/-->
+        <!--remap from="/Engine/TargetTorque"           to=""/-->
+        <!--remap from="/Engine/TargetSpeed"            to=""/-->
+        <!--remap from="/Engine/TargetAcceleration"     to=""/-->
+
+        <!--remap from="/Sensors/BodyAngle"             to=""/-->
+    </node>
+
+   
+    <!--args="tx ty tz rx ry rz rw" Translation kartesisch Rotation quaternion-->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="OdomFront2JointFront"   args="-$(arg FrontLength) 0 0 0 0 0 1 AxesFront JointFront" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="OdomRear2JointRear"     args="$(arg RearLength) 0 0 0 0 0 1  JointRear AxesRear" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="World"                  args="0 0 0 0 0 0 1 World map" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="Front"                  args="0 0 0 0 0 0 1 Odom AxesFront" />
+
+    <!--include file="$(find sick_scan)/launch/own_scanner.launch">
+        <arg name="ParentFrame" value="AxesFront" />
+        <arg name="PositionID"  value="Front" />
+        <arg name="TX"          value="0" />
+        <arg name="TY"          value="0" />
+        <arg name="TZ"          value="-0.1" />
+        <arg name="IPAddress"   value="192.168.0.51" />
+    </include>
+
+    <include file="$(find sick_scan)/launch/own_scanner.launch">
+        <arg name="ParentFrame" value="AxesRear" />
+        <arg name="PositionID"  value="Rear" />
+        <arg name="TX"          value="0" />
+        <arg name="TY"          value="0" />
+        <arg name="TZ"          value="-0.1" />
+        <arg name="IPAddress"   value="192.168.0.52" />
+    </include-->
+
+</launch>
