@@ -19,13 +19,13 @@ public:
 
     void getParam();
     void createPublisherSubscriber();
+    void PublishSpeed();
 
 private:
     
     void AngleCallback(const base::Angle::ConstPtr& msg);
     void CmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
     void SpeedCallback(const base::Wheels::ConstPtr& msg);
-    void PublishSpeed();
 
     kinematics::ArticulatedDrive Drive_;
     base::Wheels Speedmsg_;

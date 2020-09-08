@@ -8,12 +8,19 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "Kinematics");
     
     ros::NodeHandle Nh;
+    ros::Rate r(10);
 
     KinematicsPublisher Pub(&Nh, kinematics::coordinate::Front);
     
     try
     {
-        ros::spin();
+        while(ros::ok())
+        {
+            ros::spinOnce();
+            Pub.PublishSpeed();
+            r.sleep();
+        }
+        //ros::spin();
     }
     catch( std::runtime_error* e)
     {

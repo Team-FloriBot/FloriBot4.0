@@ -6,23 +6,31 @@ KinematicsPublisher::KinematicsPublisher(ros::NodeHandle* pNh, kinematics::coord
     seq_=0;
     pNh_=pNh;
     getParam();
+    Angle_=0;
     Drive_.setParam(FrontLength_, RearLength_, AxesLength_, WheelDiameter_, Base);
     createPublisherSubscriber();
-    CmdVelTimer_=pNh_->createTimer(0.1, &KinematicsPublisher::PublishSpeed, this);
+    //CmdVelTimer_=pNh_->createTimer(ros::Duration(0.1), &KinematicsPublisher::PublishSpeed, this);
 }
 KinematicsPublisher::~KinematicsPublisher(){};
 
 void KinematicsPublisher::PublishSpeed()
 {
-    Speedmsg_.header.stamp=ros::Time::now();
-    Speedmsg_.header.seq=seq_++;
+    base::Wheels tmp;
+
+    tmp.header.stamp=ros::Time::now();
+    tmp.header.seq=seq_++;
+    tmp.FrontLeft=Speedmsg_.FrontLeft;
+    tmp.FrontRight=Speedmsg_.FrontRight;
+    tmp.RearLeft=Speedmsg_.RearLeft;
+    tmp.RearRight=Speedmsg_.RearRight;
+
 
     SpeedPublisher_.publish(Speedmsg_);
 
-    Speedmsg_.FrontLeft=0;
-    Speedmsg_.FrontRight=0;    
-    Speedmsg_.RearRight=0;
-    Speedmsg_.RearRight=0;
+    //Speedmsg_.FrontLeft=0;
+    //Speedmsg_.FrontRight=0;    
+    //Speedmsg_.RearRight=0;
+    //Speedmsg_.RearLeft=0;
 }
 
 void KinematicsPublisher::getParam()
@@ -78,9 +86,8 @@ void KinematicsPublisher::CmdVelCallback(const geometry_msgs::Twist::ConstPtr& m
     Speedmsg_.FrontLeft=Wheelspeed.Front.leftWheel;
     Speedmsg_.FrontRight=Wheelspeed.Front.rightWheel;
 
-    //Vorzeichen invertiert wegen Motormontage
-    Speedmsg_.RearLeft=-Wheelspeed.Rear.leftWheel;
-    Speedmsg_.RearRight=-Wheelspeed.Rear.rightWheel;
+    Speedmsg_.RearLeft=Wheelspeed.Rear.leftWheel;
+    Speedmsg_.RearRight=Wheelspeed.Rear.rightWheel;
 }
 
 void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)

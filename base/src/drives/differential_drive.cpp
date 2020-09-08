@@ -72,8 +72,8 @@ kinematics::DifferentialWheelSpeed kinematics::differentialDrive::inverseKinemat
     WheelSpeed.rightWheel=cmdVelMsg.linear.x+cmdVelMsg.angular.z*axesLength_/2;
     WheelSpeed.leftWheel=WheelSpeed.rightWheel-cmdVelMsg.angular.z*axesLength_;
 
-    //WheelSpeed.rightWheel=WheelSpeed.rightWheel/wheelCircumference_;
-    //WheelSpeed.leftWheel=WheelSpeed.leftWheel/wheelCircumference_;
+    WheelSpeed.rightWheel=WheelSpeed.rightWheel/wheelCircumference_;
+    WheelSpeed.leftWheel=WheelSpeed.leftWheel/wheelCircumference_;
 
     return WheelSpeed;
 }
