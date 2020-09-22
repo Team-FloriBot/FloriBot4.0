@@ -34,6 +34,8 @@ class ArticulatedDrive
     ~ArticulatedDrive();
 
     articulatedWheelSpeed inverseKinematics(geometry_msgs::Twist cmdVelMsg, double Theta);
+    articulatedWheelSpeed inverseKinematics(geometry_msgs::Twist cmdVelMsg, geometry_msgs::TransformStamped Front2Joint, 
+            geometry_msgs::TransformStamped Joint2Rear);
 
     //Todo: Transform in baseframe
     geometry_msgs::Pose2D forwardKinematics(articulatedWheelSpeed WheelSpeed, ros::Time Timestamp);

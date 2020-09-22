@@ -1,6 +1,5 @@
 #include <base_node/base_publisher.h>
 
-
 KinematicsPublisher::KinematicsPublisher(ros::NodeHandle* pNh, kinematics::coordinate Base)
 {
     seq_=0;
@@ -9,11 +8,11 @@ KinematicsPublisher::KinematicsPublisher(ros::NodeHandle* pNh, kinematics::coord
     Angle_=0;
     Drive_.setParam(FrontLength_, RearLength_, AxesLength_, WheelDiameter_, Base);
     createPublisherSubscriber();
-    //CmdVelTimer_=pNh_->createTimer(ros::Duration(0.1), &KinematicsPublisher::PublishSpeed, this);
+    CmdVelTimer_=pNh_->createTimer(ros::Duration(0.1), &KinematicsPublisher::PublishSpeed, this);
 }
 KinematicsPublisher::~KinematicsPublisher(){};
 
-void KinematicsPublisher::PublishSpeed()
+void KinematicsPublisher::PublishSpeed(const ros::TimerEvent& e)
 {
     base::Wheels tmp;
 
@@ -27,10 +26,10 @@ void KinematicsPublisher::PublishSpeed()
 
     SpeedPublisher_.publish(Speedmsg_);
 
-    //Speedmsg_.FrontLeft=0;
-    //Speedmsg_.FrontRight=0;    
-    //Speedmsg_.RearRight=0;
-    //Speedmsg_.RearLeft=0;
+    Speedmsg_.FrontLeft=0;
+    Speedmsg_.FrontRight=0;    
+    Speedmsg_.RearRight=0;
+    Speedmsg_.RearLeft=0;
 }
 
 void KinematicsPublisher::getParam()

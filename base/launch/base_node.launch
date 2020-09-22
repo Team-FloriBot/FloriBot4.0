@@ -23,7 +23,7 @@
 
    
     <!--args="tx ty tz rx ry rz rw" Translation kartesisch Rotation quaternion-->
-    <node pkg="tf2_ros" type="static_transform_publisher" name="OdomFront2JointFront"   args="-$(arg FrontLength) 0 0 0 0 0 1 AxesFront JointFront" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="OdomFront2JointFront"   args="$(arg FrontLength) 0 0 0 0 0 1 AxesFront JointFront" />
     <node pkg="tf2_ros" type="static_transform_publisher" name="OdomRear2JointRear"     args="$(arg RearLength) 0 0 0 0 0 1  JointRear AxesRear" />
     <node pkg="tf2_ros" type="static_transform_publisher" name="World"                  args="0 0 0 0 0 0 1 World map" />
     <node pkg="tf2_ros" type="static_transform_publisher" name="Front"                  args="0 0 0 0 0 0 1 Odom AxesFront" />

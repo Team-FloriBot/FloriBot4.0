@@ -14,13 +14,7 @@ int main(int argc, char** argv)
     
     try
     {
-        while(ros::ok())
-        {
-            ros::spinOnce();
-            Pub.PublishSpeed();
-            r.sleep();
-        }
-        //ros::spin();
+        ros::spin();
     }
     catch( std::runtime_error* e)
     {
