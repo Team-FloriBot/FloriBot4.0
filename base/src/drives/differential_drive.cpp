@@ -24,6 +24,7 @@ void kinematics::differentialDrive::reset()
     WheelSpeed_.rightWheel=0;
 
     TimeStamp_=ros::Time::now();
+    ROS_ERROR("%f", TimeStamp_.toSec());
 }
 
 void kinematics::differentialDrive::setParam(double axesLength, double wheelDiameter)
@@ -53,6 +54,7 @@ geometry_msgs::Pose2D kinematics::differentialDrive::forwardKinematics(Different
     double deltaTime=(Timestamp-TimeStamp_).toSec();
     TimeStamp_=Timestamp;
 
+    WheelSpeed_=WheelSpeed;
     Speed_.linear.x=(WheelSpeed_.leftWheel*wheelCircumference_+WheelSpeed_.rightWheel*wheelCircumference_)/2;
     Speed_.angular.z=(WheelSpeed_.rightWheel*wheelCircumference_-WheelSpeed_.leftWheel*wheelCircumference_)/axesLength_;
 
@@ -60,6 +62,7 @@ geometry_msgs::Pose2D kinematics::differentialDrive::forwardKinematics(Different
     Pose_.x+=Speed_.linear.x*deltaTime*cos(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
     Pose_.y+=Speed_.linear.x*deltaTime*sin(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
     Pose_.theta+=Speed_.angular.z*deltaTime;
+   
 
     return Pose_;
 }
