@@ -17,6 +17,9 @@ PlcConnectionNode::PlcConnectionNode()
     //Publish Topics
     CreatePublisher();
 
+    //Run Functions time triggered
+    SendRecvTimer_=nh.createTimer(ros::Duration(0.1), &PlcConnectionNode::SendRecv, this);
+
 
     //ToDo: Initialize all
     Data.From.Speed[0]=0;
@@ -87,18 +90,19 @@ void PlcConnectionNode::InitializeSocket()
 
 }
 
-//Read ROSparameter //ToDo change Datatype
+//Read ROSparameter 
 void PlcConnectionNode::ReadParams()
 {
     //Get Param from Paramserver or set Default Values
     nh.param<std::string>("/"+ros::this_node::getName()+"/PLC_IP", strTargetIP, "192.168.0.43");
-    nh.param<uint>("/"+ros::this_node::getName()+"/PLC_Port", TargetPort, 5000);
-    nh.param<uint>("/"+ros::this_node::getName()+"/Xavier_Port", OwnPort, 5000);
-    nh.param<std::string>("/"+ros::this_node::getName()+"/Xavier_IP", strOwnIP, "");   
-    nh.param<uint>("/"+ros::this_node::getName()+"/Engine_Mode", Mode, 0);
-    nh.param<double>("/"+ros::this_node::getName()+"/PLC_Timeout", PLCTimeout, 1.5);
-    nh.param<uint>("/"+ros::this_node::getName()+"/Receive_Timeout_sec", ReceiveTimeoutSec, 0);
-    nh.param<uint>("/"+ros::this_node::getName()+"/Receive_Timeout_usec", ReceiveTimeoutUsec, 500);
+    nh.param<std::string>("/"+ros::this_node::getName()+"/Xavier_IP", strOwnIP, ""); 
+
+    TargetPort=nh.param("/"+ros::this_node::getName()+"/PLC_Port", 5000);
+    OwnPort=nh.param("/"+ros::this_node::getName()+"/Xavier_Port", 5000);  
+    Mode=nh.param("/"+ros::this_node::getName()+"/Engine_Mode", 0);
+    PLCTimeout=nh.param("/"+ros::this_node::getName()+"/PLC_Timeout", 1.5);
+    ReceiveTimeoutSec=nh.param("/"+ros::this_node::getName()+"/Receive_Timeout_sec", 0);
+    ReceiveTimeoutUsec=nh.param("/"+ros::this_node::getName()+"/Receive_Timeout_usec", 500);
 }
 
 //Subscribe to topics
@@ -148,7 +152,7 @@ void PlcConnectionNode::AccelerationCallback(const base::Wheels::ConstPtr& msg)
 
 //Operator() 
 //ToDo: Add Error Handling in Protocol
-void PlcConnectionNode::operator()()
+void PlcConnectionNode::SendRecv(const ros::TimerEvent &e)
 {
     //Send and receive Data
     try

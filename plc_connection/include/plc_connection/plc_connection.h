@@ -47,6 +47,7 @@ struct TargetDevice
 };
 
 //node class
+//ToDo: Trigger operator() with Timer and then do not use operator()
 class PlcConnectionNode
 {
     public:
@@ -58,8 +59,8 @@ class PlcConnectionNode
     //Read ROS-Param
     void ReadParams();
 
-    //Operators
-    void operator()();
+    //Timer Function
+    void SendRecv(const ros::TimerEvent &e);
     
     //Send/receive Data
     void SendData();
@@ -89,6 +90,8 @@ class PlcConnectionNode
     ros::Subscriber SpeedSubscriber, TorqueSubscriber, AccelerationSubscriber;
     //Publisher
     ros::Publisher SpeedPublisher, AnglePublisher;
+
+    ros::Timer SendRecvTimer_;
 
     //Strings for Rosparams
     std::string strTargetIP, strOwnIP;
