@@ -167,7 +167,6 @@ target_link_libraries(pcl_converter
 target_link_libraries(sick_generic_caller sick_scan_lib)
 
 add_executable(sick_scan_test
-	test/src/sick_scan_test.cpp
 	driver/src/tinyxml/tinystr.cpp
 	driver/src/tinyxml/tinyxml.cpp
 	driver/src/tinyxml/tinyxmlerror.cpp
