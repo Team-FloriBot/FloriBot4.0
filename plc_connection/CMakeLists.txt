@@ -14,6 +14,8 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   message_runtime
   base 
+  tf2
+  tf2_ros
 )
 
 

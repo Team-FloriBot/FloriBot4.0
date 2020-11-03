@@ -7,6 +7,9 @@
 
 #include <base/Wheels.h>
 #include <ros/ros.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <geometry_msgs/TransformStamped.h>
 #include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/Float64.h> 
 #include <base/Angle.h>   
@@ -47,6 +50,7 @@ struct TargetDevice
 };
 
 //node class
+//ToDo: Trigger operator() with Timer and then do not use operator()
 class PlcConnectionNode
 {
     public:
@@ -58,8 +62,8 @@ class PlcConnectionNode
     //Read ROS-Param
     void ReadParams();
 
-    //Operators
-    void operator()();
+    //Timer Function
+    void SendRecv(const ros::TimerEvent &e);
     
     //Send/receive Data
     void SendData();
@@ -84,30 +88,33 @@ class PlcConnectionNode
 
     //Member
     //nodehandle
-    ros::NodeHandle nh;
+    ros::NodeHandle nh_;
     //Subscriber
-    ros::Subscriber SpeedSubscriber, TorqueSubscriber, AccelerationSubscriber;
+    ros::Subscriber SpeedSubscriber_, TorqueSubscriber_, AccelerationSubscriber_;
     //Publisher
-    ros::Publisher SpeedPublisher, AnglePublisher;
+    ros::Publisher SpeedPublisher_, AnglePublisher_;
+    tf2_ros::TransformBroadcaster TransformBroadcaster_;
+
+    ros::Timer SendRecvTimer_;
 
     //Strings for Rosparams
-    std::string strTargetIP, strOwnIP;
-    uint TargetPort, OwnPort, Mode, ReceiveTimeoutSec, ReceiveTimeoutUsec;
-    double PLCTimeout;
+    std::string strTargetIP_, strOwnIP_;
+    uint TargetPort_, OwnPort_, Mode_, ReceiveTimeoutSec_, ReceiveTimeoutUsec_;
+    double PLCTimeout_;
     //Duration for Connection Timeout
-    ros::Duration ConnectionTimeout;
+    ros::Duration ConnectionTimeout_;
 
     //Connection ok status
-    bool ComOk;
+    bool ComOk_;
     unsigned int seq_;
 
     //UDP-Socket
-    OwnUDP::UDPSocket PLC_Socket;
+    OwnUDP::UDPSocket PLC_Socket_;
     //PLC Data to Exchange
-    PLC_Data Data;
+    PLC_Data Data_;
 
     //Target plc data
-    TargetDevice Target;   
+    TargetDevice Target_;   
 };
 
 //PLC Data to network/host 

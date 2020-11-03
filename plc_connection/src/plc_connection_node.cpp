@@ -12,20 +12,12 @@ int main(int argc, char** argv)
     try
     {
         PlcConnectionNode PlcConnection;
-        ros::Rate r(10);
-
-        while (ros::ok())
-        {
-            PlcConnection();
-            ros::spinOnce();
-            r.sleep();
-        }
+        ros::spin();
     }
     //Log Error before exiting node with error
     catch(const std::exception* e)
     {
         ROS_ERROR("Exiting with error:\n%s\n", e->what());
-        std::cerr << e->what() << '\n';
         delete e;
         exit(-1);
     }
