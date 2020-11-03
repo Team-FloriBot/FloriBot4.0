@@ -1,37 +1,13 @@
-<launch>   
-    <group ns="camera front">
-        <arg name="ParentFrame"   default="AxesFront" />
-        <arg name="PositionID"    default="front" />
-        <arg name="TX"            default="0" />
-        <arg name="TY"            default="0" />
-        <arg name="TZ"            default="-0.1" />
-        <arg name="RX"            default="0" />
-        <arg name="RY"            default="0" />
-        <arg name="RZ"            default="-0.1" />
-        <node pkg="tf2_ros" type="static_transform_publisher" name="camera_$(arg PositionID)_TF" args="$(arg TX) $(arg TY) $(arg TZ) 0 0 0 1 $(arg ParentFrame) camera_$(arg PositionID)" />
+<launch> 
         
-        <include file="$(find realsense2_camera)/launch/rs_camera.launch" >
-            <rosparam file="$(find pointcloud_preprocessing)/camera_front_param.yaml" command="load" />
-            <arg name="camera"   default="AxesFront" />
-            <arg name="tf_prefix"   default="AxesFront" />
-        </include>
-    </group>
-
-    <group ns="camera back">
-        <arg name="ParentFrame"   default="AxesRear" />
-        <arg name="PositionID"    default="rear" />
-        <arg name="TX"            default="0" />
-        <arg name="TY"            default="0" />
-        <arg name="TZ"            default="-0.1" />
-        <arg name="RX"            default="0" />
-        <arg name="RY"            default="0" />
-        <arg name="RZ"            default="-0.1" />
-        <node pkg="tf2_ros" type="static_transform_publisher" name="camera_$(arg PositionID)_TF" args="$(arg TX) $(arg TY) $(arg TZ) 0 0 0 1 $(arg ParentFrame) camera_$(arg PositionID)" />
-        
-        <include file="$(find realsense2_camera)/launch/rs_camera.launch" >
-            <rosparam file="$(find pointcloud_preprocessing)/camera_front_param.yaml" command="load" />
-            <arg name="camera"   default="camera_$(arg PositionID)" />
-            <arg name="tf_prefix"   default="camera_$(arg PositionID)" />
-        </include>
-    </group>
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch" >
+        <rosparam file="$(find pointcloud_preprocessing)/camera_front_param.yaml" command="load" />
+        <arg name="camera"   default="camera_front" />
+        <arg name="tf_prefix"   default="camera_front" />
+    </include>     
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch" >
+        <rosparam file="$(find pointcloud_preprocessing)/camera_rear_param.yaml" command="load" />
+        <arg name="camera"   default="camera_rear" />
+        <arg name="tf_prefix"   default="camera_rear" />
+    </include>
 </launch>
