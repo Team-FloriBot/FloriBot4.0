@@ -7,7 +7,9 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/TransformStamped.h>
-#include <Eigen/Geometry>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.h>
 
 namespace kinematics
 
@@ -33,9 +35,8 @@ class ArticulatedDrive
     ArticulatedDrive(double axesLength, double wheelDiameter, double frontlength, double rearlength, coordinate Base);
     ~ArticulatedDrive();
 
-    articulatedWheelSpeed inverseKinematics(geometry_msgs::Twist cmdVelMsg, double Theta);
-    articulatedWheelSpeed inverseKinematics(geometry_msgs::Twist cmdVelMsg, geometry_msgs::TransformStamped Front2Joint, 
-            geometry_msgs::TransformStamped Joint2Rear);
+    articulatedWheelSpeed inverseKinematics(geometry_msgs::Twist cmdVelMsg);
+
 
     //Todo: Transform in baseframe
     geometry_msgs::Pose2D forwardKinematics(articulatedWheelSpeed WheelSpeed, ros::Time Timestamp);
@@ -46,6 +47,8 @@ class ArticulatedDrive
     void setParam(double FrontLength, double RearLength, double AxesLength, double WheelDiameter, coordinate Base);
     private:
     
+    tf2_ros::Buffer TFBuffer_;
+    tf2_ros::TransformListener* pTF_Listener_;
     kinematics::coordinate Base_;
     kinematics::differentialDrive frontDrive_, rearDrive_;
     double frontlength_, rearlength_;

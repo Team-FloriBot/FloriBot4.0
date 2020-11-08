@@ -42,12 +42,12 @@ void KinematicsPublisher::getParam()
 
 void KinematicsPublisher::createPublisherSubscriber()
 {
-    OdometryPublisher_=pNh_->advertise<nav_msgs::Odometry>("/Odom", 1);
-    SpeedPublisher_=pNh_->advertise<base::Wheels>("Engine/TargetSpeed", 1);
+    OdometryPublisher_=pNh_->advertise<nav_msgs::Odometry>("/odom", 1);
+    SpeedPublisher_=pNh_->advertise<base::Wheels>("engine/targetSpeed", 1);
 
-    AngleSubscriber_=pNh_->subscribe("Sensors/BodyAngle", 1, &KinematicsPublisher::AngleCallback, this);
+    AngleSubscriber_=pNh_->subscribe("sensors/bodyAngle", 1, &KinematicsPublisher::AngleCallback, this);
     CmdVelSubscriber_=pNh_->subscribe("cmd_vel", 1, &KinematicsPublisher::CmdVelCallback, this);
-    SpeedSubscriber_=pNh_->subscribe("Engine/ActualSpeed", 1, &KinematicsPublisher::SpeedCallback, this);    
+    SpeedSubscriber_=pNh_->subscribe("engine/actualSpeed", 1, &KinematicsPublisher::SpeedCallback, this);    
 }
 
 void KinematicsPublisher::AngleCallback(const base::Angle::ConstPtr& msg)
@@ -59,8 +59,8 @@ void KinematicsPublisher::AngleCallback(const base::Angle::ConstPtr& msg)
     tf2::Quaternion q;
     q.setRPY(0,0,Angle_);
 
-    TFMsg.child_frame_id="JointRear";
-    TFMsg.header.frame_id="JointFront";
+    TFMsg.child_frame_id="jointRear";
+    TFMsg.header.frame_id="jointFront";
     TFMsg.header.seq=msg->header.seq;
     TFMsg.header.stamp=msg->header.stamp;
 
@@ -80,7 +80,7 @@ void KinematicsPublisher::CmdVelCallback(const geometry_msgs::Twist::ConstPtr& m
 {
     kinematics::articulatedWheelSpeed Wheelspeed;
 
-    Wheelspeed=Drive_.inverseKinematics(*msg, Angle_);
+    Wheelspeed=Drive_.inverseKinematics(*msg);
 
     Speedmsg_.FrontLeft=Wheelspeed.Front.leftWheel;
     Speedmsg_.FrontRight=Wheelspeed.Front.rightWheel;
@@ -110,7 +110,7 @@ void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
     q.setRPY(0, 0, ActualPose.theta);
 
     //TF Msg
-    Transform.child_frame_id="Odom";
+    Transform.child_frame_id="odom";
     Transform.header.frame_id="map";
     Transform.header.seq=msg->header.seq;
     Transform.header.stamp=msg->header.stamp;
@@ -126,7 +126,7 @@ void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
    
     //ToDo: Add Covariance
     //Odom Msg
-    OdomMsg.child_frame_id="Odom";
+    OdomMsg.child_frame_id="odom";
     OdomMsg.header.frame_id="map";
     OdomMsg.header.seq=msg->header.seq;
     OdomMsg.header.stamp=msg->header.stamp;
@@ -142,7 +142,6 @@ void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
 
 
     OdomMsg.twist.twist=Drive_.getSpeed();
-
 
     //publish
     OdometryPublisher_.publish(OdomMsg);

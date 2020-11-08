@@ -142,7 +142,7 @@ include_directories(
  )
 
  add_library(basePublisher
-src/base_node/base_publisher.cpp
+  src/base_node/base_publisher.cpp
  )
 
 ## Add cmake target dependencies of the library

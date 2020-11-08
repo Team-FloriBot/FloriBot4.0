@@ -3,17 +3,14 @@
 void ExitFcn();
 
 int main(int argc, char** argv)
-{
+{ 
     std::atexit(ExitFcn);
     ros::init(argc, argv, "Kinematics");
-    
-    ros::NodeHandle Nh;
-    ros::Rate r(10);
 
-    KinematicsPublisher Pub(&Nh, kinematics::coordinate::Front);
-    
     try
     {
+        ros::NodeHandle Nh;
+        KinematicsPublisher Pub(&Nh, kinematics::coordinate::Front);
         ros::spin();
     }
     catch( std::runtime_error* e)
