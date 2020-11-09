@@ -19,12 +19,11 @@ public:
     KinematicsPublisher(ros::NodeHandle* pnh, kinematics::coordinate Base);
     ~KinematicsPublisher();
 
-    void getParam();
-    void createPublisherSubscriber();
-    void PublishSpeed(const ros::TimerEvent& e);
-
 private:
-    
+
+    void getParam();
+    void createPublisherSubscriber();    
+    void PublishSpeed(const ros::TimerEvent& e);
     void AngleCallback(const base::Angle::ConstPtr& msg);
     void CmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
     void SpeedCallback(const base::Wheels::ConstPtr& msg);

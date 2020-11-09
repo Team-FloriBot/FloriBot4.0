@@ -7,8 +7,8 @@ kinematics::ArticulatedDrive::ArticulatedDrive()
 }
 
 
-kinematics::ArticulatedDrive::ArticulatedDrive(double axesLength, double wheelDiameter, double frontlength, double rearlength, coordinate Base):
-        frontDrive_(axesLength, wheelDiameter), rearDrive_(axesLength, wheelDiameter), frontlength_(frontlength), rearlength_(rearlength), Base_(Base)
+kinematics::ArticulatedDrive::ArticulatedDrive(double axesLength, double wheelDiameter, coordinate Base):
+        frontDrive_(axesLength, wheelDiameter), rearDrive_(axesLength, wheelDiameter), Base_(Base)
         {
             pTF_Listener_=new tf2_ros::TransformListener(TFBuffer_);
         }
@@ -163,12 +163,10 @@ geometry_msgs::Pose2D kinematics::ArticulatedDrive::estimateActualPose()
     }
 }
 
-void kinematics::ArticulatedDrive::setParam(double FrontLength, double RearLength, double AxesLength, double WheelDiameter, coordinate Base)
+void kinematics::ArticulatedDrive::setParam(double AxesLength, double WheelDiameter, coordinate Base)
 {
     frontDrive_.setParam(AxesLength, WheelDiameter);
     rearDrive_.setParam(AxesLength, WheelDiameter);
-    frontlength_=FrontLength;
-    rearlength_=RearLength;
     Base_=Base;
 }
 

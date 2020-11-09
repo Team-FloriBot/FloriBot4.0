@@ -1,30 +1,28 @@
 <launch>
 
 <!--Parameters for Kinematics -->
-    <arg name="FrontLength"         default="0.4"/>
-    <arg name="RearLength"          default="0.4"/>
-    <arg name="WheelDiameter"       default="0.1"/>
-    <arg name="AxesLength"          default="0.2"/>
+    <arg name="frontLength"         default="0.4"/>
+    <arg name="rearLength"          default="0.4"/>
+    <arg name="wheelDiameter"       default="0.1"/>
+    <arg name="axesLength"          default="0.2"/>
 
 
     <node name="base" pkg="base" type="base_node">
-        <param name="FrontLength"       value="$(arg FrontLength)"/>
-        <param name="RearLength"        value="$(arg RearLength)"/>
-        <param name="WheelDiameter"     value="$(arg WheelDiameter)"/>
-        <param name="AxesLength"        value="$(arg AxesLength)"/>
+        <param name="wheelDiameter"     value="$(arg wheelDiameter)"/>
+        <param name="axesLength"        value="$(arg axesLength)"/>
 
-        <!--remap from="/Engine/ActualSpeed"            to=""/-->
-        <!--remap from="/Engine/TargetTorque"           to=""/-->
-        <!--remap from="/Engine/TargetSpeed"            to=""/-->
-        <!--remap from="/Engine/TargetAcceleration"     to=""/-->
+        <!--remap from="/engine/actualSpeed"            to=""/-->
+        <!--remap from="/engine/targetTorque"           to=""/-->
+        <!--remap from="/engine/targetSpeed"            to=""/-->
+        <!--remap from="/engine/targetAcceleration"     to=""/-->
 
-        <!--remap from="/Sensors/BodyAngle"             to=""/-->
+        <!--remap from="/sensors/bodyAngle"             to=""/-->
     </node>
 
    
     <!--args="tx ty tz rx ry rz rw" Translation kartesisch Rotation quaternion-->
-    <node pkg="tf2_ros" type="static_transform_publisher" name="OdomFront2JointFront"   args="$(arg FrontLength) 0 0 0 0 0 1 AxesFront JointFront" />
-    <node pkg="tf2_ros" type="static_transform_publisher" name="OdomRear2JointRear"     args="$(arg RearLength) 0 0 0 0 0 1  JointRear AxesRear" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="AxesFront2JointFront"   args="$(arg frontLength) 0 0 0 0 0 1 axesFront jointFront" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="AxesRear2JointRear"     args="$(arg rearLength) 0 0 0 0 0 1  jointRear axesRear" />
     <node pkg="tf2_ros" type="static_transform_publisher" name="World"                  args="0 0 0 0 0 0 1 World map" />
     <node pkg="tf2_ros" type="static_transform_publisher" name="Front"                  args="0 0 0 0 0 0 1 Odom AxesFront" />
 

@@ -5,8 +5,7 @@ KinematicsPublisher::KinematicsPublisher(ros::NodeHandle* pNh, kinematics::coord
     seq_=0;
     pNh_=pNh;
     getParam();
-    Angle_=0;
-    Drive_.setParam(FrontLength_, RearLength_, AxesLength_, WheelDiameter_, Base);
+    Drive_.setParam(AxesLength_, WheelDiameter_, Base);
     createPublisherSubscriber();
     CmdVelTimer_=pNh_->createTimer(ros::Duration(0.1), &KinematicsPublisher::PublishSpeed, this);
 }
@@ -34,10 +33,8 @@ void KinematicsPublisher::PublishSpeed(const ros::TimerEvent& e)
 
 void KinematicsPublisher::getParam()
 {
-    pNh_->param<double>("/"+ros::this_node::getName()+"/FrontLength", FrontLength_, 0.4);
-    pNh_->param<double>("/"+ros::this_node::getName()+"/RearLength", RearLength_, 0.4);
-    pNh_->param<double>("/"+ros::this_node::getName()+"/AxesLength", AxesLength_, 0.4);
-    pNh_->param<double>("/"+ros::this_node::getName()+"/WheelDiameter", WheelDiameter_, 0.4);
+    pNh_->param<double>("/"+ros::this_node::getName()+"/axesLength", AxesLength_, 0.4);
+    pNh_->param<double>("/"+ros::this_node::getName()+"/wheelDiameter", WheelDiameter_, 0.4);
 }
 
 void KinematicsPublisher::createPublisherSubscriber()
@@ -45,35 +42,8 @@ void KinematicsPublisher::createPublisherSubscriber()
     OdometryPublisher_=pNh_->advertise<nav_msgs::Odometry>("/odom", 1);
     SpeedPublisher_=pNh_->advertise<base::Wheels>("engine/targetSpeed", 1);
 
-    AngleSubscriber_=pNh_->subscribe("sensors/bodyAngle", 1, &KinematicsPublisher::AngleCallback, this);
     CmdVelSubscriber_=pNh_->subscribe("cmd_vel", 1, &KinematicsPublisher::CmdVelCallback, this);
     SpeedSubscriber_=pNh_->subscribe("engine/actualSpeed", 1, &KinematicsPublisher::SpeedCallback, this);    
-}
-
-void KinematicsPublisher::AngleCallback(const base::Angle::ConstPtr& msg)
-{
-    geometry_msgs::TransformStamped TFMsg;
-    
-    Angle_=msg->Angle;
-    
-    tf2::Quaternion q;
-    q.setRPY(0,0,Angle_);
-
-    TFMsg.child_frame_id="jointRear";
-    TFMsg.header.frame_id="jointFront";
-    TFMsg.header.seq=msg->header.seq;
-    TFMsg.header.stamp=msg->header.stamp;
-
-    TFMsg.transform.rotation.w=q.getW();
-    TFMsg.transform.rotation.x=q.getX();
-    TFMsg.transform.rotation.y=q.getY();
-    TFMsg.transform.rotation.z=q.getZ();
-
-    TFMsg.transform.translation.x=0;
-    TFMsg.transform.translation.y=0;
-    TFMsg.transform.translation.z=0;
-
-    TFBroadaster_.sendTransform(TFMsg);
 }
 
 void KinematicsPublisher::CmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)

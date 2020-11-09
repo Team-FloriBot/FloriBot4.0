@@ -32,19 +32,16 @@ class ArticulatedDrive
 {
     public:
     ArticulatedDrive();
-    ArticulatedDrive(double axesLength, double wheelDiameter, double frontlength, double rearlength, coordinate Base);
+    ArticulatedDrive(double axesLength, double wheelDiameter, coordinate Base);
     ~ArticulatedDrive();
 
     articulatedWheelSpeed inverseKinematics(geometry_msgs::Twist cmdVelMsg);
-
-
-    //Todo: Transform in baseframe
     geometry_msgs::Pose2D forwardKinematics(articulatedWheelSpeed WheelSpeed, ros::Time Timestamp);
     geometry_msgs::Pose2D estimateActualPose();
     geometry_msgs::Pose2D getActualPose(coordinate Frame);
     geometry_msgs::Twist getSpeed();
 
-    void setParam(double FrontLength, double RearLength, double AxesLength, double WheelDiameter, coordinate Base);
+    void setParam(double AxesLength, double WheelDiameter, coordinate Base);
     private:
     
     tf2_ros::Buffer TFBuffer_;

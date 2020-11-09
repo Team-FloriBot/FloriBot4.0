@@ -228,13 +228,29 @@ void PlcConnectionNode::PublishData()
     //Create messages
     base::Angle  AngleMsg;
     base::Wheels SpeedMsg;
+    geometry_msgs::TransformStamped TFAngleMsg;
+    tf2::Quaternion q;
 
     //write data in messages and publish
+    TFAngleMsg.header.seq=seq_;
+    TFAngleMsg.header.stamp=ros::Time::now();
+
     SpeedMsg.header.seq=seq_;
     SpeedMsg.header.stamp=ros::Time::now();
 
     AngleMsg.header.seq=seq_++;
     AngleMsg.header.stamp=ros::Time::now();
+
+    q.setRPY(0,0,Data.From.Angle);
+    TFAngleMsg.transform.translation.x=0;
+    TFAngleMsg.transform.translation.y=0;
+    TFAngleMsg.transform.translation.z=0;
+
+    TFAngleMsg.transform.rotation.x=q.x();
+    TFAngleMsg.transform.rotation.y=q.y();
+    TFAngleMsg.transform.rotation.z=q.z();
+    TFAngleMsg.transform.rotation.w=q.w();
+
 
     SpeedMsg.FrontLeft=Data.From.Speed[0];
     SpeedMsg.FrontRight=Data.From.Speed[1];
@@ -242,6 +258,8 @@ void PlcConnectionNode::PublishData()
     SpeedMsg.RearRight=Data.From.Speed[3];
 
     AngleMsg.Angle=Data.From.Angle;
+
+    TFBroadcaster.sendTransform(TFAngleMsg);
 
     SpeedPublisher.publish(SpeedMsg);
 
