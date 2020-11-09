@@ -233,6 +233,8 @@ void PlcConnectionNode::PublishData()
 
     //write data in messages and publish
     TFAngleMsg.header.seq=seq_;
+    TFAngleMsg.child_frame_id="jointRear";
+    TFAngleMsg.header.frame_id="jointFront";
     TFAngleMsg.header.stamp=ros::Time::now();
 
     SpeedMsg.header.seq=seq_;

@@ -24,7 +24,6 @@ private:
     void getParam();
     void createPublisherSubscriber();    
     void PublishSpeed(const ros::TimerEvent& e);
-    void AngleCallback(const base::Angle::ConstPtr& msg);
     void CmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
     void SpeedCallback(const base::Wheels::ConstPtr& msg);
 
@@ -33,9 +32,9 @@ private:
     ros::NodeHandle* pNh_;
     ros::Timer CmdVelTimer_;
     ros::Publisher SpeedPublisher_, OdometryPublisher_;
-    ros::Subscriber AngleSubscriber_, CmdVelSubscriber_, SpeedSubscriber_;
+    ros::Subscriber CmdVelSubscriber_, SpeedSubscriber_;
     tf2_ros::TransformBroadcaster TFBroadaster_;
-    double Angle_, FrontLength_, RearLength_, AxesLength_, WheelDiameter_;
+    double AxesLength_, WheelDiameter_;
     unsigned int seq_;
     
 };

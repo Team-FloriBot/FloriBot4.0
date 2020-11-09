@@ -62,7 +62,7 @@ void KinematicsPublisher::CmdVelCallback(const geometry_msgs::Twist::ConstPtr& m
 void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
 {
     kinematics::articulatedWheelSpeed ActualSpeed;
-    geometry_msgs::Pose2D ActualPose;
+    geometry_msgs::Pose2D OdomPose;
     geometry_msgs::TransformStamped Transform;
     nav_msgs::Odometry OdomMsg;
     tf2::Quaternion q;
@@ -72,12 +72,11 @@ void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
     ActualSpeed.Rear.leftWheel=msg->RearLeft;
     ActualSpeed.Rear.rightWheel=msg->RearRight;
 
-    ActualPose=Drive_.forwardKinematics(ActualSpeed, msg->header.stamp );
+    OdomPose=Drive_.forwardKinematics(ActualSpeed, msg->header.stamp );
 
      
     //Front Msg
-
-    q.setRPY(0, 0, ActualPose.theta);
+    q.setRPY(0, 0, OdomPose.theta);
 
     //TF Msg
     Transform.child_frame_id="odom";
@@ -85,8 +84,8 @@ void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
     Transform.header.seq=msg->header.seq;
     Transform.header.stamp=msg->header.stamp;
 
-    Transform.transform.translation.x=ActualPose.x;
-    Transform.transform.translation.y=ActualPose.y;
+    Transform.transform.translation.x=OdomPose.x;
+    Transform.transform.translation.y=OdomPose.y;
     Transform.transform.translation.z=WheelDiameter_/2;
 
     Transform.transform.rotation.w=q.getW();
@@ -106,8 +105,8 @@ void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
     OdomMsg.pose.pose.orientation.y=q.getY();
     OdomMsg.pose.pose.orientation.z=q.getZ();
 
-    OdomMsg.pose.pose.position.x=ActualPose.x;
-    OdomMsg.pose.pose.position.y=ActualPose.y;
+    OdomMsg.pose.pose.position.x=OdomPose.x;
+    OdomMsg.pose.pose.position.y=OdomPose.y;
     OdomMsg.pose.pose.position.z=WheelDiameter_/2;
 
 

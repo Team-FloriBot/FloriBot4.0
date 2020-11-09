@@ -35,9 +35,9 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
     //Front Speed is given
     case coordinate::Front:
         //Get latest Transforms
-        Axes2Joint=TFBuffer_.lookupTransform("JointFront", "AxesFront", ros::Time(0));
-        Joint2Joint=TFBuffer_.lookupTransform("JointRear", "JointFront", ros::Time(0));
-        Joint2Axes=TFBuffer_.lookupTransform("AxesRear", "JointRear", ros::Time(0));
+        Axes2Joint=TFBuffer_.lookupTransform("jointFront", "axesFront", ros::Time(0));
+        Joint2Joint=TFBuffer_.lookupTransform("jointRear", "jointFront", ros::Time(0));
+        Joint2Axes=TFBuffer_.lookupTransform("axesRear", "jointRear", ros::Time(0));
 
         //Get Data from the Messages, since the tf2::fromMsg-Function returns Linking-Errors with workaround
         SpeedAxesFront.setValue(cmdVelMsg.linear.x,cmdVelMsg.linear.y,cmdVelMsg.linear.z);
@@ -67,9 +67,9 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
     case coordinate::Rear:
 
         //Get latest Transforms
-        Axes2Joint=TFBuffer_.lookupTransform("JointRear", "AxesRear", ros::Time(0));
-        Joint2Joint=TFBuffer_.lookupTransform("JointFront", "JointRear", ros::Time(0));
-        Joint2Axes=TFBuffer_.lookupTransform("AxesFront", "JointFront", ros::Time(0));
+        Axes2Joint=TFBuffer_.lookupTransform("jointRear", "axesRear", ros::Time(0));
+        Joint2Joint=TFBuffer_.lookupTransform("jointFront", "jointRear", ros::Time(0));
+        Joint2Axes=TFBuffer_.lookupTransform("axesFront", "jointFront", ros::Time(0));
 
         //Get Data from the Messages, since the tf2::fromMsg-Function returns Linking-Errors with workaround
         SpeedAxesRear.setValue(cmdVelMsg.linear.x,cmdVelMsg.linear.y,cmdVelMsg.linear.z);
