@@ -71,11 +71,11 @@ namespace OwnSocket
         
         protected:
         //Class member
-        Connection _Type;
-        int _SocketID;
-        bool _Connected;
-        bool _Passive;
-        Address OwnAddress;
+        Connection Type_;
+        int SocketID_;
+        bool Connected_;
+        bool Passive_;
+        Address OwnAddress_;
 
     };
 

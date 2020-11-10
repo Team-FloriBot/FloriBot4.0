@@ -18,25 +18,30 @@ PlcConnectionNode::PlcConnectionNode()
     CreatePublisher();
 
     //Run Functions time triggered
-    SendRecvTimer_=nh.createTimer(ros::Duration(0.1), &PlcConnectionNode::SendRecv, this);
+    SendRecvTimer_=nh_.createTimer(ros::Duration(0.1), &PlcConnectionNode::SendRecv, this);
 
 
     //ToDo: Initialize all
-    Data.From.Speed[0]=0;
-    Data.From.Speed[1]=0;
-    Data.From.Speed[2]=0;
-    Data.From.Speed[3]=0;
-    Data.From.Angle=M_PI;
+    Data_.From.Speed[0]=0;
+    Data_.From.Speed[1]=0;
+    Data_.From.Speed[2]=0;
+    Data_.From.Speed[3]=0;
+    Data_.From.Angle=M_PI;
 
-    Data.To.Accelleration[0]=0;
-    Data.To.Accelleration[1]=0;
-    Data.To.Accelleration[2]=0;
-    Data.To.Accelleration[3]=0;
+    Data_.To.Speed[0]=0;
+    Data_.To.Speed[1]=0;
+    Data_.To.Speed[2]=0;
+    Data_.To.Speed[3]=0;
 
-    Data.To.Torque[0]=0;
-    Data.To.Torque[1]=0;
-    Data.To.Torque[2]=0;
-    Data.To.Torque[3]=0;
+    Data_.To.Accelleration[0]=0;
+    Data_.To.Accelleration[1]=0;
+    Data_.To.Accelleration[2]=0;
+    Data_.To.Accelleration[3]=0;
+
+    Data_.To.Torque[0]=0;
+    Data_.To.Torque[1]=0;
+    Data_.To.Torque[2]=0;
+    Data_.To.Torque[3]=0;
     
 }
 
@@ -47,43 +52,43 @@ void PlcConnectionNode::InitializeSocket()
     OwnUDP::Address tmpAddress;
 
     //Set timeout for connection
-    ConnectionTimeout=ros::Duration(PLCTimeout);
-    ROS_INFO("PLC Timeout is set to %f seconds", PLCTimeout);
+    ConnectionTimeout_=ros::Duration(PLCTimeout_);
+    ROS_INFO("PLC Timeout is set to %f seconds", PLCTimeout_);
 
     //Set plcmode
-    Data.To.Mode=Mode;
-    ROS_INFO("PLC Mode is %i", Mode);
+    Data_.To.Mode=Mode_;
+    ROS_INFO("PLC Mode is %i", Mode_);
 
     //Set plc Address
-    Target.IP.IP=strTargetIP;
-    Target.IP.Port=TargetPort;
-    ROS_INFO("PLC IP is %s:%i", strTargetIP.c_str(), Target.IP.Port);
+    Target_.IP.IP=strTargetIP_;
+    Target_.IP.Port=TargetPort_;
+    ROS_INFO("PLC IP is %s:%i", strTargetIP_.c_str(), Target_.IP.Port);
     
     //Initialize Target data
-    Target.LastID=0;
-    Target.ComOk=false;
-    Target.LastID=0;
-    Target.LastMsgTime=ros::Time::now();
+    Target_.LastID=0;
+    Target_.ComOk=false;
+    Target_.LastID=0;
+    Target_.LastMsgTime=ros::Time::now();
 
     tmpAddress.IP.clear();
-    tmpAddress.IP=strOwnIP;
-    tmpAddress.Port=OwnPort;
+    tmpAddress.IP=strOwnIP_;
+    tmpAddress.Port=OwnPort_;
 
     //Create UDP Socket
     ROS_INFO("Creating UDP Socket");
     try
     {    
         //set IP-Address
-        PLC_Socket.bindAddress(&tmpAddress);
-        ROS_INFO("UDP Socket created on Port %i", OwnPort);
+        PLC_Socket_.bindAddress(&tmpAddress);
+        ROS_INFO("UDP Socket created on Port %i", OwnPort_);
 
         //set receive Timeout
-        PLC_Socket.setReceiveTime(ReceiveTimeoutUsec, ReceiveTimeoutSec);
-        ROS_INFO("Receive Timeout for UDP Socket ist set to %i seconds and %i usec", ReceiveTimeoutSec, ReceiveTimeoutUsec);
+        PLC_Socket_.setReceiveTime(ReceiveTimeoutUsec_, ReceiveTimeoutSec_);
+        ROS_INFO("Receive Timeout for UDP Socket ist set to %i seconds and %i usec", ReceiveTimeoutSec_, ReceiveTimeoutUsec_);
     }
     catch(const std::runtime_error* e)
     {
-        ROS_ERROR("Error while creating UDP Socket on Port %i\n %s", OwnPort, e->what());
+        ROS_ERROR("Error while creating UDP Socket on Port %i\n %s", OwnPort_, e->what());
         delete e;
         exit(-1);
     }
@@ -94,63 +99,62 @@ void PlcConnectionNode::InitializeSocket()
 void PlcConnectionNode::ReadParams()
 {
     //Get Param from Paramserver or set Default Values
-    nh.param<std::string>("/"+ros::this_node::getName()+"/PLC_IP", strTargetIP, "192.168.0.43");
-    nh.param<std::string>("/"+ros::this_node::getName()+"/Xavier_IP", strOwnIP, ""); 
+    nh_.param<std::string>("/"+ros::this_node::getName()+"/PLC_IP", strTargetIP_, "192.168.0.43");
+    nh_.param<std::string>("/"+ros::this_node::getName()+"/Xavier_IP", strOwnIP_, ""); 
 
-    TargetPort=nh.param("/"+ros::this_node::getName()+"/PLC_Port", 5000);
-    OwnPort=nh.param("/"+ros::this_node::getName()+"/Xavier_Port", 5000);  
-    Mode=nh.param("/"+ros::this_node::getName()+"/Engine_Mode", 0);
-    PLCTimeout=nh.param("/"+ros::this_node::getName()+"/PLC_Timeout", 1.5);
-    ReceiveTimeoutSec=nh.param("/"+ros::this_node::getName()+"/Receive_Timeout_sec", 0);
-    ReceiveTimeoutUsec=nh.param("/"+ros::this_node::getName()+"/Receive_Timeout_usec", 500);
+    TargetPort_=nh_.param("/"+ros::this_node::getName()+"/PLC_Port", 5000);
+    OwnPort_=nh_.param("/"+ros::this_node::getName()+"/Xavier_Port", 5000);  
+    Mode_=nh_.param("/"+ros::this_node::getName()+"/Engine_Mode", 0);
+    PLCTimeout_=nh_.param("/"+ros::this_node::getName()+"/PLC_Timeout", 1.5);
+    ReceiveTimeoutSec_=nh_.param("/"+ros::this_node::getName()+"/Receive_Timeout_sec", 0);
+    ReceiveTimeoutUsec_=nh_.param("/"+ros::this_node::getName()+"/Receive_Timeout_usec", 500);
 }
 
 //Subscribe to topics
 void PlcConnectionNode::Subscribe()
 {
     //Create Subscriber 
-    SpeedSubscriber=nh.subscribe("Engine/TargetSpeed", 1, &PlcConnectionNode::SpeedCallback, this);
+    SpeedSubscriber_=nh_.subscribe("Engine/TargetSpeed", 1, &PlcConnectionNode::SpeedCallback, this);
     
-    AccelerationSubscriber=nh.subscribe("Engine/TargetAcceleration", 1, &PlcConnectionNode::AccelerationCallback, this);
+    AccelerationSubscriber_=nh_.subscribe("Engine/TargetAcceleration", 1, &PlcConnectionNode::AccelerationCallback, this);
     
-    TorqueSubscriber=nh.subscribe("Engine/TargetTorque", 1, &PlcConnectionNode::TorqueCallback, this);
+    TorqueSubscriber_=nh_.subscribe("Engine/TargetTorque", 1, &PlcConnectionNode::TorqueCallback, this);
 }
 
 //create Publisher
 void PlcConnectionNode::CreatePublisher()
 {
     //create Publisher
-    SpeedPublisher=nh.advertise<base::Wheels>("Engine/ActualSpeed", 1);
+    SpeedPublisher_=nh_.advertise<base::Wheels>("Engine/ActualSpeed", 1);
     
-    AnglePublisher=nh.advertise<base::Angle>("Sensors/BodyAngle", 1);
+    AnglePublisher_=nh_.advertise<base::Angle>("Sensors/BodyAngle", 1);
 }
 
 //Callbacks for Subscriber
 void PlcConnectionNode::SpeedCallback(const base::Wheels::ConstPtr& msg)
 {
-    Data.To.Speed[0]=msg->FrontLeft;
-    Data.To.Speed[1]=msg->FrontRight;
-    Data.To.Speed[2]=msg->RearLeft;
-    Data.To.Speed[3]=msg->RearLeft;
+    Data_.To.Speed[0]=msg->FrontLeft;
+    Data_.To.Speed[1]=msg->FrontRight;
+    Data_.To.Speed[2]=msg->RearLeft;
+    Data_.To.Speed[3]=msg->RearLeft;
 }
 
 void PlcConnectionNode::TorqueCallback(const base::Wheels::ConstPtr& msg)
 {
-    Data.To.Torque[0]=msg->FrontLeft;
-    Data.To.Torque[1]=msg->FrontRight;
-    Data.To.Torque[2]=msg->RearLeft;
-    Data.To.Torque[3]=msg->RearLeft;
+    Data_.To.Torque[0]=msg->FrontLeft;
+    Data_.To.Torque[1]=msg->FrontRight;
+    Data_.To.Torque[2]=msg->RearLeft;
+    Data_.To.Torque[3]=msg->RearLeft;
 }
 
 void PlcConnectionNode::AccelerationCallback(const base::Wheels::ConstPtr& msg)
 {
-    Data.To.Accelleration[0]=msg->FrontLeft;
-    Data.To.Accelleration[1]=msg->FrontRight;
-    Data.To.Accelleration[2]=msg->RearLeft;
-    Data.To.Accelleration[3]=msg->RearLeft;
+    Data_.To.Accelleration[0]=msg->FrontLeft;
+    Data_.To.Accelleration[1]=msg->FrontRight;
+    Data_.To.Accelleration[2]=msg->RearLeft;
+    Data_.To.Accelleration[3]=msg->RearLeft;
 }
-
-//Operator() 
+ 
 //ToDo: Add Error Handling in Protocol
 void PlcConnectionNode::SendRecv(const ros::TimerEvent &e)
 {
@@ -175,10 +179,10 @@ void PlcConnectionNode::SendData()
 {
     //prepare data
     PLC_Data tmpData;
-    htonPLC(&tmpData, &Data);
+    htonPLC(&tmpData, &Data_);
 
     //send data
-    PLC_Socket.write((uint8_t*) &tmpData.To, sizeof(Data.To), &Target.IP);
+    PLC_Socket_.write((uint8_t*) &tmpData.To, sizeof(Data_.To), &Target_.IP);
 }
 
 //receive data
@@ -189,32 +193,32 @@ bool PlcConnectionNode::ReadData()
     OwnUDP::Address tmpAddress;
 
     //read received data
-    PLC_Socket.read((uint8_t*) &tmpData.From, sizeof(Data.From), &tmpAddress);
+    PLC_Socket_.read((uint8_t*) &tmpData.From, sizeof(Data_.From), &tmpAddress);
     
     //Check received data
-    if(tmpAddress.IP==Target.IP.IP && tmpAddress.Port==Target.IP.Port)
+    if(tmpAddress.IP==Target_.IP.IP && tmpAddress.Port==Target_.IP.Port)
     {
         //Check if it is a new message
-        if (ntohl(tmpData.From.MessageID)==Target.LastID)
+        if (ntohl(tmpData.From.MessageID)==Target_.LastID)
         {  
             //Check for connection timeout
-            if ((ros::Time::now() - Target.LastMsgTime).toSec()>ConnectionTimeout.toSec())
+            if ((ros::Time::now() - Target_.LastMsgTime).toSec()>ConnectionTimeout_.toSec())
             {
-                if (Target.ComOk==true)
+                if (Target_.ComOk==true)
                 {
                     ROS_ERROR("No Connection to PLC");
                 } 
-                Target.ComOk=false;
+                Target_.ComOk=false;
             }
             return false;
         }
 
         //write data for host
-        ntohPLC(&Data, &tmpData);
+        ntohPLC(&Data_, &tmpData);
 
-        Target.ComOk=true;
-        Target.LastID=Data.From.MessageID;
-        Target.LastMsgTime=ros::Time::now();
+        Target_.ComOk=true;
+        Target_.LastID=Data_.From.MessageID;
+        Target_.LastMsgTime=ros::Time::now();
 
         return true;
     }
@@ -243,7 +247,7 @@ void PlcConnectionNode::PublishData()
     AngleMsg.header.seq=seq_++;
     AngleMsg.header.stamp=ros::Time::now();
 
-    q.setRPY(0,0,Data.From.Angle);
+    q.setRPY(0,0,Data_.From.Angle);
     TFAngleMsg.transform.translation.x=0;
     TFAngleMsg.transform.translation.y=0;
     TFAngleMsg.transform.translation.z=0;
@@ -254,18 +258,18 @@ void PlcConnectionNode::PublishData()
     TFAngleMsg.transform.rotation.w=q.w();
 
 
-    SpeedMsg.FrontLeft=Data.From.Speed[0];
-    SpeedMsg.FrontRight=Data.From.Speed[1];
-    SpeedMsg.RearLeft=Data.From.Speed[2];
-    SpeedMsg.RearRight=Data.From.Speed[3];
+    SpeedMsg.FrontLeft=Data_.From.Speed[0];
+    SpeedMsg.FrontRight=Data_.From.Speed[1];
+    SpeedMsg.RearLeft=Data_.From.Speed[2];
+    SpeedMsg.RearRight=Data_.From.Speed[3];
 
-    AngleMsg.Angle=Data.From.Angle;
+    AngleMsg.Angle=Data_.From.Angle;
 
-    TFBroadcaster.sendTransform(TFAngleMsg);
+    TFBroadcaster_.sendTransform(TFAngleMsg);
 
-    SpeedPublisher.publish(SpeedMsg);
+    SpeedPublisher_.publish(SpeedMsg);
 
-    AnglePublisher.publish(AngleMsg);
+    AnglePublisher_.publish(AngleMsg);
 }
 
 //Write data for network

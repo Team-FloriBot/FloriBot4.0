@@ -38,8 +38,8 @@ void OwnUDP::UDPSocket::read(uint8_t* Data, int length, Address* IP)
 void OwnUDP::UDPSocket::getAddress(Address* IP)
 {
     IP->IP.clear();
-    IP->IP+=OwnAddress.IP;
-    IP->Port=OwnAddress.Port;
+    IP->IP+=OwnAddress_.IP;
+    IP->Port=OwnAddress_.Port;
 }
 
 void OwnUDP::UDPSocket::setReceiveTime(int usec, int sec)

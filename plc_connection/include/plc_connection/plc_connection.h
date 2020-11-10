@@ -90,34 +90,34 @@ class PlcConnectionNode
 
     //Member
     //nodehandle
-    ros::NodeHandle nh;
+    ros::NodeHandle nh_;
     //Subscriber
-    ros::Subscriber SpeedSubscriber, TorqueSubscriber, AccelerationSubscriber;
+    ros::Subscriber SpeedSubscriber_, TorqueSubscriber_, AccelerationSubscriber_;
     //Publisher
-    ros::Publisher SpeedPublisher, AnglePublisher;
-    tf2_ros::TransformBroadcaster TFBroadcaster;
+    ros::Publisher SpeedPublisher_, AnglePublisher_;
+    tf2_ros::TransformBroadcaster TFBroadcaster_;
 
     ros::Timer SendRecvTimer_;
 
     //Rosparams
-    std::string strTargetIP, strOwnIP;
-    uint TargetPort, OwnPort, Mode, ReceiveTimeoutSec, ReceiveTimeoutUsec;
-    double PLCTimeout;
+    std::string strTargetIP_, strOwnIP_;
+    uint TargetPort_, OwnPort_, Mode_, ReceiveTimeoutSec_, ReceiveTimeoutUsec_;
+    double PLCTimeout_;
 
     //Duration for Connection Timeout
-    ros::Duration ConnectionTimeout;
+    ros::Duration ConnectionTimeout_;
 
     //Connection ok status
-    bool ComOk;
+    bool ComOk_;
     unsigned int seq_;
 
     //UDP-Socket
-    OwnUDP::UDPSocket PLC_Socket;
+    OwnUDP::UDPSocket PLC_Socket_;
     //PLC Data to Exchange
-    PLC_Data Data;
+    PLC_Data Data_;
 
     //Target plc data
-    TargetDevice Target;   
+    TargetDevice Target_;   
 };
 
 //PLC Data to network/host 
