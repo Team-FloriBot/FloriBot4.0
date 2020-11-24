@@ -1,13 +1,32 @@
-<launch> 
-        
-    <include file="$(find realsense2_camera)/launch/rs_camera.launch" >
-        <rosparam file="$(find pointcloud_preprocessing)/camera_front_param.yaml" command="load" />
-        <arg name="camera"   default="camera_front" />
-        <arg name="tf_prefix"   default="camera_front" />
-    </include>     
-    <include file="$(find realsense2_camera)/launch/rs_camera.launch" >
-        <rosparam file="$(find pointcloud_preprocessing)/camera_rear_param.yaml" command="load" />
-        <arg name="camera"   default="camera_rear" />
-        <arg name="tf_prefix"   default="camera_rear" />
-    </include>
+<launch>  
+	<arg name="TX_front"            default="0,310" />
+	<arg name="TY_front"            default="0" />
+	<arg name="TZ_front"            default="0,2785" />
+	<arg name="RX_front"            default="0"/>
+	<arg name="RY_front"            default="0"/>
+	<arg name="RZ_front"            default="0"/>
+	<arg name="RW_front"            default="1"/>  
+	<node pkg="tf2_ros" type="static_transform_publisher" name="camera_front_TF" args="$(arg TX_front) $(arg TY_front) $(arg TZ_front) $(arg RX_front) $(arg RY_front) $(arg RZ_front) $(arg RW_front) axesFront camera_front_link" />
+
+        <include file="$(find realsense2_camera)/launch/rs_camera.launch" >
+            <rosparam file="camera_front_param.yaml" command="load" />
+            <arg name="camera"   default="camera_front" />
+            <arg name="tf_prefix"   default="camera_front" />
+        </include>
+		        
+	<arg name="TX_rear"            default="0,310" />
+	<arg name="TY_rear"            default="0" />
+	<arg name="TZ_rear"            default="0,2785" />
+	<arg name="RX_rear"            default="0"/>
+	<arg name="RY_rear"            default="0"/>
+	<arg name="RZ_rear"            default="0"/>
+	<arg name="RW_rear"            default="1"/> 
+	<node pkg="tf2_ros" type="static_transform_publisher" name="camera_rear_TF" args="$(arg TX_rear) $(arg TY_rear) $(arg TZ_rear) $(arg RX_rear) $(arg RY_rear) $(arg RZ_rear) $(arg RW_rear) axesRear camera_rear_link" />
+		
+	<include file="$(find realsense2_camera)/launch/rs_camera.launch" >
+            <rosparam file="camera_rear_param.yaml" command="load" />
+            <arg name="camera"   default="camera_rear" />
+            <arg name="tf_prefix"   default="camera_rear" />
+        </include>
+		
 </launch>
