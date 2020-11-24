@@ -21,6 +21,10 @@ struct FromPLC
     uint32_t Mode;
     float Speed[4];
     float Angle;
+    float Voltage;
+    uint32_t HomingError;
+    uint32_t SpeedError[4];
+    uint32_t ResetError[4];
 };
 
 //struct for sending data

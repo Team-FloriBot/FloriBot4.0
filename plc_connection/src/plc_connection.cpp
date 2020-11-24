@@ -278,8 +278,15 @@ void ntohPLC(PLC_Data* Host, PLC_Data* Network)
     Host->From.MessageID=ntohl(Network->From.MessageID);
     Host->From.Mode=ntohl(Network->From.Mode);
     Host->From.Angle=OwnSocket::ntohf(Network->From.Angle);
-    
-    for (int i=0;i<4;i++)  Host->From.Speed[i]=OwnSocket::ntohf(Network->From.Speed[i]);
+    Host->From.Voltage=OwnSocket::ntohf(Network->From.Voltage);
+    Host->From.HomingError=ntohl(Network->From.HomingError);
+
+    for (int i=0;i<4;i++)  
+    {
+        Host->From.Speed[i]=OwnSocket::ntohf(Network->From.Speed[i]);
+        Host->From.SpeedError[i]=ntohl(Network->From.SpeedError[i]);
+        Host->From.ResetError[i]=ntohl(Network->From.ResetError[i]);
+    }
 }
 
 //write data for host
