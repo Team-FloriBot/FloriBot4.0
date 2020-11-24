@@ -1,8 +1,8 @@
 <launch>
 
     <arg name="plc_ip"          default="192.168.0.43"/>
-    <arg name="plc_port"        default="5000"/>
-    <arg name="xavier_ip"       default="127.0.0.1"/>
+    <arg name="plc_port"        default="50000"/>
+    <arg name="xavier_ip"       default="192.168.0.42"/>
     <arg name="xavier_port"     default="50000"/>
     <arg name="plc_timeout"     default="1.5"/>
     <arg name="engine_mode"     default="0"/>

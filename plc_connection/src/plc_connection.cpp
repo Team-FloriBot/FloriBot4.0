@@ -133,25 +133,25 @@ void PlcConnectionNode::CreatePublisher()
 //Callbacks for Subscriber
 void PlcConnectionNode::SpeedCallback(const base::Wheels::ConstPtr& msg)
 {
-    Data_.To.Speed[0]=msg->FrontLeft;
-    Data_.To.Speed[1]=msg->FrontRight;
-    Data_.To.Speed[2]=msg->RearLeft;
+    Data_.To.Speed[0]=msg->FrontRight;
+    Data_.To.Speed[1]=msg->FrontLeft;
+    Data_.To.Speed[2]=msg->RearRight;
     Data_.To.Speed[3]=msg->RearLeft;
 }
 
 void PlcConnectionNode::TorqueCallback(const base::Wheels::ConstPtr& msg)
 {
-    Data_.To.Torque[0]=msg->FrontLeft;
-    Data_.To.Torque[1]=msg->FrontRight;
-    Data_.To.Torque[2]=msg->RearLeft;
+    Data_.To.Torque[0]=msg->FrontRight;
+    Data_.To.Torque[1]=msg->FrontLeft;
+    Data_.To.Torque[2]=msg->RearRight;
     Data_.To.Torque[3]=msg->RearLeft;
 }
 
 void PlcConnectionNode::AccelerationCallback(const base::Wheels::ConstPtr& msg)
 {
-    Data_.To.Accelleration[0]=msg->FrontLeft;
-    Data_.To.Accelleration[1]=msg->FrontRight;
-    Data_.To.Accelleration[2]=msg->RearLeft;
+    Data_.To.Accelleration[0]=msg->FrontRight;
+    Data_.To.Accelleration[1]=msg->FrontLeft;
+    Data_.To.Accelleration[2]=msg->RearRight;
     Data_.To.Accelleration[3]=msg->RearLeft;
 }
  
@@ -188,15 +188,16 @@ void PlcConnectionNode::SendData()
 //receive data
 bool PlcConnectionNode::ReadData()
 {
-    //create teomporary variables
+    //create temporary variables
     PLC_Data tmpData;
     OwnUDP::Address tmpAddress;
 
     //read received data
     PLC_Socket_.read((uint8_t*) &tmpData.From, sizeof(Data_.From), &tmpAddress);
-    
+
+
     //Check received data
-    if(tmpAddress.IP==Target_.IP.IP && tmpAddress.Port==Target_.IP.Port)
+    if(tmpAddress.IP==Target_.IP.IP && tmpAddress.Port==Target_.IP.Port || true)
     {
         //Check if it is a new message
         if (ntohl(tmpData.From.MessageID)==Target_.LastID)
@@ -258,10 +259,10 @@ void PlcConnectionNode::PublishData()
     TFAngleMsg.transform.rotation.w=q.w();
 
 
-    SpeedMsg.FrontLeft=Data_.From.Speed[0];
-    SpeedMsg.FrontRight=Data_.From.Speed[1];
-    SpeedMsg.RearLeft=Data_.From.Speed[2];
-    SpeedMsg.RearRight=Data_.From.Speed[3];
+    SpeedMsg.FrontRight=Data_.From.Speed[0];
+    SpeedMsg.FrontLeft=Data_.From.Speed[1];
+    SpeedMsg.RearRight=Data_.From.Speed[2];
+    SpeedMsg.RearLeft=Data_.From.Speed[3];
 
     AngleMsg.Angle=Data_.From.Angle;
 

@@ -1,4 +1,5 @@
 #include "network/socket/socket.h"
+#include <ros/ros.h>
 
 //Standardconstructor
 OwnSocket::Socket::Socket()
@@ -154,7 +155,11 @@ void OwnSocket::Socket::write(uint8_t* Data, int length, Address* Target=NULL)
 	    target.sin_port=htons(Target->Port);
 
         //Send data
-        if (sendto(SocketID_, Data, length,0, (struct sockaddr*)&target, sizeof(target))<0) throw new std::runtime_error("Error while sending Data");
+
+        int s=sendto(SocketID_, Data, length,0, (struct sockaddr*)&target, sizeof(target));
+        std::stringstream strs;
+        strs<<s;
+        if (s<0) throw new std::runtime_error(strs.str());
     }   
 }
 
@@ -174,6 +179,7 @@ void OwnSocket::Socket::read(uint8_t* Data, int length, Address* Source=NULL)
     if (recvfrom(SocketID_, Data, length,0, (struct sockaddr*)&source, &len)<0) throw new std::runtime_error("Error while receiving Data"); 
 
     //Write Sourceaddress data for further use
+    
     if (Source!=NULL)
     {
         Source->IP.clear();
