@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find floribot)/launch/launch_cameras.launch" />
+    <include file="$(find floribot)/launch/own_scanner.launch" />
+</launch>
