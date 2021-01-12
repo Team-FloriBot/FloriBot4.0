@@ -133,26 +133,26 @@ void PlcConnectionNode::CreatePublisher()
 //Callbacks for Subscriber
 void PlcConnectionNode::SpeedCallback(const base::Wheels::ConstPtr& msg)
 {
-    Data_.To.Speed[0]=msg->FrontRight;
-    Data_.To.Speed[1]=msg->FrontLeft;
-    Data_.To.Speed[2]=msg->RearRight;
-    Data_.To.Speed[3]=msg->RearLeft;
+    Data_.To.Speed[0]=msg->frontRight;
+    Data_.To.Speed[1]=msg->frontLeft;
+    Data_.To.Speed[2]=msg->rearRight;
+    Data_.To.Speed[3]=msg->rearLeft;
 }
 
 void PlcConnectionNode::TorqueCallback(const base::Wheels::ConstPtr& msg)
 {
-    Data_.To.Torque[0]=msg->FrontRight;
-    Data_.To.Torque[1]=msg->FrontLeft;
-    Data_.To.Torque[2]=msg->RearRight;
-    Data_.To.Torque[3]=msg->RearLeft;
+    Data_.To.Torque[0]=msg->frontRight;
+    Data_.To.Torque[1]=msg->frontLeft;
+    Data_.To.Torque[2]=msg->rearRight;
+    Data_.To.Torque[3]=msg->rearLeft;
 }
 
 void PlcConnectionNode::AccelerationCallback(const base::Wheels::ConstPtr& msg)
 {
-    Data_.To.Accelleration[0]=msg->FrontRight;
-    Data_.To.Accelleration[1]=msg->FrontLeft;
-    Data_.To.Accelleration[2]=msg->RearRight;
-    Data_.To.Accelleration[3]=msg->RearLeft;
+    Data_.To.Accelleration[0]=msg->frontRight;
+    Data_.To.Accelleration[1]=msg->frontLeft;
+    Data_.To.Accelleration[2]=msg->rearRight;
+    Data_.To.Accelleration[3]=msg->rearLeft;
 }
  
 //ToDo: Add Error Handling in Protocol
@@ -259,12 +259,12 @@ void PlcConnectionNode::PublishData()
     TFAngleMsg.transform.rotation.w=q.w();
 
 
-    SpeedMsg.FrontRight=Data_.From.Speed[0];
-    SpeedMsg.FrontLeft=Data_.From.Speed[1];
-    SpeedMsg.RearRight=Data_.From.Speed[2];
-    SpeedMsg.RearLeft=Data_.From.Speed[3];
+    SpeedMsg.frontRight=Data_.From.Speed[0];
+    SpeedMsg.frontLeft=Data_.From.Speed[1];
+    SpeedMsg.rearRight=Data_.From.Speed[2];
+    SpeedMsg.rearLeft=Data_.From.Speed[3];
 
-    AngleMsg.Angle=Data_.From.Angle;
+    AngleMsg.angle=Data_.From.Angle;
 
     TFBroadcaster_.sendTransform(TFAngleMsg);
 

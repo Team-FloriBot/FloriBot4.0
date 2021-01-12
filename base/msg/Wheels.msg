@@ -1,5 +1,5 @@
 Header header
-float64 FrontLeft
-float64 FrontRight
-float64 RearLeft
-float64 RearRight
+float64 frontLeft
+float64 frontRight
+float64 rearLeft
+float64 rearRight

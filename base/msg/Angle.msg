@@ -1,2 +1,2 @@
 Header header
-float64 Angle
+float64 angle

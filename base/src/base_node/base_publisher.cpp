@@ -17,18 +17,18 @@ void KinematicsPublisher::PublishSpeed(const ros::TimerEvent& e)
 
     tmp.header.stamp=ros::Time::now();
     tmp.header.seq=seq_++;
-    tmp.FrontLeft=Speedmsg_.FrontLeft;
-    tmp.FrontRight=Speedmsg_.FrontRight;
-    tmp.RearLeft=Speedmsg_.RearLeft;
-    tmp.RearRight=Speedmsg_.RearRight;
+    tmp.frontLeft=Speedmsg_.frontLeft;
+    tmp.frontRight=Speedmsg_.frontRight;
+    tmp.rearLeft=Speedmsg_.rearLeft;
+    tmp.rearLeft=Speedmsg_.rearRight;
 
 
     SpeedPublisher_.publish(Speedmsg_);
 
-    Speedmsg_.FrontLeft=0;
-    Speedmsg_.FrontRight=0;    
-    Speedmsg_.RearRight=0;
-    Speedmsg_.RearLeft=0;
+    Speedmsg_.frontLeft=0;
+    Speedmsg_.frontRight=0;    
+    Speedmsg_.rearRight=0;
+    Speedmsg_.rearLeft=0;
 }
 
 void KinematicsPublisher::getParam()
@@ -52,11 +52,11 @@ void KinematicsPublisher::CmdVelCallback(const geometry_msgs::Twist::ConstPtr& m
 
     Wheelspeed=Drive_.inverseKinematics(*msg);
 
-    Speedmsg_.FrontLeft=Wheelspeed.Front.leftWheel;
-    Speedmsg_.FrontRight=Wheelspeed.Front.rightWheel;
+    Speedmsg_.frontLeft=Wheelspeed.Front.leftWheel;
+    Speedmsg_.frontRight=Wheelspeed.Front.rightWheel;
 
-    Speedmsg_.RearLeft=Wheelspeed.Rear.leftWheel;
-    Speedmsg_.RearRight=Wheelspeed.Rear.rightWheel;
+    Speedmsg_.rearLeft=Wheelspeed.Rear.leftWheel;
+    Speedmsg_.rearRight=Wheelspeed.Rear.rightWheel;
 }
 
 void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
@@ -67,10 +67,10 @@ void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
     nav_msgs::Odometry OdomMsg;
     tf2::Quaternion q;
 
-    ActualSpeed.Front.leftWheel=msg->FrontLeft;
-    ActualSpeed.Front.rightWheel=msg->FrontRight;
-    ActualSpeed.Rear.leftWheel=msg->RearLeft;
-    ActualSpeed.Rear.rightWheel=msg->RearRight;
+    ActualSpeed.Front.leftWheel=msg->frontLeft;
+    ActualSpeed.Front.rightWheel=msg->frontRight;
+    ActualSpeed.Rear.leftWheel=msg->rearLeft;
+    ActualSpeed.Rear.rightWheel=msg->rearRight;
 
     OdomPose=Drive_.forwardKinematics(ActualSpeed, msg->header.stamp );
 
