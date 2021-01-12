@@ -11,9 +11,9 @@
         <param name="wheelDiameter"     value="$(arg wheelDiameter)"/>
         <param name="axesLength"        value="$(arg axesLength)"/>
 
-        <!--remap from="/engine/actualSpeed"            to=""/-->
+        <remap from="/engine/actualSpeed"            to="/Engine/ActualSpeed"/>
         <!--remap from="/engine/targetTorque"           to=""/-->
-        <!--remap from="/engine/targetSpeed"            to=""/-->
+        <remap from="/engine/targetSpeed"            to="/Engine/TargetSpeed"/>
         <!--remap from="/engine/targetAcceleration"     to=""/-->
 
         <!--remap from="/sensors/bodyAngle"             to=""/-->
