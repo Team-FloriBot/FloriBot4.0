@@ -1,0 +1,63 @@
+include "floribot.inc"
+window
+(
+	size [400 400]
+	# camera options
+	center [0 0]
+	rotate [0 0]
+	scale 100.0
+	# perspective camera options
+	pcam_loc [0 -4 2]
+	pcam_angle [70 0]
+	# GUI options
+	show_data 0
+	show_flags 1
+	show_blocks 1
+	show_clock 1
+	show_footprints 0
+	show_grid 1
+	show_trailrise 0
+	show_trailarrows 0
+	show_trailfast 0
+	show_occupancy 0
+	show_tree 0
+	pcam_on 0
+	screenshots 0
+)
+define wall_vertical model
+(
+	# a wall is rectangular
+	polygons 1
+	polygon[0].points 4
+	polygon[0].points[0] [0 0]
+	polygon[0].points[1] [1 0]
+	polygon[0].points[2] [1 0.01]
+	polygon[0].points[3] [0 0.01]
+	size [0.2 12 0.5]
+	color "black"
+)
+define wall_horizontal model
+(
+	# a wall is rectangular
+	polygons 1
+	polygon[0].points 4
+	polygon[0].points[0] [0 0]
+	polygon[0].points[1] [1 0]
+	polygon[0].points[2] [1 0.01]
+	polygon[0].points[3] [0 0.01]
+	size [0.2 21 0.5]
+	color "black"
+)
+define obstacle model
+(
+	# a obstacle is rectangular
+	size [0.05 0.05 0.2]
+	color "blue"
+)
+floribot
+(
+	name "flori"
+	pose [0 0 0 0]
+)
+
+
