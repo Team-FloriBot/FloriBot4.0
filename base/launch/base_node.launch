@@ -11,9 +11,9 @@
         <param name="wheelDiameter"     value="$(arg wheelDiameter)"/>
         <param name="axesLength"        value="$(arg axesLength)"/>
 
-        <remap from="/engine/actualSpeed"            to="/Engine/ActualSpeed"/>
+        <!--remap from="/engine/actualSpeed"            to="/Engine/ActualSpeed"/-->
         <!--remap from="/engine/targetTorque"           to=""/-->
-        <remap from="/engine/targetSpeed"            to="/Engine/TargetSpeed"/>
+        <!--remap from="/engine/targetSpeed"            to="/Engine/TargetSpeed"/-->
         <!--remap from="/engine/targetAcceleration"     to=""/-->
 
         <!--remap from="/sensors/bodyAngle"             to=""/-->
@@ -23,8 +23,8 @@
     <!--args="tx ty tz rx ry rz rw" Translation kartesisch Rotation quaternion-->
     <node pkg="tf2_ros" type="static_transform_publisher" name="AxesFront2JointFront"   args="$(arg frontLength) 0 0 0 0 0 1 axesFront jointFront" />
     <node pkg="tf2_ros" type="static_transform_publisher" name="AxesRear2JointRear"     args="$(arg rearLength) 0 0 0 0 0 1  jointRear axesRear" />
-    <node pkg="tf2_ros" type="static_transform_publisher" name="World"                  args="0 0 0 0 0 0 1 World map" />
-    <node pkg="tf2_ros" type="static_transform_publisher" name="Front"                  args="0 0 0 0 0 0 1 Odom AxesFront" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="World"                  args="0 0 0 0 0 0 1 world map" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="Front"                  args="0 0 0 0 0 0 1 odom axesFront" />
 
     <!--include file="$(find sick_scan)/launch/own_scanner.launch">
         <arg name="ParentFrame" value="AxesFront" />

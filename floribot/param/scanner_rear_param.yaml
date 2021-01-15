@@ -1,0 +1,10 @@
+ParentFrame: 'odom'
+PositionID: 'rear'
+TX: 0.31
+TY: 0.0
+TZ: 0.0
+RX: 0.0
+RY: 0.0
+RZ: 0.0
+RW: 1.0
+IPAddress: '192.168.0.51'

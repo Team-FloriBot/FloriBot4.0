@@ -6,12 +6,14 @@
 #include <base/Angle.h>
 
 void AngleCallback(const base::Angle::ConstPtr& msg);
-
+tf2_ros::TransformBroadcaster* TF;
+geometry_msgs::TransformStamped TFAngleMsg;
 int main(int argc, char** argv)
 {
     ros::init(argc, argv, "angle2tf");
     ros::NodeHandle Nh;
-    ros::Subscriber AngleSubs=Nh.subscribe("Sensors/BodyAngle", 1, &AngleCallback);
+    TF = new tf2_ros::TransformBroadcaster();
+    ros::Subscriber AngleSubs=Nh.subscribe("/sensors/bodyAngle", 1, &AngleCallback);
 
     ros::spin();
 
@@ -19,15 +21,13 @@ int main(int argc, char** argv)
 }
 
 void AngleCallback(const base::Angle::ConstPtr& msg)
-{
-    geometry_msgs::TransformStamped TFAngleMsg;
-    tf2::Quaternion q;
-    tf2_ros::TransformBroadcaster TF;
-
+{  
+    tf2::Quaternion q; 
+    ROS_ERROR("%f",msg->angle);
     TFAngleMsg.header.seq=msg->header.seq;
     TFAngleMsg.child_frame_id="jointRear";
     TFAngleMsg.header.frame_id="jointFront";
-    TFAngleMsg.header.stamp=msg->header.stamp;
+    TFAngleMsg.header.stamp=ros::Time::now();
 
 
     q.setRPY(0,0,msg->angle);
@@ -40,7 +40,7 @@ void AngleCallback(const base::Angle::ConstPtr& msg)
     TFAngleMsg.transform.rotation.z=q.z();
     TFAngleMsg.transform.rotation.w=q.w();
 
-    TF.sendTransform(TFAngleMsg);
+    TF->sendTransform(TFAngleMsg);
 
 
 }
