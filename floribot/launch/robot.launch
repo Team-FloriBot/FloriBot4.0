@@ -1,8 +1,9 @@
 <launch>
 	<arg name="dummy" default="false" />
+	<arg name="PI" default="3.14159265359"/>
 	<group if="$(arg dummy)">
-		<!--Adding TF publisher for simulation-->
-		<include file="$(find floribot)/launch/own_scanner.launch" >
+		<!--Availible soon-->
+		<!--include file="$(find floribot)/launch/own_scanner.launch" >
 			<rosparam file="$(find floribot)/paramFiles/scanner_front_param.yaml" command="load" />
 			<arg name="dummy" value="$(arg dummy)"/>
 		</include>
@@ -10,13 +11,10 @@
 		<include file="$(find floribot)/launch/own_scanner.launch" >
 			<rosparam file="$(find floribot)/paramFiles/scanner_rear_param.yaml" command="load" />
 			<arg name="dummy" value="$(arg dummy)"/>
-		</include>
+		</include-->
 
-		<!--node pkg="tf2_ros" type="static_transform_publisher" name="scanner_front_TF">
-			<rosparam file="$(find floribot)/param/scanner_front_param.yaml" command="load" />
-		 	<args=" 0.31 0 0 0 0 0 1 axesFront scaner_front">
-		</node-->
-		<!--node pkg="tf2_ros" type="static_transform_publisher" name="scanner_rear_TF" args=" 0.31 0 0 0 0 0 1 axesRear scaner_rear" /-->
+		<node pkg="tf2_ros" type="static_transform_publisher" name="scanner_front_TF" args=" -0.31 0 0 0 -1 0 0 axesFront scaner_front"/>
+		<node pkg="tf2_ros" type="static_transform_publisher" name="scanner_rear_TF" args=" 0.31 0 0 1 0 0 0 axesRear scaner_rear" />
 		<!--Adding TF publisher for angle-->
 		<node pkg="base" type="angle2tf" name="angle2tf"/>
 
