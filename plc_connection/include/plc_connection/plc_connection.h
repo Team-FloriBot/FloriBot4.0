@@ -19,6 +19,7 @@ struct FromPLC
 {
     uint32_t MessageID;
     uint32_t Mode;
+
     float Speed[4];
     float Angle;
     float Voltage;
@@ -32,6 +33,7 @@ struct ToPLC
 {
     uint32_t MessageID;
     uint32_t Mode;
+
     float Speed[4];
     float Accelleration[4];
     float Torque[4];
@@ -54,14 +56,13 @@ struct TargetDevice
 };
 
 //node class
-//ToDo: Trigger operator() with Timer and then do not use operator()
-class PlcConnectionNode
+class plcConnectionNode
 {
     public:
     //Constructor
-    PlcConnectionNode(OwnUDP::Address* OwnIP);
-    PlcConnectionNode(OwnUDP::Address* OwnIP, OwnUDP::Address* TargetIP);
-    PlcConnectionNode();
+    plcConnectionNode(OwnUDP::Address* OwnIP);
+    plcConnectionNode(OwnUDP::Address* OwnIP, OwnUDP::Address* TargetIP);
+    plcConnectionNode();
 
    
     

@@ -1,7 +1,7 @@
 #include "plc_connection/plc_connection.h"
 
 //Standard constructor
-PlcConnectionNode::PlcConnectionNode()
+plcConnectionNode::plcConnectionNode()
 {
     seq_=0;
 
@@ -18,7 +18,7 @@ PlcConnectionNode::PlcConnectionNode()
     CreatePublisher();
 
     //Run Functions time triggered
-    SendRecvTimer_=nh_.createTimer(ros::Duration(0.1), &PlcConnectionNode::SendRecv, this);
+    SendRecvTimer_=nh_.createTimer(ros::Duration(0.1), &plcConnectionNode::SendRecv, this);
 
 
     //ToDo: Initialize all
@@ -46,7 +46,7 @@ PlcConnectionNode::PlcConnectionNode()
 }
 
 //Initialize Socket
-void PlcConnectionNode::InitializeSocket()
+void plcConnectionNode::InitializeSocket()
 {
     //temporary variables
     OwnUDP::Address tmpAddress;
@@ -96,7 +96,7 @@ void PlcConnectionNode::InitializeSocket()
 }
 
 //Read ROSparameter 
-void PlcConnectionNode::ReadParams()
+void plcConnectionNode::ReadParams()
 {
     //Get Param from Paramserver or set Default Values
     nh_.param<std::string>("/"+ros::this_node::getName()+"/PLC_IP", strTargetIP_, "192.168.0.43");
@@ -111,18 +111,18 @@ void PlcConnectionNode::ReadParams()
 }
 
 //Subscribe to topics
-void PlcConnectionNode::Subscribe()
+void plcConnectionNode::Subscribe()
 {
     //Create Subscriber 
-    SpeedSubscriber_=nh_.subscribe("Engine/TargetSpeed", 1, &PlcConnectionNode::SpeedCallback, this);
+    SpeedSubscriber_=nh_.subscribe("Engine/TargetSpeed", 1, &plcConnectionNode::SpeedCallback, this);
     
-    AccelerationSubscriber_=nh_.subscribe("Engine/TargetAcceleration", 1, &PlcConnectionNode::AccelerationCallback, this);
+    AccelerationSubscriber_=nh_.subscribe("Engine/TargetAcceleration", 1, &plcConnectionNode::AccelerationCallback, this);
     
-    TorqueSubscriber_=nh_.subscribe("Engine/TargetTorque", 1, &PlcConnectionNode::TorqueCallback, this);
+    TorqueSubscriber_=nh_.subscribe("Engine/TargetTorque", 1, &plcConnectionNode::TorqueCallback, this);
 }
 
 //create Publisher
-void PlcConnectionNode::CreatePublisher()
+void plcConnectionNode::CreatePublisher()
 {
     //create Publisher
     SpeedPublisher_=nh_.advertise<base::Wheels>("Engine/ActualSpeed", 1);
@@ -131,7 +131,7 @@ void PlcConnectionNode::CreatePublisher()
 }
 
 //Callbacks for Subscriber
-void PlcConnectionNode::SpeedCallback(const base::Wheels::ConstPtr& msg)
+void plcConnectionNode::SpeedCallback(const base::Wheels::ConstPtr& msg)
 {
     Data_.To.Speed[0]=msg->frontRight;
     Data_.To.Speed[1]=msg->frontLeft;
@@ -139,7 +139,7 @@ void PlcConnectionNode::SpeedCallback(const base::Wheels::ConstPtr& msg)
     Data_.To.Speed[3]=msg->rearLeft;
 }
 
-void PlcConnectionNode::TorqueCallback(const base::Wheels::ConstPtr& msg)
+void plcConnectionNode::TorqueCallback(const base::Wheels::ConstPtr& msg)
 {
     Data_.To.Torque[0]=msg->frontRight;
     Data_.To.Torque[1]=msg->frontLeft;
@@ -147,7 +147,7 @@ void PlcConnectionNode::TorqueCallback(const base::Wheels::ConstPtr& msg)
     Data_.To.Torque[3]=msg->rearLeft;
 }
 
-void PlcConnectionNode::AccelerationCallback(const base::Wheels::ConstPtr& msg)
+void plcConnectionNode::AccelerationCallback(const base::Wheels::ConstPtr& msg)
 {
     Data_.To.Accelleration[0]=msg->frontRight;
     Data_.To.Accelleration[1]=msg->frontLeft;
@@ -156,7 +156,7 @@ void PlcConnectionNode::AccelerationCallback(const base::Wheels::ConstPtr& msg)
 }
  
 //ToDo: Add Error Handling in Protocol
-void PlcConnectionNode::SendRecv(const ros::TimerEvent &e)
+void plcConnectionNode::SendRecv(const ros::TimerEvent &e)
 {
     //Send and receive Data
     try
@@ -175,7 +175,7 @@ void PlcConnectionNode::SendRecv(const ros::TimerEvent &e)
 }
 
 //send data
-void PlcConnectionNode::SendData()
+void plcConnectionNode::SendData()
 {
     //prepare data
     PLC_Data tmpData;
@@ -186,7 +186,7 @@ void PlcConnectionNode::SendData()
 }
 
 //receive data
-bool PlcConnectionNode::ReadData()
+bool plcConnectionNode::ReadData()
 {
     //create temporary variables
     PLC_Data tmpData;
@@ -228,7 +228,7 @@ bool PlcConnectionNode::ReadData()
 }
 
 //Publish received Data
-void PlcConnectionNode::PublishData()
+void plcConnectionNode::PublishData()
 {
     //Create messages
     base::Angle  AngleMsg;
