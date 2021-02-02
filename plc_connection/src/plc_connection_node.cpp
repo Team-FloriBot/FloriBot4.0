@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
     try
     {
-        PlcConnectionNode PlcConnection;
+        plcConnectionNode PlcConnection;
         ros::spin();
     }
     //Log Error before exiting node with error

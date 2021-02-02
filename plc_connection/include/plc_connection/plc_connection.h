@@ -35,8 +35,8 @@ struct ToPLC
     uint32_t Mode;
 
     float Speed[4];
-    float Accelleration[4];
-    float Torque[4];
+    float Accelleration;
+    float Torque;
 };
 
 //Struct for Exachanged Data PLC

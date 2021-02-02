@@ -78,8 +78,6 @@ namespace OwnSocket
         Address OwnAddress_;
 
     };
-
-
 }
 
 #endif
