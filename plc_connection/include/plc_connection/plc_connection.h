@@ -4,6 +4,7 @@
 #include "network/udp/udp_socket.h"
 #include <linux/if_link.h>
 #include <ifaddrs.h>
+#include <math.h>
 
 #include <base/Wheels.h>
 #include <ros/ros.h>
@@ -17,11 +18,13 @@
 //Struct for receiving Data
 struct FromPLC
 {
+    //Header
     uint32_t MessageID;
     uint32_t Mode;
 
+    //Data
     float Speed[4];
-    float Angle;
+    uint32_t Angle;
     float Voltage;
     uint32_t HomingError;
     uint32_t SpeedError[4];
@@ -31,9 +34,11 @@ struct FromPLC
 //struct for sending data
 struct ToPLC
 {
+    //Header
     uint32_t MessageID;
     uint32_t Mode;
 
+    //Data
     float Speed[4];
     float Accelleration;
     float Torque;
@@ -111,6 +116,10 @@ class plcConnectionNode
 
     //Duration for Connection Timeout
     ros::Duration ConnectionTimeout_;
+
+    //Params for Angle
+    int zeroCount_;
+    int countPerRotation_;
 
     //Connection ok status
     bool ComOk_;

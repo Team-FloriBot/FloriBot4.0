@@ -101,6 +101,10 @@ void plcConnectionNode::ReadParams()
     PLCTimeout_=nh_.param("/"+ros::this_node::getName()+"/PLC_Timeout", 1.5);
     ReceiveTimeoutSec_=nh_.param("/"+ros::this_node::getName()+"/Receive_Timeout_sec", 0);
     ReceiveTimeoutUsec_=nh_.param("/"+ros::this_node::getName()+"/Receive_Timeout_usec", 500);
+
+        //Params for Angle
+    zeroCount_=nh_.param("/"+ros::this_node::getName()+"/zeroCount_Encoder", 0);
+    countPerRotation_=nh_.param("/"+ros::this_node::getName()+"/countPerRotation_Encoder", 20000);
 }
 
 //Subscribe to topics
@@ -222,6 +226,7 @@ void plcConnectionNode::PublishData()
     base::Wheels SpeedMsg;
     geometry_msgs::TransformStamped TFAngleMsg;
     tf2::Quaternion q;
+    float Angle=(Data_.From.Angle-zeroCount_)/countPerRotation_*2*M_PI;
 
     //write data in messages and publish
     TFAngleMsg.header.seq=seq_;
@@ -235,7 +240,7 @@ void plcConnectionNode::PublishData()
     AngleMsg.header.seq=seq_++;
     AngleMsg.header.stamp=ros::Time::now();
 
-    q.setRPY(0,0,Data_.From.Angle);
+    q.setRPY(0,0,Angle);
     TFAngleMsg.transform.translation.x=0;
     TFAngleMsg.transform.translation.y=0;
     TFAngleMsg.transform.translation.z=0;
@@ -251,7 +256,7 @@ void plcConnectionNode::PublishData()
     SpeedMsg.rearRight=Data_.From.Speed[2];
     SpeedMsg.rearLeft=Data_.From.Speed[3];
 
-    AngleMsg.angle=Data_.From.Angle;
+    AngleMsg.angle=Angle;
 
     TFBroadcaster_.sendTransform(TFAngleMsg);
 
@@ -265,7 +270,7 @@ void ntohPLC(PLC_Data* Host, PLC_Data* Network)
 {
     Host->From.MessageID=ntohl(Network->From.MessageID);
     Host->From.Mode=ntohl(Network->From.Mode);
-    Host->From.Angle=OwnSocket::ntohf(Network->From.Angle);
+    Host->From.Angle=ntohl(Network->From.Angle);
     Host->From.Voltage=OwnSocket::ntohf(Network->From.Voltage);
     Host->From.HomingError=ntohl(Network->From.HomingError);
 
