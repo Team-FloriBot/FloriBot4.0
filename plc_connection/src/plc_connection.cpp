@@ -33,16 +33,10 @@ plcConnectionNode::plcConnectionNode()
     Data_.To.Speed[2]=0;
     Data_.To.Speed[3]=0;
 
-    Data_.To.Accelleration[0]=0;
-    Data_.To.Accelleration[1]=0;
-    Data_.To.Accelleration[2]=0;
-    Data_.To.Accelleration[3]=0;
+    Data_.To.Accelleration=0;
 
-    Data_.To.Torque[0]=0;
-    Data_.To.Torque[1]=0;
-    Data_.To.Torque[2]=0;
-    Data_.To.Torque[3]=0;
-    
+
+    Data_.To.Torque=0;    
 }
 
 //Initialize Socket
@@ -86,10 +80,9 @@ void plcConnectionNode::InitializeSocket()
         PLC_Socket_.setReceiveTime(ReceiveTimeoutUsec_, ReceiveTimeoutSec_);
         ROS_INFO("Receive Timeout for UDP Socket ist set to %i seconds and %i usec", ReceiveTimeoutSec_, ReceiveTimeoutUsec_);
     }
-    catch(const std::runtime_error* e)
+    catch(const std::runtime_error& e)
     {
-        ROS_ERROR("Error while creating UDP Socket on Port %i\n %s", OwnPort_, e->what());
-        delete e;
+        ROS_ERROR("Error while creating UDP Socket on Port %i\n %s", OwnPort_, e.what());
         exit(-1);
     }
 
@@ -139,20 +132,15 @@ void plcConnectionNode::SpeedCallback(const base::Wheels::ConstPtr& msg)
     Data_.To.Speed[3]=msg->rearLeft;
 }
 
-void plcConnectionNode::TorqueCallback(const base::Wheels::ConstPtr& msg)
+void plcConnectionNode::TorqueCallback(const std_msgs::Float64::ConstPtr& msg)
 {
-    Data_.To.Torque[0]=msg->frontRight;
-    Data_.To.Torque[1]=msg->frontLeft;
-    Data_.To.Torque[2]=msg->rearRight;
-    Data_.To.Torque[3]=msg->rearLeft;
+    Data_.To.Torque=msg->data;
 }
 
-void plcConnectionNode::AccelerationCallback(const base::Wheels::ConstPtr& msg)
+void plcConnectionNode::AccelerationCallback(const std_msgs::Float64::ConstPtr& msg)
 {
-    Data_.To.Accelleration[0]=msg->frontRight;
-    Data_.To.Accelleration[1]=msg->frontLeft;
-    Data_.To.Accelleration[2]=msg->rearRight;
-    Data_.To.Accelleration[3]=msg->rearLeft;
+    Data_.To.Accelleration=msg->data;
+
 }
  
 //ToDo: Add Error Handling in Protocol
@@ -164,10 +152,9 @@ void plcConnectionNode::SendRecv(const ros::TimerEvent &e)
         SendData();
         ReadData();    
     }
-    catch(std::runtime_error* e)
+    catch(std::runtime_error& e)
     {
-        ROS_WARN("%s",e->what());
-        delete e;
+        ROS_WARN("%s",e.what());
     }
 
     //Publish data
@@ -295,11 +282,11 @@ void htonPLC(PLC_Data* Network, PLC_Data* Host)
 {
     Network->To.MessageID=htonl(Host->To.MessageID++);
     Network->To.Mode=htonl(Host->To.Mode);
+    Network->To.Torque=OwnSocket::htonf(Host->To.Torque);
+    Network->To.Accelleration=OwnSocket::htonf(Host->To.Accelleration);
     
     for (int i=0; i<4;i++)
     {
         Network->To.Speed[i]=OwnSocket::htonf(Host->To.Speed[i]);
-        Network->To.Torque[i]=OwnSocket::htonf(Host->To.Torque[i]);
-        Network->To.Accelleration[i]=OwnSocket::htonf(Host->To.Accelleration[i]);
     }
 }

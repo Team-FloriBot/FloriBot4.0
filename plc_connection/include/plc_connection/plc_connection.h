@@ -88,10 +88,10 @@ class plcConnectionNode
 
 
     //Callback for Torque subscriber
-    void TorqueCallback(const base::Wheels::ConstPtr& msg);
+    void TorqueCallback(const std_msgs::Float64::ConstPtr& msg);
     
     //Callback for Accelaration subscriber
-    void AccelerationCallback(const base::Wheels::ConstPtr& msg);
+    void AccelerationCallback(const std_msgs::Float64::ConstPtr& msg);
 
     //Member
     //nodehandle

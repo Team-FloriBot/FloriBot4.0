@@ -51,7 +51,7 @@ void OwnSocket::Socket::init(Connection Type)
     }
 
     //Check if Socket was created succesfull
-    if (SocketID_ <= 0) throw new std::runtime_error("Socket is not valid");
+    if (SocketID_ <= 0) throw std::runtime_error("Socket is not valid");
 
     //Get Socket Data from System
     getsockname(SocketID_, (sockaddr*)&ownAddr, &len);
@@ -75,7 +75,7 @@ void OwnSocket::Socket::setReceiveTime(int usec, int sec)
     tv.tv_sec = sec;       
     tv.tv_usec = usec; 
     //Set timeout for Socket     
-    if (setsockopt(SocketID_, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval))<0) throw new std::runtime_error("Can not set Timeout");
+    if (setsockopt(SocketID_, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval))<0) throw std::runtime_error("Can not set Timeout");
 
 }
 
@@ -85,14 +85,14 @@ void OwnSocket::Socket::connectTo(Address* IP)
     //create temporary variables
     struct sockaddr_in server;
 
-    if (!checkAddress(IP)) throw new std::runtime_error("Invalid Addressparameter");
+    if (!checkAddress(IP)) throw std::runtime_error("Invalid Addressparameter");
     //Set Server Connection data
     server.sin_family=AF_INET;
 	server.sin_addr.s_addr=inet_addr(IP->IP.c_str());
 	server.sin_port=htons(IP->Port);
 
     //Connect to Server
-    if (connect(SocketID_,(struct sockaddr *) &server, sizeof(server)<0)) throw new std::runtime_error("Can not Connect to IP "+IP->IP);
+    if (connect(SocketID_,(struct sockaddr *) &server, sizeof(server)<0)) throw std::runtime_error("Can not Connect to IP "+IP->IP);
     
     else Connected_=true;
 }
@@ -130,22 +130,22 @@ bool OwnSocket::Socket::socketOk()
 void OwnSocket::Socket::write(uint8_t* Data, int length, Address* Target=NULL)
 {
     //Check Socket status  
-    if (Passive_) throw new std::runtime_error("Writing on passive Socket");
-    if (!socketOk()) throw new std::runtime_error("Socket is not valid");
+    if (Passive_) throw std::runtime_error("Writing on passive Socket");
+    if (!socketOk()) throw std::runtime_error("Socket is not valid");
 
     //Check if connected
     if (Connected_)
     {
         //Send Data
-        if (send(SocketID_, Data, length,0)<0) throw new std::runtime_error("Sending Data failed");
+        if (send(SocketID_, Data, length,0)<0) throw std::runtime_error("Sending Data failed");
     }
     else
     {
         //Check if it should be connected
-        if (Type_==TCP) throw new std::runtime_error("TCP Socket has to be connected to send Data");
+        if (Type_==TCP) throw std::runtime_error("TCP Socket has to be connected to send Data");
 
         //Check Address to send to
-        if (Target->IP.empty()||!checkAddress(Target)) throw new std::runtime_error("No vaild IP-Address to send Data to");
+        if (Target->IP.empty()||!checkAddress(Target)) throw std::runtime_error("No vaild IP-Address to send Data to");
 
         struct sockaddr_in target;
 
@@ -157,9 +157,14 @@ void OwnSocket::Socket::write(uint8_t* Data, int length, Address* Target=NULL)
         //Send data
 
         int s=sendto(SocketID_, Data, length,0, (struct sockaddr*)&target, sizeof(target));
-        std::stringstream strs;
-        strs<<s;
-        if (s<0) throw new std::runtime_error(strs.str());
+
+        if (s<0) 
+        {
+            std::stringstream strs;
+            strs<<"Error while sending message to "<<Target->IP<<":"<<Target->Port;
+            throw std::runtime_error(strs.str());
+        
+        }
     }   
 }
 
@@ -167,16 +172,16 @@ void OwnSocket::Socket::write(uint8_t* Data, int length, Address* Target=NULL)
 void OwnSocket::Socket::read(uint8_t* Data, int length, Address* Source=NULL)
 {
     //Check Socket
-    if (!socketOk()) throw new std::runtime_error("Socket is not valid");
+    if (!socketOk()) throw std::runtime_error("Socket is not valid");
 
     //Check if an active connection is needed to receive messages
-    if (Type_==TCP && !Connected_) throw new std::runtime_error("Socket has to be connected to receive Data");
+    if (Type_==TCP && !Connected_) throw std::runtime_error("Socket has to be connected to receive Data");
 
     socklen_t len;
     struct sockaddr_in source;
 
     //receive Data and get Sourceaddress
-    if (recvfrom(SocketID_, Data, length,0, (struct sockaddr*)&source, &len)<0) throw new std::runtime_error("Error while receiving Data"); 
+    if (recvfrom(SocketID_, Data, length,0, (struct sockaddr*)&source, &len)<0) throw std::runtime_error("Error while receiving Data"); 
 
     //Write Sourceaddress data for further use
     
@@ -201,7 +206,7 @@ void OwnSocket::Socket::bindAddress(Address* IPParam)
 {
     struct sockaddr_in Addr;
 
-    if (!checkAddress(IPParam)) throw new std::runtime_error("Invalid IP Parameter Address: "+ IPParam->IP+ " Port: "+ std::to_string(IPParam->Port));
+    if (!checkAddress(IPParam)) throw std::runtime_error("Invalid IP Parameter Address: "+ IPParam->IP+ " Port: "+ std::to_string(IPParam->Port));
 
     //Prepare Data to set Address data
     Addr.sin_family=AF_INET;
@@ -215,7 +220,7 @@ void OwnSocket::Socket::bindAddress(Address* IPParam)
 
     //Bind Address to Socket
     if (bind(SocketID_, (sockaddr*)&Addr, sizeof(Addr))<0) 
-                throw new std::runtime_error("Error while binding Address "+ IPParam->IP+ " with Port " + std::to_string(IPParam->Port));
+                throw std::runtime_error("Error while binding Address "+ IPParam->IP+ " with Port " + std::to_string(IPParam->Port));
     else
     {
         //Change saved Socket data
@@ -234,7 +239,7 @@ OwnSocket::Socket* OwnSocket::Socket::acceptConnection()
     int newID;
 
     //Accept connection
-    if (newID=accept(SocketID_, (sockaddr*)&NewSock, &len)<0) throw new std::runtime_error("Socket can not accept connections");
+    if (newID=accept(SocketID_, (sockaddr*)&NewSock, &len)<0) throw std::runtime_error("Socket can not accept connections");
 
     //Return Socketobject for the new connection
     return new Socket(newID, Type_);
@@ -244,7 +249,7 @@ OwnSocket::Socket* OwnSocket::Socket::acceptConnection()
 void OwnSocket::Socket::listenPort(int queuesSize)
 {
     //Set Socket
-    if (listen(SocketID_, queuesSize)<0) throw new std::runtime_error("Socket can not listen");
+    if (listen(SocketID_, queuesSize)<0) throw std::runtime_error("Socket can not listen");
     Passive_=true;
 }
 
