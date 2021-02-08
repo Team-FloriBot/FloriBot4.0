@@ -1,6 +1,11 @@
 #include <pathfollowing_node/pathfollowing.h>
 
-PathFollowingControl::~PathFollowingControl(){};
+PathFollowingControl::~PathFollowingControl(){
+    
+    //cleanup 
+    _tfListener->~TransformListener();
+    delete _tfListener;
+};
 
 void PathFollowingControl::initialise(const ros::NodeHandle& nh, const float maxLinV, const float maxRotV,const float timejump)
 {
@@ -10,6 +15,7 @@ void PathFollowingControl::initialise(const ros::NodeHandle& nh, const float max
     PathFollowingControl::_maxRotV=maxRotV;
     PathFollowingControl::_timejump=timejump;
 
+
     //initialise publisher
     PathFollowingControl::_futurePos_pub    = PathFollowingControl::_nh.advertise<geometry_msgs::PointStamped>("/futurePos", 1);
     PathFollowingControl::_cmdVel_pub       = PathFollowingControl::_nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
@@ -18,6 +24,7 @@ void PathFollowingControl::initialise(const ros::NodeHandle& nh, const float max
     PathFollowingControl::_odom_sub = _nh.subscribe("/odom", 1, &PathFollowingControl::odomCallback,this);
 
     //initialise tf handler
+    PathFollowingControl::_tfListener = new tf2_ros::TransformListener(_tfBuffer);
 
 }
 

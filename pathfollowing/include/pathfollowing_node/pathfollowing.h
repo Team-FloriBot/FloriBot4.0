@@ -28,7 +28,7 @@ class PathFollowingControl
 
         //transformmessages
         tf2_ros::Buffer                     _tfBuffer;
-        tf2_ros::TransformListener          _tfListener(_tfBuffer);
+        tf2_ros::TransformListener*          _tfListener;
         geometry_msgs::TransformStamped     _odom_2_base;
         geometry_msgs::TransformStamped     _base_2_odom;
 
@@ -43,6 +43,6 @@ class PathFollowingControl
         void odomCallback(const nav_msgs::Odometry& odom);
 
     public:
-        void initialise(const ros::NodeHandle& nh, const float maxLinV, const float maxRotV,const float timejump);
+        void initialise(const ros::NodeHandle& nh ,const float maxLinV, const float maxRotV,const float timejump);
         ~PathFollowingControl();
 };
