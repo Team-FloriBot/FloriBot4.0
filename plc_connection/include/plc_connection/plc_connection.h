@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include <base/Wheels.h>
+#include "plc_connection/GetCount.h"
 #include <ros/ros.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <geometry_msgs/TransformStamped.h>
@@ -89,6 +90,9 @@ class plcConnectionNode
     bool ReadData();
     void PublishData();
 
+    //Callback for ServiceCount Callback
+    bool GetCountService(plc_connection::GetCount::Request &req, plc_connection::GetCount::Response &res);
+
     //Callback for Speed subscriber 
     void SpeedCallback(const base::Wheels::ConstPtr& msg);
 
@@ -107,6 +111,9 @@ class plcConnectionNode
     //Publisher
     ros::Publisher SpeedPublisher_, AnglePublisher_;
     tf2_ros::TransformBroadcaster TFBroadcaster_;
+
+    //Service
+    ros::ServiceServer CountServer;
 
     ros::Timer SendRecvTimer_;
 

@@ -17,16 +17,18 @@ plcConnectionNode::plcConnectionNode()
     //Publish Topics
     CreatePublisher();
 
+    //Create Service Server
+    CountServer=nh_.advertiseService("Sensors/Angle/GetCounter", &plcConnectionNode::GetCountService, this);
+
     //Run Functions time triggered
     SendRecvTimer_=nh_.createTimer(ros::Duration(0.1), &plcConnectionNode::SendRecv, this);
 
 
-    //ToDo: Initialize all
     Data_.From.Speed[0]=0;
     Data_.From.Speed[1]=0;
     Data_.From.Speed[2]=0;
     Data_.From.Speed[3]=0;
-    Data_.From.Angle=M_PI;
+    Data_.From.Angle=0;
 
     Data_.To.Speed[0]=0;
     Data_.To.Speed[1]=0;
@@ -139,6 +141,13 @@ void plcConnectionNode::SpeedCallback(const base::Wheels::ConstPtr& msg)
     Data_.To.Speed[1]=msg->frontLeft;
     Data_.To.Speed[2]=msg->rearRight;
     Data_.To.Speed[3]=msg->rearLeft;
+}
+
+//Callback for ServiceCount Callback
+bool plcConnectionNode::GetCountService(plc_connection::GetCount::Request &req, plc_connection::GetCount::Response &res)
+{
+    res.Count=Data_.From.Angle;
+    return true;
 }
 
 //ToDo: Add Error Handling in Protocol
