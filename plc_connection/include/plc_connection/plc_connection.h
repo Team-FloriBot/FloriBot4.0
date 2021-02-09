@@ -103,7 +103,7 @@ class plcConnectionNode
     //nodehandle
     ros::NodeHandle nh_;
     //Subscriber
-    ros::Subscriber SpeedSubscriber_, TorqueSubscriber_, AccelerationSubscriber_;
+    ros::Subscriber SpeedSubscriber_;
     //Publisher
     ros::Publisher SpeedPublisher_, AnglePublisher_;
     tf2_ros::TransformBroadcaster TFBroadcaster_;

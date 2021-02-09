@@ -35,12 +35,12 @@ plcConnectionNode::plcConnectionNode()
 
     Data_.To.Accelleration=0;
 
-    Data_.To.Torque=0;    
+    Data_.To.Jerk=0;    
 
-    Data_.to.Dummy[0]=0;
-    Data_.to.Dummy[1]=0;
-    Data_.to.Dummy[2]=0;
-    Data_.to.Dummy[3]=0;
+    Data_.To.Dummy[0]=0;
+    Data_.To.Dummy[1]=0;
+    Data_.To.Dummy[2]=0;
+    Data_.To.Dummy[3]=0;
 }
 
 //Initialize Socket
@@ -121,10 +121,6 @@ void plcConnectionNode::Subscribe()
 {
     //Create Subscriber 
     SpeedSubscriber_=nh_.subscribe("Engine/TargetSpeed", 1, &plcConnectionNode::SpeedCallback, this);
-    
-    AccelerationSubscriber_=nh_.subscribe("Engine/TargetAcceleration", 1, &plcConnectionNode::AccelerationCallback, this);
-    
-    TorqueSubscriber_=nh_.subscribe("Engine/TargetTorque", 1, &plcConnectionNode::TorqueCallback, this);
 }
 
 //create Publisher
@@ -145,17 +141,6 @@ void plcConnectionNode::SpeedCallback(const base::Wheels::ConstPtr& msg)
     Data_.To.Speed[3]=msg->rearLeft;
 }
 
-void plcConnectionNode::TorqueCallback(const std_msgs::Float64::ConstPtr& msg)
-{
-    Data_.To.Torque=msg->data;
-}
-
-void plcConnectionNode::AccelerationCallback(const std_msgs::Float64::ConstPtr& msg)
-{
-    Data_.To.Accelleration=msg->data;
-
-}
- 
 //ToDo: Add Error Handling in Protocol
 void plcConnectionNode::SendRecv(const ros::TimerEvent &e)
 {
