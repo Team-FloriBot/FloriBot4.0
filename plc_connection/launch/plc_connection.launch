@@ -8,6 +8,8 @@
     <arg name="engine_mode"                     default="0"/>
     <arg name="zero_count_encoder"              default="0"/>
     <arg name="count_per_rotation_encoder"      default="20000"/>
+    <arg name="engine_acceleration"             default="5"/>
+    <arg name="engine_jerk"                     default="5"/>
 
 
 
@@ -20,6 +22,8 @@
     <param name="Engine_Mode"               value="$(arg engine_mode)"/>
     <param name="ZeroCount_Encoder"         value="$(arg zero_count_encoder)"/>
     <param name="CountPerRotation_Encoder"  value="$(arg count_per_rotation_encoder)"/>
+    <param name="Engine_Acceleration"       value="$(arg engine_acceleration)"/>
+    <param name="Engine_Jerk"               value="$(arg engine_jerk)"/>
 
     <!--remap from="/Engine/ActualSpeed"         to=""/-->
     <!--remap from="/Engine/TargetSpeed"         to=""/-->

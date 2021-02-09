@@ -41,7 +41,8 @@ struct ToPLC
     //Data
     float Speed[4];
     float Accelleration;
-    float Torque;
+    float Jerk;
+    float Dummy[4];
 };
 
 //Struct for Exachanged Data PLC

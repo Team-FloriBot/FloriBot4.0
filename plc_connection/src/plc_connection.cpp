@@ -35,8 +35,12 @@ plcConnectionNode::plcConnectionNode()
 
     Data_.To.Accelleration=0;
 
-
     Data_.To.Torque=0;    
+
+    Data_.to.Dummy[0]=0;
+    Data_.to.Dummy[1]=0;
+    Data_.to.Dummy[2]=0;
+    Data_.to.Dummy[3]=0;
 }
 
 //Initialize Socket
@@ -102,9 +106,14 @@ void plcConnectionNode::ReadParams()
     ReceiveTimeoutSec_=nh_.param("/"+ros::this_node::getName()+"/Receive_Timeout_sec", 0);
     ReceiveTimeoutUsec_=nh_.param("/"+ros::this_node::getName()+"/Receive_Timeout_usec", 500);
 
-        //Params for Angle
+    //Params for Angle
     zeroCount_=nh_.param("/"+ros::this_node::getName()+"/zeroCount_Encoder", 0);
     countPerRotation_=nh_.param("/"+ros::this_node::getName()+"/countPerRotation_Encoder", 20000);
+
+    //Param Jerk and Acceleration
+    Data_.To.Accelleration=nh_.param("/"+ros::this_node::getName()+"/Engine_Acceleration", 0);
+    Data_.To.Jerk=nh_.param("/"+ros::this_node::getName()+"/Engine_Jerk", 0);
+
 }
 
 //Subscribe to topics
@@ -287,11 +296,12 @@ void htonPLC(PLC_Data* Network, PLC_Data* Host)
 {
     Network->To.MessageID=htonl(Host->To.MessageID++);
     Network->To.Mode=htonl(Host->To.Mode);
-    Network->To.Torque=OwnSocket::htonf(Host->To.Torque);
+    Network->To.Jerk=OwnSocket::htonf(Host->To.Jerk);
     Network->To.Accelleration=OwnSocket::htonf(Host->To.Accelleration);
     
     for (int i=0; i<4;i++)
     {
         Network->To.Speed[i]=OwnSocket::htonf(Host->To.Speed[i]);
+        Network->To.Dummy[i]=OwnSocket::htonf(Host->To.Dummy[i]);
     }
 }
