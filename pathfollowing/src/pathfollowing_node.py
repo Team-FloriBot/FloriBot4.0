@@ -5,6 +5,7 @@ import numpy as np
 import math
 from geometry_msgs.msg import Twist as Twist
 from geometry_msgs.msg import PoseStamped as PoseStamped
+from geometry_msgs.msg import PointStamped as PointStamped
 from nav_msgs.msg import Odometry as Odometry
 from nav_msgs.msg import Path as Path
 import tf2_ros
@@ -15,12 +16,13 @@ maxRot=1.0
 maxSpeed=math.sqrt(maxLin**2+maxRot**2)
 target = PoseStamped()
 pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
-pub_pred = rospy.Publisher('pred_point', PoseStamped, queue_size=10)
-pub_target = rospy.Publisher('target_point', PoseStamped, queue_size=10)
+pub_pred = rospy.Publisher('pred_point', PointStamped, queue_size=10)
+pub_target = rospy.Publisher('target_point', PointStamped, queue_size=10)
 pub_path = rospy.Publisher('pathfollowing_node_path', Path, queue_size=10)
 tfBuffer = tf2_ros.Buffer()
 newTarget=True
 precise=0.05
+last_idx=-1
 
 def getfuturePos(location,timeprediction):
     try:
@@ -33,7 +35,10 @@ def getfuturePos(location,timeprediction):
         predPoint=PoseStamped()
         predPoint.header=location.header
         predPoint.pose=odom_pred.pose
-        pub_pred.publish(odom_pred)
+        point =PointStamped()
+        point.header=predPoint.header
+        point.point=predPoint.pose.position
+        pub_pred.publish(point)
         return predPoint
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
         rospy.logerr("Unable to transform odom")
@@ -42,18 +47,31 @@ def getfuturePos(location,timeprediction):
 def applyScalarProjection(line,point):
     point=[point.pose.position.x, point.pose.position.y]
     # print (line)
-    ap=np.subtract(point, line[1])
+    robot_2_p2=np.subtract(point, line[1])
     ab =np.subtract(line[1],line[0])
     ab=ab/np.linalg.norm(ab)
-    ab=ab*np.dot(ap,ab)
+    ab=ab*np.dot(robot_2_p2,ab)
     normalPoint = np.add(line[1],ab)
-    # print normalPoint
-    if normalPoint[0]<line[0][0] or normalPoint[0]>line[1][0] or normalPoint[1]<line[0][1] or normalPoint[1]>line[1][1]:
+    print normalPoint
+
+    mag_normalPoint=np.linalg.norm(normalPoint)
+    mag_p1=np.linalg.norm(line[0])
+    mag_p2=np.linalg.norm(line[1])
+
+    print("mag_normal {}".format(mag_normalPoint))
+    print("mag_point 1 {}".format(mag_p1))
+    print("mag_point 2 {}".format(mag_p2))
+
+    if (mag_normalPoint<mag_p1 and mag_normalPoint<mag_p2): 
+        normalPoint=line[0]
+    if (mag_normalPoint>mag_p1 and mag_normalPoint>mag_p2):
+        print("wir sind hier")
         normalPoint=line[1]
+
     return normalPoint
 
 def getClosestDist(path,predPoint):
-    closest_dist=100.0
+    closest_dist=100000.0
     target =PoseStamped()
     line_tmp=[]
     distance_temp=0
@@ -63,12 +81,16 @@ def getClosestDist(path,predPoint):
             line=[[path.poses[i].pose.position.x, path.poses[i].pose.position.y],
                 [path.poses[i+1].pose.position.x, path.poses[i+1].pose.position.y]]
             normalPoint=applyScalarProjection(line,predPoint)
+            distance=np.linalg.norm([normalPoint[0]-predPoint.pose.position.x,normalPoint[1]-predPoint.pose.position.y])
+            print("distance normal {}".format(distance))
         else:
             normalPoint=[path.poses[i].pose.position.x, path.poses[i].pose.position.y]
-        print (line)
-        print (normalPoint)
-        distance=np.linalg.norm([normalPoint[0]-predPoint.pose.position.x,normalPoint[1]-predPoint.pose.position.y])
-        print (distance)
+            distance=np.linalg.norm([normalPoint[0]-predPoint.pose.position.x,normalPoint[1]-predPoint.pose.position.y])
+        # print (line)
+        # print (normalPoint)
+
+        
+        print("distance {}".format(distance))
         if distance<closest_dist:
             target.header=predPoint.header
             target.pose.position.x=normalPoint[0]
@@ -77,7 +99,11 @@ def getClosestDist(path,predPoint):
             distance_temp=distance
             normalPointTemp=normalPoint
             closest_dist=distance
-    pub_target.publish(target)
+    print ("end")
+    targetPoint= PointStamped()
+    targetPoint.header=target.header
+    targetPoint.point=target.pose.position
+    pub_target.publish(targetPoint)
     return target             
 
 def getDirectPath(odom,target):
@@ -122,7 +148,7 @@ def followTarget(odom,target):
 
 def getPath():
     path =Path()
-    coordinates=[[1.0,1.0],[1.5,2.0],[2.0,2.0],[3.0,3.0],[4.0,3.0]]
+    coordinates=[[-1.0,-1.0],[-1.5,-2.0],[-2.0,-2.0],[-3.0,-3.0],[-4.0,-3.0]]
     path.header.stamp=rospy.Time.now()
     path.header.frame_id='odom'
     for i in range(0,len(coordinates)):
@@ -143,7 +169,7 @@ def odom_callback(data):
     cmd_vel.linear.x=0.0
     cmd_vel.angular.z=0.0 
 
-    point=getfuturePos(data,1)
+    point=getfuturePos(data,2)
     path=getPath()
     target=getClosestDist(path,point)
 
