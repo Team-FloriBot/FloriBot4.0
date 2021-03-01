@@ -54,8 +54,8 @@ geometry_msgs::Pose2D kinematics::differentialDrive::forwardKinematics(Different
     TimeStamp_=Timestamp;
 
     WheelSpeed_=WheelSpeed;
-    Speed_.linear.x=(WheelSpeed_.leftWheel*wheelCircumference_+WheelSpeed_.rightWheel*wheelCircumference_)/2;
-    Speed_.angular.z=(WheelSpeed_.rightWheel*wheelCircumference_-WheelSpeed_.leftWheel*wheelCircumference_)/axesLength_;
+    Speed_.linear.x=(WheelSpeed_.leftWheel*wheelDiameter_+WheelSpeed_.rightWheel*wheelDiameter_)/2;
+    Speed_.angular.z=(WheelSpeed_.rightWheel*wheelDiameter_-WheelSpeed_.leftWheel*wheelDiameter_)/axesLength_;
 
     //from Papers and Books
     Pose_.x+=Speed_.linear.x*deltaTime*cos(Pose_.theta+0.5*Speed_.angular.z*deltaTime);

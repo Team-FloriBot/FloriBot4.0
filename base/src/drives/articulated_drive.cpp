@@ -154,7 +154,7 @@ geometry_msgs::Pose2D kinematics::ArticulatedDrive::forwardKinematics(articulate
             break;
 
         default:
-            throw new std::runtime_error("Can not calculate forwardkinematics for given Frame");
+            throw new std::runtime_error("Can not calculate forward kinematics for given Frame");
     }
 }
 
