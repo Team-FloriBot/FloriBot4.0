@@ -79,8 +79,8 @@ void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
     q.setRPY(0, 0, OdomPose.theta);
 
     //TF Msg
-    Transform.child_frame_id="odom";
-    Transform.header.frame_id="map";
+    Transform.child_frame_id="base_link";
+    Transform.header.frame_id="odom";
     Transform.header.seq=msg->header.seq;
     Transform.header.stamp=msg->header.stamp;
 
@@ -95,8 +95,8 @@ void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
    
     //ToDo: Add Covariance
     //Odom Msg
-    OdomMsg.child_frame_id="odom";
-    OdomMsg.header.frame_id="map";
+    OdomMsg.child_frame_id="base_link";
+    OdomMsg.header.frame_id="odom";
     OdomMsg.header.seq=msg->header.seq;
     OdomMsg.header.stamp=msg->header.stamp;
 
@@ -111,6 +111,11 @@ void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
 
 
     OdomMsg.twist.twist=Drive_.getSpeed();
+    tf2::Vector3 linearSpeed(OdomMsg.twist.twist.linear.x, OdomMsg.twist.twist.linear.y, OdomMsg.twist.twist.linear.z);
+    linearSpeed.rotate(q.inverse().getAxis(),q.inverse().getAngle());
+    OdomMsg.twist.twist.linear.x=linearSpeed.getX();
+    OdomMsg.twist.twist.linear.y=linearSpeed.getY();
+    OdomMsg.twist.twist.linear.z=linearSpeed.getZ();
 
     //publish
     OdometryPublisher_.publish(OdomMsg);
