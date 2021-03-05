@@ -1,8 +1,8 @@
 <launch>
 
 <!--Parameters for Kinematics -->
-    <arg name="frontLength"         default="0.4"/>
-    <arg name="rearLength"          default="0.4"/>
+    <arg name="frontLength"         default="-0.4"/>
+    <arg name="rearLength"          default="-0.4"/>
     <arg name="wheelDiameter"       default="0.1"/>
     <arg name="axesLength"          default="0.2"/>
 
