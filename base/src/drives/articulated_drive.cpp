@@ -1,4 +1,5 @@
 #include "drives/articulated_drive.h"
+#include <ros/ros.h>
 
 
 kinematics::ArticulatedDrive::ArticulatedDrive()
@@ -55,6 +56,19 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
             //tf2::fromMsg(Joint2Axes.transform.translation,TranslationRear);
             //tf2::fromMsg(Joint2Joint.transform.rotation, Rotation);
 
+
+            if (abs((double)Rotation.getAngle()>M_PI/2))
+            {
+
+                ROS_ERROR("%f", abs((double)Rotation.getAngle()));
+                retVal.Front.leftWheel=0;
+                retVal.Front.rightWheel=0;
+                retVal.Rear.leftWheel=0;
+                retVal.Rear.rightWheel=0;
+                return retVal;
+            }
+
+
             //Calculate Speed Joint Front
             SpeedJointFront=SpeedAxesFront+OmegaFront.cross(TranslationFront);
 
@@ -81,6 +95,16 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
             TranslationRear.setValue(Axes2Joint.transform.translation.x, Axes2Joint.transform.translation.y, Axes2Joint.transform.translation.z);
             TranslationFront.setValue(Joint2Axes.transform.translation.x, Joint2Axes.transform.translation.y, Joint2Axes.transform.translation.z);
             Rotation.setValue(Joint2Joint.transform.rotation.x,Joint2Joint.transform.rotation.y, Joint2Joint.transform.rotation.z, Joint2Joint.transform.rotation.w);
+            
+            if (abs(Rotation.getAngle()>M_PI/2))
+            {
+                retVal.Front.leftWheel=0;
+                retVal.Front.rightWheel=0;
+                retVal.Rear.leftWheel=0;
+                retVal.Rear.rightWheel=0;
+                return retVal;
+            }
+            
             //tf2::fromMsg(cmdVelMsg.linear, SpeedAxesRear);
             //tf2::fromMsg(cmdVelMsg.angular, OmegaRear);
             //tf2::fromMsg(Axes2Joint.transform.translation,TranslationRear);
@@ -155,24 +179,6 @@ geometry_msgs::Pose2D kinematics::ArticulatedDrive::forwardKinematics(articulate
 
         default:
             throw new std::runtime_error("Can not calculate forward kinematics for given Frame");
-    }
-}
-
-
-geometry_msgs::Pose2D kinematics::ArticulatedDrive::estimateActualPose()
-{
-    switch (Base_)
-    {
-    case coordinate::Front:
-        return frontDrive_.estimateActualPose();
-        break;
-
-    case coordinate::Rear:
-        return rearDrive_.estimateActualPose();
-        break;
-
-    default:
-        throw new std::runtime_error("Can not estimate pose for given Frame");
     }
 }
 

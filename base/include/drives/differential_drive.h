@@ -24,7 +24,6 @@ namespace kinematics
 
         DifferentialWheelSpeed inverseKinematics(geometry_msgs::Twist cmdVelMsg);
         geometry_msgs::Pose2D forwardKinematics(DifferentialWheelSpeed WheelSpeed, ros::Time Timestamp);
-        geometry_msgs::Pose2D estimateActualPose();
         geometry_msgs::Pose2D getActualPose();
         geometry_msgs::Twist getSpeed();
 

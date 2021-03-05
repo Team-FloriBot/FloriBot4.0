@@ -34,20 +34,6 @@ void kinematics::differentialDrive::setParam(double axesLength, double wheelDiam
     wheelCircumference_=2*M_PI*wheelDiameter_/2;
 }
 
-geometry_msgs::Pose2D kinematics::differentialDrive::estimateActualPose()
-{
-    //Declare temporary Variables
-    geometry_msgs::Pose2D estimatedPose;
-
-    double deltaTime=(ros::Time::now()-TimeStamp_).toSec();
-   
-    estimatedPose.x=Pose_.x+Speed_.linear.x+deltaTime+cos(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
-    estimatedPose.y=Pose_.y+Speed_.linear.x+deltaTime+sin(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
-    estimatedPose.theta=Pose_.theta+Speed_.angular.z*deltaTime;
-
-    return estimatedPose;
-}
-
 geometry_msgs::Pose2D kinematics::differentialDrive::forwardKinematics(DifferentialWheelSpeed WheelSpeed, ros::Time Timestamp)
 {
     double deltaTime=(Timestamp-TimeStamp_).toSec();
