@@ -31,6 +31,7 @@ void kinematics::differentialDrive::setParam(double axesLength, double wheelDiam
     reset();
     axesLength_=axesLength;
     wheelDiameter_=wheelDiameter;
+    wheelRadius_=wheelDiameter_/2;
     wheelCircumference_=2*M_PI*wheelDiameter_/2;
 }
 
@@ -40,8 +41,8 @@ geometry_msgs::Pose2D kinematics::differentialDrive::forwardKinematics(Different
     TimeStamp_=Timestamp;
 
     WheelSpeed_=WheelSpeed;
-    Speed_.linear.x=(WheelSpeed_.leftWheel*wheelDiameter_+WheelSpeed_.rightWheel*wheelDiameter_)/2;
-    Speed_.angular.z=(WheelSpeed_.rightWheel*wheelDiameter_-WheelSpeed_.leftWheel*wheelDiameter_)/axesLength_;
+    Speed_.linear.x=(WheelSpeed_.leftWheel*wheelRadius_+WheelSpeed_.rightWheel*wheelRadius_)/2;
+    Speed_.angular.z=(WheelSpeed_.rightWheel*wheelRadius_-WheelSpeed_.leftWheel*wheelRadius_)/axesLength_;
 
     //from Papers and Books
     Pose_.x+=Speed_.linear.x*deltaTime*cos(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
@@ -60,8 +61,8 @@ kinematics::DifferentialWheelSpeed kinematics::differentialDrive::inverseKinemat
     WheelSpeed.rightWheel=cmdVelMsg.linear.x+cmdVelMsg.angular.z*axesLength_/2;
     WheelSpeed.leftWheel=WheelSpeed.rightWheel-cmdVelMsg.angular.z*axesLength_;
 
-    WheelSpeed.rightWheel=WheelSpeed.rightWheel/wheelDiameter_;
-    WheelSpeed.leftWheel=WheelSpeed.leftWheel/wheelDiameter_;
+    WheelSpeed.rightWheel=WheelSpeed.rightWheel/wheelRadius_;
+    WheelSpeed.leftWheel=WheelSpeed.leftWheel/wheelRadius_;
 
     return WheelSpeed;
 }

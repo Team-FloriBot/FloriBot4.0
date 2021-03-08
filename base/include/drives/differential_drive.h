@@ -36,7 +36,7 @@ namespace kinematics
         DifferentialWheelSpeed WheelSpeed_;
         geometry_msgs::Twist Speed_;
         ros::Time TimeStamp_;
-        double axesLength_, wheelDiameter_, wheelCircumference_;
+        double axesLength_, wheelDiameter_, wheelCircumference_, wheelRadius_;
 
     };
 } 
