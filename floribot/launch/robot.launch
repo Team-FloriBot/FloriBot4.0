@@ -25,13 +25,13 @@
 	<group unless="$(arg dummy)">
 		<include file="$(find base)/launch/base_node.launch"/>
 
-		<include file="$(find floribot)/launch/own_scanner.launch" >
+		<!--include file="$(find floribot)/launch/own_scanner.launch" >
 			<rosparam file="$(find floribot)/param/scanner_front_param.yaml" command="load" />
 		</include>
 
 		<include file="$(find floribot)/launch/own_scanner.launch" >
 			<rosparam file="$(find floribot)/param/scanner_rear_param.yaml" command="load" />
-		</include>
+		</include-->
 	
 		<include file="$(find plc_connection)/launch/plc_connection.launch" />
 	</group>	

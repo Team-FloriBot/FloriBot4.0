@@ -30,6 +30,7 @@ struct FromPLC
     uint32_t HomingError;
     uint32_t SpeedError[4];
     uint32_t ResetError[4];
+    float Angle_rad;
 };
 
 //struct for sending data
@@ -127,7 +128,7 @@ class plcConnectionNode
 
     //Params for Angle
     int zeroCount_;
-    int countPerRotation_;
+    float countPerRotation_;
 
     //Connection ok status
     bool ComOk_;

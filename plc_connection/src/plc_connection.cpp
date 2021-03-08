@@ -21,7 +21,7 @@ plcConnectionNode::plcConnectionNode()
     CountServer=nh_.advertiseService("Sensors/Angle/GetCounter", &plcConnectionNode::GetCountService, this);
 
     //Run Functions time triggered
-    SendRecvTimer_=nh_.createTimer(ros::Duration(0.1), &plcConnectionNode::SendRecv, this);
+    SendRecvTimer_=nh_.createTimer(ros::Duration(0.05), &plcConnectionNode::SendRecv, this);
 
 
     Data_.From.Speed[0]=0;
@@ -34,10 +34,6 @@ plcConnectionNode::plcConnectionNode()
     Data_.To.Speed[1]=0;
     Data_.To.Speed[2]=0;
     Data_.To.Speed[3]=0;
-
-    Data_.To.Accelleration=0;
-
-    Data_.To.Jerk=0;    
 
     Data_.To.Dummy[0]=0;
     Data_.To.Dummy[1]=0;
@@ -110,7 +106,7 @@ void plcConnectionNode::ReadParams()
 
     //Params for Angle
     zeroCount_=nh_.param("/"+ros::this_node::getName()+"/zeroCount_Encoder", 0);
-    countPerRotation_=nh_.param("/"+ros::this_node::getName()+"/countPerRotation_Encoder", 20000);
+    countPerRotation_=nh_.param("/"+ros::this_node::getName()+"/CountPerRotation_Encoder", 20000);
 
     //Param Jerk and Acceleration
     Data_.To.Accelleration=nh_.param("/"+ros::this_node::getName()+"/Engine_Acceleration", 0);
@@ -173,6 +169,7 @@ void plcConnectionNode::SendData()
 {
     //prepare data
     PLC_Data tmpData;
+
     htonPLC(&tmpData, &Data_);
 
     //send data
@@ -229,7 +226,9 @@ void plcConnectionNode::PublishData()
     base::Wheels SpeedMsg;
     geometry_msgs::TransformStamped TFAngleMsg;
     tf2::Quaternion q;
-    float Angle=(Data_.From.Angle-zeroCount_)/countPerRotation_*2*M_PI;
+
+    float Angle=((Data_.From.Angle-zeroCount_)/countPerRotation_)*2*M_PI;
+    Angle=Data_.From.Angle_rad-5.24161;
 
     //write data in messages and publish
     TFAngleMsg.header.seq=seq_;
@@ -266,6 +265,7 @@ void plcConnectionNode::PublishData()
     SpeedPublisher_.publish(SpeedMsg);
 
     AnglePublisher_.publish(AngleMsg);
+
 }
 
 //Write data for network
@@ -276,6 +276,7 @@ void ntohPLC(PLC_Data* Host, PLC_Data* Network)
     Host->From.Angle=ntohl(Network->From.Angle);
     Host->From.Voltage=OwnSocket::ntohf(Network->From.Voltage);
     Host->From.HomingError=ntohl(Network->From.HomingError);
+    Host->From.Angle_rad=OwnSocket::ntohf(Network->From.Angle_rad);
 
     for (int i=0;i<4;i++)  
     {

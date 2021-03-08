@@ -6,10 +6,10 @@
     <arg name="xavier_port"                     default="50000"/>
     <arg name="plc_timeout"                     default="1.5"/>
     <arg name="engine_mode"                     default="0"/>
-    <arg name="zero_count_encoder"              default="0"/>
+    <arg name="zero_count_encoder"              default="44377"/>
     <arg name="count_per_rotation_encoder"      default="20000"/>
-    <arg name="engine_acceleration"             default="5"/>
-    <arg name="engine_jerk"                     default="5"/>
+    <arg name="engine_acceleration"             default="1000"/>
+    <arg name="engine_jerk"                     default="10000"/>
 
 
 
@@ -25,10 +25,10 @@
     <param name="Engine_Acceleration"       value="$(arg engine_acceleration)"/>
     <param name="Engine_Jerk"               value="$(arg engine_jerk)"/>
 
-    <!--remap from="/Engine/ActualSpeed"         to=""/-->
-    <!--remap from="/Engine/TargetSpeed"         to=""/-->
-    <!--remap from="/Engine/TargetAcceleration"  to=""/-->
-    <!--remap from="/Engine/TargetTorque"        to=""/-->
+    <remap from="/Engine/ActualSpeed"         to="/engine/actualSpeed"/>
+    <remap from="/Engine/TargetSpeed"         to="/engine/targetSpeed"/>
+    <remap from="/Engine/TargetAcceleration"  to="/engine/targetAcceleration"/>
+    <remap from="/Engine/TargetTorque"        to="/engine/targetTorque"/>
 
     <!--remap from="/Sensors/BodyAngle"           to=""/-->
     </node>

@@ -157,7 +157,6 @@ add_dependencies(basePublisher ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPO
 ## The recommended prefix ensures that target names across packages don't collide
  add_executable(${PROJECT_NAME}_node src/${PROJECT_NAME}_node/${PROJECT_NAME}_node.cpp)
  add_executable(angle2tf src/${PROJECT_NAME}_node/angle2tf.cpp)
- add_executable(testodom src/${PROJECT_NAME}_node/test_odom.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -175,9 +174,6 @@ add_dependencies(angle2tf ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_
    ${catkin_LIBRARIES}
  )
 
- target_link_libraries(testodom
-   ${catkin_LIBRARIES}
- )
 
   target_link_libraries(articulatedDrive
    ${catkin_LIBRARIES}
