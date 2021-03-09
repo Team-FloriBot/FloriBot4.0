@@ -110,14 +110,10 @@ void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
     OdomMsg.pose.pose.position.z=WheelDiameter_/2;
 
 
-    //Ragarding http://wiki.ros.org/navigation/Tutorials/RobotSetup/Odom the speed has to be in the child_frame
+    //According to http://wiki.ros.org/navigation/Tutorials/RobotSetup/Odom the speed has to be in the child_frame
     //in our case base_link which means the robot itself
 
     OdomMsg.twist.twist=Drive_.getSpeed();    
-    
-    OdomMsg.twist.twist.linear.x=linearSpeed.getX();
-    OdomMsg.twist.twist.linear.y=linearSpeed.getY();
-    OdomMsg.twist.twist.linear.z=linearSpeed.getZ();
 
     //publish
     OdometryPublisher_.publish(OdomMsg);
