@@ -5,7 +5,6 @@
     <arg name="xavier_ip"                       default="192.168.0.42"/>
     <arg name="xavier_port"                     default="50000"/>
     <arg name="plc_timeout"                     default="1.5"/>
-    <arg name="engine_mode"                     default="0"/>
     <arg name="zero_count_encoder"              default="44377"/>
     <arg name="count_per_rotation_encoder"      default="20000"/>
     <arg name="engine_acceleration"             default="1000"/>
@@ -19,17 +18,16 @@
     <param name="PLC_Timeout"               value="$(arg plc_timeout)"/>
     <param name="Xavier_Port"               value="$(arg xavier_port)"/>
     <param name="Xavier_IP"                 value="$(arg xavier_ip)"/>
-    <param name="Engine_Mode"               value="$(arg engine_mode)"/>
     <param name="ZeroCount_Encoder"         value="$(arg zero_count_encoder)"/>
     <param name="CountPerRotation_Encoder"  value="$(arg count_per_rotation_encoder)"/>
     <param name="Engine_Acceleration"       value="$(arg engine_acceleration)"/>
     <param name="Engine_Jerk"               value="$(arg engine_jerk)"/>
 
-    <remap from="/Engine/ActualSpeed"         to="/engine/actualSpeed"/>
-    <remap from="/Engine/TargetSpeed"         to="/engine/targetSpeed"/>
-    <remap from="/Engine/TargetAcceleration"  to="/engine/targetAcceleration"/>
-    <remap from="/Engine/TargetTorque"        to="/engine/targetTorque"/>
+    <!--remap from="/engine/actualSpeed"         to="/engine/actualSpeed"/-->
+    <!--remap from="/engine/targetSpeed"         to="/engine/targetSpeed"/-->
+    <!--remap from="/engine/targetAcceleration"  to="/engine/targetAcceleration"/-->
+    <!--remap from="/engine/targetTorque"        to="/engine/targetTorque"/-->
 
-    <!--remap from="/Sensors/BodyAngle"           to=""/-->
+    <!--remap from="/sensors/bodyAngle"           to=""/-->
     </node>
 </launch>

@@ -18,7 +18,7 @@ plcConnectionNode::plcConnectionNode()
     CreatePublisher();
 
     //Create Service Server
-    CountServer=nh_.advertiseService("Sensors/Angle/GetCounter", &plcConnectionNode::GetCountService, this);
+    CountServer_=nh_.advertiseService("sensors/angle/getCounter", &plcConnectionNode::GetCountService, this);
 
     //Run Functions time triggered
     SendRecvTimer_=nh_.createTimer(ros::Duration(0.05), &plcConnectionNode::SendRecv, this);
@@ -29,6 +29,8 @@ plcConnectionNode::plcConnectionNode()
     Data_.From.Speed[2]=0;
     Data_.From.Speed[3]=0;
     Data_.From.Angle=0;
+
+    Data_.To.Mode=0;
 
     Data_.To.Speed[0]=0;
     Data_.To.Speed[1]=0;
@@ -50,10 +52,6 @@ void plcConnectionNode::InitializeSocket()
     //Set timeout for connection
     ConnectionTimeout_=ros::Duration(PLCTimeout_);
     ROS_INFO("PLC Timeout is set to %f seconds", PLCTimeout_);
-
-    //Set plcmode
-    Data_.To.Mode=Mode_;
-    ROS_INFO("PLC Mode is %i", Mode_);
 
     //Set plc Address
     Target_.IP.IP=strTargetIP_;
@@ -99,7 +97,6 @@ void plcConnectionNode::ReadParams()
 
     TargetPort_=nh_.param("/"+ros::this_node::getName()+"/PLC_Port", 5000);
     OwnPort_=nh_.param("/"+ros::this_node::getName()+"/Xavier_Port", 5000);  
-    Mode_=nh_.param("/"+ros::this_node::getName()+"/Engine_Mode", 0);
     PLCTimeout_=nh_.param("/"+ros::this_node::getName()+"/PLC_Timeout", 1.5);
     ReceiveTimeoutSec_=nh_.param("/"+ros::this_node::getName()+"/Receive_Timeout_sec", 0);
     ReceiveTimeoutUsec_=nh_.param("/"+ros::this_node::getName()+"/Receive_Timeout_usec", 500);
@@ -118,16 +115,17 @@ void plcConnectionNode::ReadParams()
 void plcConnectionNode::Subscribe()
 {
     //Create Subscriber 
-    SpeedSubscriber_=nh_.subscribe("Engine/TargetSpeed", 1, &plcConnectionNode::SpeedCallback, this);
+    SpeedSubscriber_=nh_.subscribe("engine/targetSpeed", 1, &plcConnectionNode::SpeedCallback, this);
+    ModeSubscriber_=nh_.subscribe("engine/mode",1,&plcConnectionNode::ModeCallback, this);
 }
 
 //create Publisher
 void plcConnectionNode::CreatePublisher()
 {
     //create Publisher
-    SpeedPublisher_=nh_.advertise<base::Wheels>("Engine/ActualSpeed", 1);
+    SpeedPublisher_=nh_.advertise<base::Wheels>("engine/actualSpeed", 1);
     
-    AnglePublisher_=nh_.advertise<base::Angle>("Sensors/BodyAngle", 1);
+    AnglePublisher_=nh_.advertise<base::Angle>("sensors/bodyAngle", 1);
 }
 
 //Callbacks for Subscriber
@@ -137,6 +135,11 @@ void plcConnectionNode::SpeedCallback(const base::Wheels::ConstPtr& msg)
     Data_.To.Speed[1]=msg->frontLeft;
     Data_.To.Speed[2]=msg->rearRight;
     Data_.To.Speed[3]=msg->rearLeft;
+}
+
+void plcConnectionNode::ModeCallback(const std_msgs::UInt32::ConstPtr& msg)
+{
+    Data_.To.Mode=msg->data;
 }
 
 //Callback for ServiceCount Callback

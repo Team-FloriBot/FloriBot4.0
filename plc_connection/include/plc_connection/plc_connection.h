@@ -12,8 +12,8 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2/LinearMath/Quaternion.h>
-#include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/Float64.h> 
+#include <std_msgs/UInt32.h> 
 #include <base/Angle.h>   
 
 //Struct for receiving Data
@@ -97,6 +97,9 @@ class plcConnectionNode
     //Callback for Speed subscriber 
     void SpeedCallback(const base::Wheels::ConstPtr& msg);
 
+    //Callback for Mode subscriber
+    void ModeCallback(const std_msgs::UInt32::ConstPtr& msg);
+
 
     //Callback for Torque subscriber
     void TorqueCallback(const std_msgs::Float64::ConstPtr& msg);
@@ -108,19 +111,19 @@ class plcConnectionNode
     //nodehandle
     ros::NodeHandle nh_;
     //Subscriber
-    ros::Subscriber SpeedSubscriber_;
+    ros::Subscriber SpeedSubscriber_, ModeSubscriber_;
     //Publisher
     ros::Publisher SpeedPublisher_, AnglePublisher_;
     tf2_ros::TransformBroadcaster TFBroadcaster_;
 
     //Service
-    ros::ServiceServer CountServer;
+    ros::ServiceServer CountServer_;
 
     ros::Timer SendRecvTimer_;
 
     //Rosparams
     std::string strTargetIP_, strOwnIP_;
-    uint TargetPort_, OwnPort_, Mode_, ReceiveTimeoutSec_, ReceiveTimeoutUsec_;
+    uint TargetPort_, OwnPort_, ReceiveTimeoutSec_, ReceiveTimeoutUsec_;
     double PLCTimeout_;
 
     //Duration for Connection Timeout
