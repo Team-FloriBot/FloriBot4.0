@@ -15,8 +15,6 @@
         <!--remap from="/engine/targetTorque"           to=""/-->
         <!--remap from="/engine/targetSpeed"            to="/Engine/TargetSpeed"/-->
         <!--remap from="/engine/targetAcceleration"     to=""/-->
-
-        <!--remap from="/sensors/bodyAngle"             to=""/-->
     </node>
 
    

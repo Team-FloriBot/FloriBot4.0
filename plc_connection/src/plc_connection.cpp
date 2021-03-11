@@ -156,11 +156,12 @@ void plcConnectionNode::SendRecv(const ros::TimerEvent &e)
     try
     {
         SendData();
-        ReadData();    
+        ReadData();  
     }
     catch(std::runtime_error& e)
     {
-        ROS_WARN("%s",e.what());
+        //Commented out because every third message is missing
+        //ROS_WARN("%s",e.what());
     }
 
     //Publish data
@@ -189,36 +190,30 @@ bool plcConnectionNode::ReadData()
     //read received data
     PLC_Socket_.read((uint8_t*) &tmpData.From, sizeof(Data_.From), &tmpAddress);
 
-
-    //Check received data
-    if(tmpAddress.IP==Target_.IP.IP && tmpAddress.Port==Target_.IP.Port || true)
-    {
-        //Check if it is a new message
-        if (ntohl(tmpData.From.MessageID)==Target_.LastID)
-        {  
-            //Check for connection timeout
-            if ((ros::Time::now() - Target_.LastMsgTime).toSec()>ConnectionTimeout_.toSec())
+    //Check if new message is received
+    if (ntohl(tmpData.From.MessageID)==Target_.LastID)
+    {  
+        //Check for connection timeout
+        if ((ros::Time::now() - Target_.LastMsgTime).toSec()>ConnectionTimeout_.toSec())
+        {
+            if (Target_.ComOk==true)
             {
-                if (Target_.ComOk==true)
-                {
-                    ROS_ERROR("No Connection to PLC");
-                } 
-                Target_.ComOk=false;
-            }
-            return false;
+                ROS_ERROR("No Connection to PLC");
+            } 
+            Target_.ComOk=false;
         }
-
-        //write data for host
-        ntohPLC(&Data_, &tmpData);
-
-        Target_.ComOk=true;
-        Target_.LastID=Data_.From.MessageID;
-        Target_.LastMsgTime=ros::Time::now();
-
-        return true;
+        return false;
     }
 
-    return false;
+    //write data for host
+    ntohPLC(&Data_, &tmpData);
+    ROS_ERROR("%f", OwnSocket::ntohf(tmpData.From.Angle_rad));
+    
+    Target_.ComOk=true;
+    Target_.LastID=Data_.From.MessageID;
+    Target_.LastMsgTime=ros::Time::now();
+
+    return true;
 }
 
 //Publish received Data
@@ -231,7 +226,9 @@ void plcConnectionNode::PublishData()
     tf2::Quaternion q;
 
     float Angle=((Data_.From.Angle-zeroCount_)/countPerRotation_)*2*M_PI;
+    
     Angle=Data_.From.Angle_rad-5.24161;
+
 
     //write data in messages and publish
     TFAngleMsg.header.seq=seq_;
