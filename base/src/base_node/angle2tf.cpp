@@ -23,7 +23,6 @@ int main(int argc, char** argv)
 void AngleCallback(const base::Angle::ConstPtr& msg)
 {  
     tf2::Quaternion q; 
-    ROS_ERROR("%f",msg->angle);
     TFAngleMsg.header.seq=msg->header.seq;
     TFAngleMsg.child_frame_id="jointRear";
     TFAngleMsg.header.frame_id="jointFront";

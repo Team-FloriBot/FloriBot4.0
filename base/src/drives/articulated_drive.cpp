@@ -49,8 +49,7 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
             OmegaFront.setValue(cmdVelMsg.angular.x,cmdVelMsg.angular.y,cmdVelMsg.angular.z);
             TranslationFront.setValue(-Axes2Joint.transform.translation.x, -Axes2Joint.transform.translation.y, -Axes2Joint.transform.translation.z);
             TranslationRear.setValue(-Joint2Axes.transform.translation.x, -Joint2Axes.transform.translation.y, -Joint2Axes.transform.translation.z);
-            Rotation.setValue(Joint2Joint.transform.rotation.x,Joint2Joint.transform.rotation.y, Joint2Joint.transform.rotation.z, Joint2Joint.transform.rotation.w);
-		ROS_ERROR("TransFront: %f", TranslationRear.x());            
+            Rotation.setValue(Joint2Joint.transform.rotation.x,Joint2Joint.transform.rotation.y, Joint2Joint.transform.rotation.z, Joint2Joint.transform.rotation.w);           
 //tf2::fromMsg(cmdVelMsg.linear, SpeedAxesFront);
             //tf2::fromMsg(cmdVelMsg.angular, OmegaFront);
             //tf2::fromMsg(Axes2Joint.transform.translation,TranslationFront);
@@ -60,8 +59,6 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
 
             if (abs((double)Rotation.getAngle()>M_PI/2))
             {
-
-                ROS_ERROR("%f", abs((double)Rotation.getAngle()));
                 retVal.Front.leftWheel=0;
                 retVal.Front.rightWheel=0;
                 retVal.Rear.leftWheel=0;
@@ -75,9 +72,6 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
 
             //Transform Speed in JointRear, because they have to move with the same Speed
             SpeedJointRear=SpeedJointFront.rotate(Rotation.getAxis(), Rotation.getAngle());
-
-	ROS_ERROR("Front: %f %f %f", SpeedJointFront.x(), SpeedJointFront.y(), SpeedJointFront.z());
-	ROS_WARN("Rear: %f %f %f", SpeedJointRear.x(), SpeedJointRear.y(), SpeedJointRear.z());
 
             //Calculate needed Speed and Omega for AxesRear, assuming that Z and Y for the Translation from the Joint to the Axes are zero
             OmegaRear.setValue(0,0,-SpeedJointRear.y()/TranslationRear.x());

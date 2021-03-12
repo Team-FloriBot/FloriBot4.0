@@ -21,7 +21,7 @@ plcConnectionNode::plcConnectionNode()
     CountServer_=nh_.advertiseService("sensors/angle/getCounter", &plcConnectionNode::GetCountService, this);
 
     //Run Functions time triggered
-    SendRecvTimer_=nh_.createTimer(ros::Duration(0.05), &plcConnectionNode::SendRecv, this);
+    SendRecvTimer_=nh_.createTimer(ros::Duration(readWritePeriod_), &plcConnectionNode::SendRecv, this);
 
 
     Data_.From.Speed[0]=0;
@@ -100,6 +100,8 @@ void plcConnectionNode::ReadParams()
     PLCTimeout_=nh_.param("/"+ros::this_node::getName()+"/PLC_Timeout", 1.5);
     ReceiveTimeoutSec_=nh_.param("/"+ros::this_node::getName()+"/Receive_Timeout_sec", 0);
     ReceiveTimeoutUsec_=nh_.param("/"+ros::this_node::getName()+"/Receive_Timeout_usec", 500);
+
+    readWritePeriod_=nh_.param("/"+ros::this_node::getName()+"/Period_Send_Read", 0.05);
 
     //Params for Angle
     zeroCount_=nh_.param("/"+ros::this_node::getName()+"/zeroCount_Encoder", 0);
@@ -207,7 +209,6 @@ bool plcConnectionNode::ReadData()
 
     //write data for host
     ntohPLC(&Data_, &tmpData);
-    ROS_ERROR("%f", OwnSocket::ntohf(tmpData.From.Angle_rad));
     
     Target_.ComOk=true;
     Target_.LastID=Data_.From.MessageID;

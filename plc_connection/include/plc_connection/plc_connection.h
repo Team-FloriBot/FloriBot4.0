@@ -132,6 +132,7 @@ class plcConnectionNode
     //Params for Angle
     int zeroCount_;
     float countPerRotation_;
+    double readWritePeriod_;
 
     //Connection ok status
     bool ComOk_;

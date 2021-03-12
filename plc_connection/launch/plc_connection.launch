@@ -9,6 +9,7 @@
     <arg name="count_per_rotation_encoder"      default="20000"/>
     <arg name="engine_acceleration"             default="1000"/>
     <arg name="engine_jerk"                     default="10000"/>
+    <<arg name="period_Send_Read"               default="0.05"/>>
 
 
 
@@ -22,7 +23,8 @@
     <param name="CountPerRotation_Encoder"  value="$(arg count_per_rotation_encoder)"/>
     <param name="Engine_Acceleration"       value="$(arg engine_acceleration)"/>
     <param name="Engine_Jerk"               value="$(arg engine_jerk)"/>
-
+    <<param name="Period_Send_Read"         value="$(arg period_Send_Read)"/>
+    
     <!--remap from="/engine/actualSpeed"         to="/engine/actualSpeed"/-->
     <!--remap from="/engine/targetSpeed"         to="/engine/targetSpeed"/-->
     <!--remap from="/engine/targetAcceleration"  to="/engine/targetAcceleration"/-->
