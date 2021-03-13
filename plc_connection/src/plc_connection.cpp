@@ -227,7 +227,7 @@ void plcConnectionNode::PublishData()
     tf2::Quaternion q;
 
     float Angle=((Data_.From.Angle-zeroCount_)/countPerRotation_)*2*M_PI;
-    
+    ROS_ERROR("Increment: %i", Data_.From.Angle);
     Angle=Data_.From.Angle_rad-5.24161;
 
 
