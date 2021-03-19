@@ -39,12 +39,11 @@ include_directories(
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME} src/pathFollowingControl.cpp)
-add_library(mathematics src/mathematics.cpp)
+
 
 add_executable(${PROJECT_NAME}_node src/pathfollowing_node.cpp)
 
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
   ${PROJECT_NAME}
-  mathematics
 )

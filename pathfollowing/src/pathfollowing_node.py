@@ -18,12 +18,12 @@ target = PoseStamped()
 pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 pub_pred = rospy.Publisher('pred_point', PointStamped, queue_size=10)
 pub_target = rospy.Publisher('target_point', PointStamped, queue_size=10)
-pub_path = rospy.Publisher('pathfollowing_node_path', Path, queue_size=10)
+pub_path = rospy.Publisher('local_plan', Path, queue_size=10)
 tfBuffer = tf2_ros.Buffer()
 newTarget=True
-precise=0.05
 last_idx=-1
 base_link='base_link'
+odom_link='odom'
 time_dist=1
 
 def getfuturePos(location,timeprediction):
@@ -39,12 +39,12 @@ def getfuturePos(location,timeprediction):
         odom_base.header.frame_id=base_link
         odom_base.pose.orientation.w=1.0
         odom_base.pose.position.x+=(maxLin*timeprediction)
-        odom_pred=tfBuffer.transform(odom_base,'odom')
+        odom_pred=tfBuffer.transform(odom_base,odom_link)
 
         #transform to odom
         predPoint=PoseStamped()
         predPoint.header.stamp=rospy.Time.now()
-        predPoint.header.frame_id='odom'
+        predPoint.header.frame_id=odom_link
         predPoint.pose=odom_pred.pose
 
         # only for visualisation
@@ -133,7 +133,6 @@ def getDirectPath(odom,target):
     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
         rospy.logerr("Unable to retrive Point")
         rospy.Rate(10).sleep()
-    
 
     return directPath
 
@@ -150,15 +149,15 @@ def cpSteeringVel(normPVector,cmd_vel,maxSpeed,maxRot):
 
 def followTarget(odom,target):
     cmd_vel =Twist()  
-    cmd_vel.linear.x=maxLin
     directPath=getDirectPath(odom,target)
     # print(directPath)
     if directPath is not None: #and np.linalg.norm(directPath)>precise:
+        cmd_vel.linear.x=maxLin
         normPVector=directPath/np.linalg.norm(directPath)
         rotVel=cpSteeringVel(normPVector,cmd_vel,maxSpeed,maxRot)  
         cmd_vel.angular.z=rotVel  
     else:
-        newTarget=False if directPath is not None else newTarget
+        # newTarget=False if directPath is not None else newTarget
         cmd_vel.linear.x=0.0
         cmd_vel.angular.z=0.0
     return cmd_vel
@@ -167,11 +166,11 @@ def getPath():
     path =Path()
     coordinates=[[1.0,0.0],[1.5,0.5],[2.0,1.0],[2.0,2.0],[1.5,3.0]]
     path.header.stamp=rospy.Time.now()
-    path.header.frame_id='odom'
+    path.header.frame_id=odom_link
     for i in range(0,len(coordinates)):
         pose=PoseStamped()
         pose.header.stamp=rospy.Time.now()
-        pose.header.frame_id='odom'
+        pose.header.frame_id=odom_link
         pose.pose.position.x=coordinates[i][0]
         pose.pose.position.y=coordinates[i][1]
         path.poses.append(pose)
@@ -182,18 +181,18 @@ def getPath():
 
 def odom_callback(data):
 
-    cmd_vel = Twist()
-    cmd_vel.linear.x=0.0
-    cmd_vel.angular.z=0.0 
+    # cmd_vel = Twist()
+    # cmd_vel.linear.x=0.0
+    # cmd_vel.angular.z=0.0 
 
-    point=getfuturePos(data,time_dist)
+    # point=getfuturePos(data,time_dist)
     path=getPath()
-    target=getClosestDist(path,point)
+    # target=getClosestDist(path,point)
 
-    if newTarget is True : 
-        cmd_vel= followTarget(data,target)
+    # if newTarget is True : 
+    #     cmd_vel= followTarget(data,target)
    
-    pub.publish(cmd_vel)
+    # pub.publish(cmd_vel)
 
 def pathfollowing_callback (data):
     global newTarget

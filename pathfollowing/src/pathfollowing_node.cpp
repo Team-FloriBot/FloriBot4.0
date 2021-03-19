@@ -6,13 +6,14 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
 
     PathFollowingControl pfc;
-    pfc.initialise(nh,0.1,0.1,1);
+    pfc.initialise(nh,0.1,0.1,1,"odom","base_link");
 
-    ros::Time previous=ros::Time::now();
-
-    ros::Rate rate(140.0);
+    ROS_INFO("Initialize Path following controle node");
+    ros::Rate rate(10.0);
     while (ros::ok())
     {
+        pfc.runControler();
+        pfc.publish(true);
         ros::spinOnce();
         rate.sleep();
     }

@@ -3,97 +3,153 @@
 PathFollowingControl::~PathFollowingControl(){
     
     //cleanup 
-    _tfListener->~TransformListener();
     delete _tfListener;
 };
 
-void PathFollowingControl::initialise(const ros::NodeHandle& nh, const float maxLinV, const float maxRotV,const float timejump)
+void PathFollowingControl::initialise(const ros::NodeHandle& nh, const float maxLinV, const float maxRotV,const float predTime,const std::string odomLink, const std::string baseLink)
 {
     //initialise global variables
     PathFollowingControl::_nh=nh;
     PathFollowingControl::_maxLinV=maxLinV;
     PathFollowingControl::_maxRotV=maxRotV;
-    PathFollowingControl::_timejump=timejump;
+    PathFollowingControl::_prediction_time=predTime;
+    PathFollowingControl::_odom_link =odomLink;
+    PathFollowingControl::_base_link=baseLink;
 
 
     //initialise publisher
     PathFollowingControl::_futurePos_pub    = PathFollowingControl::_nh.advertise<geometry_msgs::PointStamped>("/futurePos", 1);
+    PathFollowingControl::_targetPos_pub    = PathFollowingControl::_nh.advertise<geometry_msgs::PointStamped>("/targetPos", 1);
     PathFollowingControl::_cmdVel_pub       = PathFollowingControl::_nh.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
 
+
     //initialise subscriber
-    PathFollowingControl::_odom_sub = _nh.subscribe("/odom", 1, &PathFollowingControl::odomCallback,this);
-    PathFollowingControl::_odom_sub = _nh.subscribe("/local_plan", 1, &PathFollowingControl::PathCallback,this);
+    PathFollowingControl::_path_sub = _nh.subscribe("/local_plan", 1, &PathFollowingControl::pathCallback,this);
 
     //initialise tf handler
     PathFollowingControl::_tfListener = new tf2_ros::TransformListener(_tfBuffer);
 
+    PathFollowingControl::_isInit=true;
 }
 
-void PathFollowingControl::odomCallback(const nav_msgs::Odometry& odom){
+void PathFollowingControl::runControler(){
+    if (_isInit==false){
+        ROS_ERROR("PathFollowingControl::runControler Controler is not initialised.");
+    }
     PathFollowingControl::_isFuturePosVal=PathFollowingControl::getTransform();
 
     if (PathFollowingControl::_isFuturePosVal){
-        _actPos.header=odom.header;
-        _actPos.point=odom.pose.pose.position;
-        PathFollowingControl::_isFuturePosVal=PathFollowingControl::getFuturePos(_futurePos,_actPos);
+        PathFollowingControl::_isFuturePosVal=PathFollowingControl::getFuturePos(_futurePos);
+        PathFollowingControl::getClosestPoint(PathFollowingControl::_path);
+
     }
 }
 
-//TODO: Check if distance to point to far 
-void PathFollowingControl::PathCallback(const nav_msgs::Path& path){
-    if(PathFollowingControl::_isFuturePosVal){
-        for (int i=0; i<path.poses.size();i++){
-
-            
+void PathFollowingControl::getClosestPoint(const nav_msgs::Path& path){
+    float closest_dist=100000.0;
+    float tmp_dist;
+    tf2::Vector3 tmp_point;
+    tf2::Vector3 p_start;
+    tf2::Vector3 p_end;
+    int path_size=path.poses.size();
+    for (int i=0; i<path_size;i++){
+        if (i<path_size-1){
+            tf2::fromMsg(path.poses[i].pose.position,p_start);
+            tf2::fromMsg(path.poses[i+1].pose.position,p_end);
+            PathFollowingControl::applyScalarProjection(tmp_point,p_start,p_end);
+        }
+        else{
+            tf2::fromMsg(path.poses[i].pose.position,tmp_point);
+        }
+        tmp_point.normalize();
+        
+        if(tmp_point.length()<closest_dist){
+            PathFollowingControl::_targetPos=tmp_point;
         }
     }
 }
 
-void PathFollowingControl::applyScalarProjection(geometry_msgs::Point& p_norm,geometry_msgs::Point& p_start, geometry_msgs::Point& p_end){
-    // std::vector<double> _ap={   PathFollowingControl::_futurePos.point.x-p_end.x,
-    //                             PathFollowingControl::_futurePos.point.y-p_end.y,
-    //                             PathFollowingControl::_futurePos.point.z-p_end.z};
-    // double _ap[3]={ PathFollowingControl::_futurePos.point.x-p_end.x,
-    //                 PathFollowingControl::_futurePos.point.y-p_end.y,
-    //                 PathFollowingControl::_futurePos.point.z-p_end.z};
-    // std::vector<double> _ab={   p_end.x-p_start.x,
-    //                             p_end.y-p_start.y,
-    //                             p_end.z-p_start.z};
-    // _ab=_ab/std::sqrt(std::pow(_ab[0],2)+std::pow(_ab[1],2)+std::pow(_ab[2],2));    
+//TODO: Check if distance to point to far 
+void PathFollowingControl::pathCallback(const nav_msgs::Path& path){
+    // PathFollowingControl::getClosestPoint(path);
+    _path=path;
+}
 
+void PathFollowingControl::applyScalarProjection(tf2::Vector3& p_norm,tf2::Vector3& p_start, tf2::Vector3& p_end){
+    
+    tf2::Vector3 r_2_e=_futurePos-p_end; //cp vector between robot position and end of segment
+    tf2::Vector3 line=p_end-p_start;    //cp linesegment
+    line.normalize();
+    p_norm=p_end+line*r_2_e.dot(line); //cp targetpoint on the linesegment
 
-    // std::vector<double> _p_norm=_p_end-_p_start;
+    
+    float p_norm_len = p_norm.length2();
+    float p_start_len = p_start.length2();
+    float p_end_len = p_end.length2();
 
-    // std::
+    if (p_norm_len<p_start_len && p_norm_len<p_end_len) p_norm=p_start;
+    if (p_norm_len>p_start_len && p_norm_len>p_end_len) p_norm=p_end;
 }
 
 bool PathFollowingControl::getTransform(){
     try
     {
-        PathFollowingControl::_odom_2_base = PathFollowingControl::_tfBuffer.lookupTransform("base_link","odom",ros::Time(0));
-        PathFollowingControl::_base_2_odom = PathFollowingControl::_tfBuffer.lookupTransform("odom","base_link",ros::Time(0));
-        return false;
+        tf2::fromMsg(PathFollowingControl::_tfBuffer.lookupTransform(PathFollowingControl::_base_link,PathFollowingControl::_odom_link,ros::Time(0),ros::Duration(0.2)).transform,PathFollowingControl::_odom_2_base);
+        tf2::fromMsg(PathFollowingControl::_tfBuffer.lookupTransform(PathFollowingControl::_odom_link,PathFollowingControl::_base_link,ros::Time(0),ros::Duration(0.2)).transform,PathFollowingControl::_base_2_odom);
+        return true;
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        ROS_ERROR("PathFollowingControl::getTransform(): %s",e.what());
         return false;
     }
     
 }
 
-bool PathFollowingControl::getFuturePos(geometry_msgs::PointStamped& futurePos, geometry_msgs::PointStamped& actPos){
+bool PathFollowingControl::getFuturePos(tf2::Vector3& futurePos){
     try
     {
-        tf2::doTransform(actPos,futurePos,PathFollowingControl::_odom_2_base);
-        futurePos.point.x+=PathFollowingControl::_maxLinV * PathFollowingControl::_timejump;
-        tf2::doTransform(futurePos,futurePos,PathFollowingControl::_base_2_odom);
-        PathFollowingControl::_futurePos_pub.publish(futurePos);
+        futurePos.setZero();
+        futurePos.setX(PathFollowingControl::_maxLinV * PathFollowingControl::_prediction_time);
+        futurePos=PathFollowingControl::_base_2_odom*futurePos;
         return true;
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        ROS_ERROR("PathFollowingControl::getFuturePos(): %s",e.what());
         return false;
     }
+}
+
+bool PathFollowingControl::publish(bool visualize){
+    try
+    {
+        if (visualize)
+        {
+            //Publish target position
+            geometry_msgs::PointStamped target_point;
+            target_point.point.x=_targetPos.getX();
+            target_point.point.y=_targetPos.getY();
+            target_point.header.stamp=ros::Time::now();
+            target_point.header.frame_id=PathFollowingControl::_odom_link;
+            PathFollowingControl::_targetPos_pub.publish(target_point);
+
+
+            //Publish future Position
+            geometry_msgs::PointStamped future_point;
+            future_point.point.x=_futurePos.getX();
+            future_point.point.y=_futurePos.getY();
+            future_point.header.stamp=ros::Time::now();
+            future_point.header.frame_id=PathFollowingControl::_odom_link;
+            PathFollowingControl::_futurePos_pub.publish(future_point);
+        }
+            
+        return true;
+    }
+    catch(const std::exception& e)
+    {
+        ROS_ERROR("PathFollowingControl::getTransform(): %s",e.what());
+        return false;
+    }
+    
 }

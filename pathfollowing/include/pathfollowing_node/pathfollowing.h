@@ -23,6 +23,7 @@ class PathFollowingControl
         // Publisher
         ros::Publisher                      _cmdVel_pub;
         ros::Publisher                      _futurePos_pub;
+        ros::Publisher                      _targetPos_pub;
 
         // Subscriber
         ros::Subscriber                     _odom_sub;
@@ -31,25 +32,34 @@ class PathFollowingControl
         //transformmessages
         tf2_ros::Buffer                     _tfBuffer;
         tf2_ros::TransformListener*          _tfListener;
-        geometry_msgs::TransformStamped     _odom_2_base;
-        geometry_msgs::TransformStamped     _base_2_odom;
+        tf2::Transform                      _odom_2_base;
+        tf2::Transform                      _base_2_odom;
 
         float                               _maxLinV;
         float                               _maxRotV;
-        float                               _timejump;
+        float                               _prediction_time;
 
-        geometry_msgs::PointStamped         _futurePos;
-        geometry_msgs::PointStamped         _actPos;
+        //frame
+        std::string                         _odom_link;
+        std::string                         _base_link;
 
-        bool getFuturePos(geometry_msgs::PointStamped& futurePos, geometry_msgs::PointStamped& actPos);
+        tf2::Vector3                        _futurePos;
+        tf2::Vector3                        _actPos;
+        tf2::Vector3                        _targetPos;
+        nav_msgs::Path                      _path;
+
+        bool getFuturePos(tf2::Vector3& futurePos);
         bool getTransform();
-        void applyScalarProjection(geometry_msgs::Point& p_norm, geometry_msgs::Point& p_start, geometry_msgs::Point& p_end);
+        void applyScalarProjection(tf2::Vector3& p_norm, tf2::Vector3& p_start, tf2::Vector3& p_end);
+        void getClosestPoint(const nav_msgs::Path& path);
 
         //callbackfunktion
         void odomCallback(const nav_msgs::Odometry& odom);
-        void PathCallback(const nav_msgs::Path& path);
+        void pathCallback(const nav_msgs::Path& path);
 
     public:
-        void initialise(const ros::NodeHandle& nh ,const float maxLinV, const float maxRotV,const float timejump);
         ~PathFollowingControl();
+        void initialise(const ros::NodeHandle& nh ,const float maxLinV, const float maxRotV,const float predTime,const std::string odomLink, const std::string baseLink);
+        bool publish(bool visualize);
+        void runControler();
 };
