@@ -17,6 +17,7 @@ class PathFollowingControl
 {
     private:
         bool                                _isInit=false;
+        bool                                _isFuturePosVal=false;
         ros::NodeHandle                     _nh;
 
         // Publisher
@@ -25,6 +26,7 @@ class PathFollowingControl
 
         // Subscriber
         ros::Subscriber                     _odom_sub;
+        ros::Subscriber                     _path_sub;
 
         //transformmessages
         tf2_ros::Buffer                     _tfBuffer;
@@ -36,11 +38,16 @@ class PathFollowingControl
         float                               _maxRotV;
         float                               _timejump;
 
+        geometry_msgs::PointStamped         _futurePos;
+        geometry_msgs::PointStamped         _actPos;
+
         bool getFuturePos(geometry_msgs::PointStamped& futurePos, geometry_msgs::PointStamped& actPos);
         bool getTransform();
+        void applyScalarProjection(geometry_msgs::Point& p_norm, geometry_msgs::Point& p_start, geometry_msgs::Point& p_end);
 
         //callbackfunktion
         void odomCallback(const nav_msgs::Odometry& odom);
+        void PathCallback(const nav_msgs::Path& path);
 
     public:
         void initialise(const ros::NodeHandle& nh ,const float maxLinV, const float maxRotV,const float timejump);
