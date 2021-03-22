@@ -6,8 +6,7 @@ PathFollowingControl::~PathFollowingControl(){
     delete _tfListener;
 };
 
-void PathFollowingControl::initialise(const ros::NodeHandle& nh, const float maxLinV, const float maxRotV,const float predTime,const std::string odomLink, const std::string baseLink)
-{
+void PathFollowingControl::initialise(const ros::NodeHandle& nh, const float maxLinV, const float maxRotV,const float predTime,const std::string odomLink, const std::string baseLink){
     //initialise global variables
     PathFollowingControl::_nh=nh;
     PathFollowingControl::_maxLinV=maxLinV;
@@ -61,9 +60,13 @@ void PathFollowingControl::getClosestPoint(const nav_msgs::Path& path){
         else{
             tf2::fromMsg(path.poses[i].pose.position,tmp_point);
         }
-        tmp_point.normalize();
-        
-        if(tmp_point.length()<closest_dist){
+        std::cout<<"i:"<<i<<"not norm:["<<tmp_point.getX()<<","<<tmp_point.getY()<<","<<tmp_point.getZ()<<"]"<<std::endl;
+        tmp_dist=(tmp_point-PathFollowingControl::_futurePos).length();
+        // tmp_point.normalize();
+
+        std::cout<<"i:"<<i<<"norm :["<<tmp_point.getX()<<","<<tmp_point.getY()<<","<<tmp_point.getZ()<<"]"<<std::endl;
+        if(tmp_dist<closest_dist){
+            closest_dist=tmp_dist;
             PathFollowingControl::_targetPos=tmp_point;
         }
     }
