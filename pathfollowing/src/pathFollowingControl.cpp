@@ -39,18 +39,27 @@ void PathFollowingControl::runControler(){
 
     if (PathFollowingControl::_isFuturePosVal){
         PathFollowingControl::_isFuturePosVal=PathFollowingControl::getFuturePos(_futurePos);
-        PathFollowingControl::getClosestPoint(PathFollowingControl::_path);
-
+        bool validPoint=PathFollowingControl::getClosestPoint(PathFollowingControl::_path);
+        if(validPoint){
+            PathFollowingControl::followTarget();
+        }
+        else{
+            PathFollowingControl::_cmd_vel.linear.x=0.0;
+            PathFollowingControl::_cmd_vel.angular.z=0.0;
+        }
+        
     }
 }
 
-void PathFollowingControl::getClosestPoint(const nav_msgs::Path& path){
+bool PathFollowingControl::getClosestPoint(const nav_msgs::Path& path){
     float closest_dist=100000.0;
     float tmp_dist;
     tf2::Vector3 tmp_point;
     tf2::Vector3 p_start;
     tf2::Vector3 p_end;
     int path_size=path.poses.size();
+
+    bool return_val=true;
     for (int i=0; i<path_size;i++){
         if (i<path_size-1){
             tf2::fromMsg(path.poses[i].pose.position,p_start);
@@ -59,20 +68,27 @@ void PathFollowingControl::getClosestPoint(const nav_msgs::Path& path){
         }
         else{
             tf2::fromMsg(path.poses[i].pose.position,tmp_point);
+            std::cout<<"last Point i: "<<i<<std::endl;
         }
-        std::cout<<"i:"<<i<<"not norm:["<<tmp_point.getX()<<","<<tmp_point.getY()<<","<<tmp_point.getZ()<<"]"<<std::endl;
         tmp_dist=(tmp_point-PathFollowingControl::_futurePos).length();
-        // tmp_point.normalize();
+        std::cout<<"i: "<<i<<" dist : "<<tmp_dist<<std::endl;
+        if(tmp_dist<=closest_dist){
 
-        std::cout<<"i:"<<i<<"norm :["<<tmp_point.getX()<<","<<tmp_point.getY()<<","<<tmp_point.getZ()<<"]"<<std::endl;
-        if(tmp_dist<closest_dist){
+            std::cout<<"point: "<<i<<" dist: "<<tmp_dist<<std::endl;
+            if (i>=path_size-1 && closest_dist-tmp_dist<0.001){
+                ROS_INFO("PathFollowingControl::getClosestPoint Last Point of Path reached");
+                return_val=false;
+            } 
+            else
+                return_val=true;
+
             closest_dist=tmp_dist;
             PathFollowingControl::_targetPos=tmp_point;
         }
     }
+    return return_val;
 }
 
-//TODO: Check if distance to point to far 
 void PathFollowingControl::pathCallback(const nav_msgs::Path& path){
     // PathFollowingControl::getClosestPoint(path);
     _path=path;
@@ -124,9 +140,20 @@ bool PathFollowingControl::getFuturePos(tf2::Vector3& futurePos){
     }
 }
 
+void PathFollowingControl::followTarget(){
+    //compute normal vector to target
+    tf2::Vector3 _normTarget=(PathFollowingControl::_odom_2_base*PathFollowingControl::_targetPos).normalize();
+    PathFollowingControl::_cmd_vel.linear.x=PathFollowingControl::_maxLinV;
+    if(_normTarget.getX()>0)
+        PathFollowingControl::_cmd_vel.angular.z=_normTarget.getY()*PathFollowingControl::_maxRotV;
+    else
+        PathFollowingControl::_cmd_vel.angular.z=PathFollowingControl::_maxRotV;
+}
+
 bool PathFollowingControl::publish(bool visualize){
     try
     {
+        PathFollowingControl::_cmdVel_pub.publish(PathFollowingControl::_cmd_vel);
         if (visualize)
         {
             //Publish target position

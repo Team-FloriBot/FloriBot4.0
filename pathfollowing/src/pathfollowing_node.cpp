@@ -6,7 +6,7 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
 
     PathFollowingControl pfc;
-    pfc.initialise(nh,0.1,0.1,1,"odom","base_link");
+    pfc.initialise(nh,0.1,0.5,2,"odom","base_link");
 
     ROS_INFO("Initialize Path following controle node");
     ros::Rate rate(10.0);

@@ -48,11 +48,13 @@ class PathFollowingControl
         tf2::Vector3                        _targetPos;
         nav_msgs::Path                      _path;
 
+        geometry_msgs::Twist                _cmd_vel;
+
         bool getFuturePos(tf2::Vector3& futurePos);
         bool getTransform();
         void applyScalarProjection(tf2::Vector3& p_norm, tf2::Vector3& p_start, tf2::Vector3& p_end);
-        void getClosestPoint(const nav_msgs::Path& path);
-
+        bool getClosestPoint(const nav_msgs::Path& path); 
+        void followTarget();
         //callbackfunktion
         void odomCallback(const nav_msgs::Odometry& odom);
         void pathCallback(const nav_msgs::Path& path);
