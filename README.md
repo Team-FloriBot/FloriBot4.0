@@ -1,7 +1,7 @@
 # FloriBot4.0
 
-Dieses Repository umfasst den Softwarestand des Floribots.
-Der Floribot ist ein autonomer Roboter, welcher von Studenten der Hoschule Heilbronn entwicklet und aufgebaut wurde. 
+Dieses Repository umfasst den Softwarestand des Robotoers FloriBot 4.0.
+FloriBot 4.0 ist ein autonomer mobiler Roboter, welcher von Studenten der Hoschule Heilbronn entwicklet und aufgebaut wird. 
 In diesem Repository wird die Software des Roboter versioniert und verwaltet. 
 Der Roboter wurde entwicklet, um die Aufgabe des [Field-Robot-Events](https://www.fieldrobot.com/ "Hompage des Events") zu meistern. 
 Die Software basiert auf der Middleware [ROS](https://www.ros.org/ "ROS Homepage") Melodic und wird auf einem Ubuntu 18.04 System ausgeführt.
