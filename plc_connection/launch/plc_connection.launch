@@ -6,7 +6,7 @@
     <arg name="xavier_port"                     default="50000"/>
     <arg name="plc_timeout"                     default="1.5"/>
     <arg name="zero_count_encoder"              default="44377"/>
-    <arg name="count_per_rotation_encoder"      default="20000"/>
+    <arg name="count_per_rotation_encoder"      default="4096"/>
     <arg name="engine_acceleration"             default="1000"/>
     <arg name="engine_jerk"                     default="10000"/>
     <arg name="period_Send_Read"               default="0.05"/>

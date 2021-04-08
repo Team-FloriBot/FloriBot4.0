@@ -18,7 +18,7 @@ plcConnectionNode::plcConnectionNode()
     CreatePublisher();
 
     //Create Service Server
-    CountServer_=nh_.advertiseService("sensors/angle/getCounter", &plcConnectionNode::GetCountService, this);
+    CountServer_=nh_.advertiseService("sensors/bodyAngle/getCounter", &plcConnectionNode::GetCountService, this);
 
     //Run Functions time triggered
     SendRecvTimer_=nh_.createTimer(ros::Duration(readWritePeriod_), &plcConnectionNode::SendRecv, this);
@@ -104,7 +104,7 @@ void plcConnectionNode::ReadParams()
     readWritePeriod_=nh_.param("/"+ros::this_node::getName()+"/Period_Send_Read", 0.05);
 
     //Params for Angle
-    zeroCount_=nh_.param("/"+ros::this_node::getName()+"/zeroCount_Encoder", 0);
+    zeroCount_=nh_.param("/"+ros::this_node::getName()+"/ZeroCount_Encoder", 0);
     countPerRotation_=nh_.param("/"+ros::this_node::getName()+"/CountPerRotation_Encoder", 20000);
 
     //Param Jerk and Acceleration
@@ -226,10 +226,7 @@ void plcConnectionNode::PublishData()
     geometry_msgs::TransformStamped TFAngleMsg;
     tf2::Quaternion q;
 
-    float Angle=((Data_.From.Angle-zeroCount_)/countPerRotation_)*2*M_PI;
-    ROS_ERROR("Increment: %i", Data_.From.Angle);
-    Angle=Data_.From.Angle_rad-5.24161;
-
+    float Angle=(((float)Data_.From.Angle-(float)zeroCount_)/countPerRotation_)*2*M_PI;
 
     //write data in messages and publish
     TFAngleMsg.header.seq=seq_;

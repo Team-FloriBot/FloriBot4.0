@@ -50,7 +50,7 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
             TranslationFront.setValue(-Axes2Joint.transform.translation.x, -Axes2Joint.transform.translation.y, -Axes2Joint.transform.translation.z);
             TranslationRear.setValue(-Joint2Axes.transform.translation.x, -Joint2Axes.transform.translation.y, -Joint2Axes.transform.translation.z);
             Rotation.setValue(Joint2Joint.transform.rotation.x,Joint2Joint.transform.rotation.y, Joint2Joint.transform.rotation.z, Joint2Joint.transform.rotation.w);           
-//tf2::fromMsg(cmdVelMsg.linear, SpeedAxesFront);
+            //tf2::fromMsg(cmdVelMsg.linear, SpeedAxesFront);
             //tf2::fromMsg(cmdVelMsg.angular, OmegaFront);
             //tf2::fromMsg(Axes2Joint.transform.translation,TranslationFront);
             //tf2::fromMsg(Joint2Axes.transform.translation,TranslationRear);
@@ -90,8 +90,8 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
             //Get Data from the Messages, since the tf2::fromMsg-Function returns Linking-Errors with workaround
             SpeedAxesRear.setValue(cmdVelMsg.linear.x,cmdVelMsg.linear.y,cmdVelMsg.linear.z);
             OmegaRear.setValue(cmdVelMsg.angular.x,cmdVelMsg.angular.y,cmdVelMsg.angular.z);
-            TranslationRear.setValue(Axes2Joint.transform.translation.x, Axes2Joint.transform.translation.y, Axes2Joint.transform.translation.z);
-            TranslationFront.setValue(Joint2Axes.transform.translation.x, Joint2Axes.transform.translation.y, Joint2Axes.transform.translation.z);
+            TranslationRear.setValue(-Axes2Joint.transform.translation.x, -Axes2Joint.transform.translation.y, -Axes2Joint.transform.translation.z);
+            TranslationFront.setValue(-Joint2Axes.transform.translation.x, -Joint2Axes.transform.translation.y, -Joint2Axes.transform.translation.z);
             Rotation.setValue(Joint2Joint.transform.rotation.x,Joint2Joint.transform.rotation.y, Joint2Joint.transform.rotation.z, Joint2Joint.transform.rotation.w);
             
             if (abs(Rotation.getAngle()>M_PI/2))
