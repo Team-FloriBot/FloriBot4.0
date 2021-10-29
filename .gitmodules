@@ -1,3 +1,6 @@
 [submodule "sick_scan"]
 	path = sick_scan
 	url = https://github.com/SICKAG/sick_scan.git
+[submodule "ira_laser_tools"]
+	path = ira_laser_tools
+	url = https://github.com/iralabdisco/ira_laser_tools.git
