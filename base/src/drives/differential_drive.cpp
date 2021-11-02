@@ -45,8 +45,10 @@ geometry_msgs::Pose2D kinematics::differentialDrive::forwardKinematics(Different
     Speed_.angular.z=(WheelSpeed_.rightWheel*wheelRadius_-WheelSpeed_.leftWheel*wheelRadius_)/axesLength_;
 
     //from Papers and Books
-    Pose_.x+=Speed_.linear.x*deltaTime*cos(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
-    Pose_.y+=Speed_.linear.x*deltaTime*sin(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
+    //Pose_.x+=Speed_.linear.x*deltaTime*cos(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
+    //Pose_.y+=Speed_.linear.x*deltaTime*sin(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
+    Pose_.x+=Speed_.linear.x*deltaTime*sin(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
+    Pose_.y+=Speed_.linear.x*deltaTime*cos(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
     Pose_.theta+=Speed_.angular.z*deltaTime;
    
 

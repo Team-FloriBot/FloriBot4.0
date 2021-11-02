@@ -33,8 +33,8 @@ void KinematicsPublisher::PublishSpeed(const ros::TimerEvent& e)
 
 void KinematicsPublisher::getParam()
 {
-    pNh_->param<double>("/"+ros::this_node::getName()+"/axesLength", AxesLength_, 0.4);
-    pNh_->param<double>("/"+ros::this_node::getName()+"/wheelDiameter", WheelDiameter_, 0.4);
+    pNh_->param<double>("/"+ros::this_node::getName()+"/axesLength", AxesLength_, 0.335);
+    pNh_->param<double>("/"+ros::this_node::getName()+"/wheelDiameter", WheelDiameter_, 0.28);
 }
 
 void KinematicsPublisher::createPublisherSubscriber()
