@@ -56,15 +56,16 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
             //tf2::fromMsg(Joint2Axes.transform.translation,TranslationRear);
             //tf2::fromMsg(Joint2Joint.transform.rotation, Rotation);
 
-
-            if (abs((double)Rotation.getAngle()>M_PI/2))
-            {
-                retVal.Front.leftWheel=0;
-                retVal.Front.rightWheel=0;
-                retVal.Rear.leftWheel=0;
-                retVal.Rear.rightWheel=0;
-                return retVal;
-            }
+            //Safety feature in order to shut down robot, when angle of articulated joint is too large.
+            //Avoid the risk of damaging the robot
+            // if (abs((double)Rotation.getAngle()>M_PI/2))
+            // {
+            //     retVal.Front.leftWheel=0;
+            //     retVal.Front.rightWheel=0;
+            //     retVal.Rear.leftWheel=0;
+            //     retVal.Rear.rightWheel=0;
+            //     return retVal;
+            // }
 
 
             //Calculate Speed Joint Front
@@ -94,14 +95,14 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
             TranslationFront.setValue(-Joint2Axes.transform.translation.x, -Joint2Axes.transform.translation.y, -Joint2Axes.transform.translation.z);
             Rotation.setValue(Joint2Joint.transform.rotation.x,Joint2Joint.transform.rotation.y, Joint2Joint.transform.rotation.z, Joint2Joint.transform.rotation.w);
             
-            if (abs(Rotation.getAngle()>M_PI/2))
-            {
-                retVal.Front.leftWheel=0;
-                retVal.Front.rightWheel=0;
-                retVal.Rear.leftWheel=0;
-                retVal.Rear.rightWheel=0;
-                return retVal;
-            }
+            // if (abs(Rotation.getAngle()>M_PI/2))
+            // {
+            //     retVal.Front.leftWheel=0;
+            //     retVal.Front.rightWheel=0;
+            //     retVal.Rear.leftWheel=0;
+            //     retVal.Rear.rightWheel=0;
+            //     return retVal;
+            // }
             
             //tf2::fromMsg(cmdVelMsg.linear, SpeedAxesRear);
             //tf2::fromMsg(cmdVelMsg.angular, OmegaRear);
@@ -127,7 +128,7 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
     }
     catch(tf2::TransformException &e)
     {
-        ROS_ERROR("tf not connected! Can not calculate Transform");
+        ROS_ERROR("tf not connected! Cannot calculate Transform");
         retVal.Front.leftWheel=0;
         retVal.Front.rightWheel=0;
         retVal.Rear.leftWheel=0;

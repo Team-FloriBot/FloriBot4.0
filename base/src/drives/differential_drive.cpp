@@ -41,16 +41,13 @@ geometry_msgs::Pose2D kinematics::differentialDrive::forwardKinematics(Different
     TimeStamp_=Timestamp;
 
     WheelSpeed_=WheelSpeed;
-    Speed_.linear.x=(WheelSpeed_.leftWheel*wheelRadius_+WheelSpeed_.rightWheel*wheelRadius_)/2;
-    Speed_.angular.z=(WheelSpeed_.rightWheel*wheelRadius_-WheelSpeed_.leftWheel*wheelRadius_)/axesLength_;
+    Speed_.linear.x=(WheelSpeed_.leftWheel+WheelSpeed_.rightWheel)*wheelRadius_/2;
+    Speed_.angular.z=(WheelSpeed_.rightWheel-WheelSpeed_.leftWheel)*wheelRadius_/axesLength_;
 
-    //from Papers and Books
-    //Pose_.x+=Speed_.linear.x*deltaTime*cos(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
-    //Pose_.y+=Speed_.linear.x*deltaTime*sin(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
-    Pose_.x+=Speed_.linear.x*deltaTime*sin(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
-    Pose_.y+=Speed_.linear.x*deltaTime*cos(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
-    Pose_.theta+=Speed_.angular.z*deltaTime;
-   
+    //from Papers and Books e.g. "Mobile Roboter", JoachimHertzberg, 2012, p. 113
+    Pose_.x+=Speed_.linear.x*deltaTime*cos(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
+    Pose_.y+=Speed_.linear.x*deltaTime*sin(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
+    Pose_.theta+=Speed_.angular.z*deltaTime;   
 
     return Pose_;
 }
@@ -59,6 +56,10 @@ geometry_msgs::Pose2D kinematics::differentialDrive::forwardKinematics(Different
 kinematics::DifferentialWheelSpeed kinematics::differentialDrive::inverseKinematics(geometry_msgs::Twist cmdVelMsg)
 {
     kinematics::DifferentialWheelSpeed WheelSpeed;
+    
+    // This version is not as efficient as the uncommented one below
+    // WheelSpeed.rightWheel=(cmdVelMsg.linear.x+cmdVelMsg.angular.z*axesLength_/2)/wheelRadius_;
+    // WheelSpeed.leftWheel=(cmdVelMsg.linear.x-cmdVelMsg.angular.z*axesLength_/2)/wheelRadius_;
 
     WheelSpeed.rightWheel=cmdVelMsg.linear.x+cmdVelMsg.angular.z*axesLength_/2;
     WheelSpeed.leftWheel=WheelSpeed.rightWheel-cmdVelMsg.angular.z*axesLength_;
