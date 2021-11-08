@@ -11,6 +11,7 @@
 #include <nav_msgs/Odometry.h>
 
 #include <base/Wheels.h>
+#include <std_srvs/Empty.h>
 
 
 class KinematicsPublisher
@@ -26,6 +27,7 @@ private:
     void PublishSpeed(const ros::TimerEvent& e);
     void CmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
     void SpeedCallback(const base::Wheels::ConstPtr& msg);
+    bool ResetOdometryCallback(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
 
     kinematics::ArticulatedDrive Drive_;
     base::Wheels Speedmsg_;
@@ -33,6 +35,7 @@ private:
     ros::Timer CmdVelTimer_;
     ros::Publisher SpeedPublisher_, OdometryPublisher_;
     ros::Subscriber CmdVelSubscriber_, SpeedSubscriber_;
+    ros::ServiceServer ResetOdometryService_;
     tf2_ros::TransformBroadcaster TFBroadaster_;
     double AxesLength_, WheelDiameter_;
     unsigned int seq_;

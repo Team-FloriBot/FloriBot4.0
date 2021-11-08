@@ -21,7 +21,7 @@
     <!--args="tx ty tz rx ry rz rw" Translation kartesisch Rotation quaternion-->
     <node pkg="tf2_ros" type="static_transform_publisher" name="axesFront2jointFront"   args="$(arg frontLength) 0 0 0 0 0 1 axesFront jointFront" />
     <node pkg="tf2_ros" type="static_transform_publisher" name="jointRear2axesRear"     args="$(arg rearLength) 0 0 0 0 0 1  jointRear axesRear" />
-    <node pkg="tf2_ros" type="static_transform_publisher" name="base_link2axesFront"                  args="0 0 0 0 0 0 1 base_link axesFront" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_link2axesFront"    args="0 0 0 0 0 0 1 base_link axesFront" />
 
     <!--include file="$(find sick_scan)/launch/own_scanner.launch">
         <arg name="ParentFrame" value="AxesFront" />

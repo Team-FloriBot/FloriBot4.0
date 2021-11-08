@@ -39,11 +39,20 @@ void KinematicsPublisher::getParam()
 
 void KinematicsPublisher::createPublisherSubscriber()
 {
+    ResetOdometryService_=pNh_->advertiseService("reset_odom", &KinematicsPublisher::ResetOdometryCallback, this);
+
     OdometryPublisher_=pNh_->advertise<nav_msgs::Odometry>("/odom", 1);
     SpeedPublisher_=pNh_->advertise<base::Wheels>("engine/targetSpeed", 1);
 
     CmdVelSubscriber_=pNh_->subscribe("cmd_vel", 1, &KinematicsPublisher::CmdVelCallback, this);
     SpeedSubscriber_=pNh_->subscribe("engine/actualSpeed", 1, &KinematicsPublisher::SpeedCallback, this);    
+}
+
+bool KinematicsPublisher::ResetOdometryCallback(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
+{
+    Drive_.frontDrive_.reset();
+    Drive_.rearDrive_.reset();
+    return true;
 }
 
 void KinematicsPublisher::CmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)

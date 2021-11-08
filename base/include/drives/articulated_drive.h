@@ -41,12 +41,13 @@ class ArticulatedDrive
     geometry_msgs::Twist getSpeed();
 
     void setParam(double AxesLength, double WheelDiameter, coordinate Base);
+    
+    kinematics::differentialDrive frontDrive_, rearDrive_;
     private:
     
     tf2_ros::Buffer TFBuffer_;
     tf2_ros::TransformListener* pTF_Listener_;
     kinematics::coordinate Base_;
-    kinematics::differentialDrive frontDrive_, rearDrive_;
     double frontlength_, rearlength_;
 };
 }
