@@ -1,0 +1,7 @@
+obstacle_range: 4.5       # The default maximum distance from the robot at which an obstacle will be inserted into the cost map in meters
+raytrace_range: 5.0       # The default range in meters at which to raytrace out obstacles from the map using sensor data
+max_obstacle_height: 0.5  # The maximum height of any obstacle to be inserted into the costmap in meters
+# footprint: [[0.40, 0.22], [0.4, -0.22], [-1.16, -0.22], [-1.16, 0.22]] # floribot (in base_link): 387 --> 400, 212.5 --> 220, 1.153 --> 1.160
+# This more accurate footprint has been determined by reading the corresponding dynamic reconfigure variable
+# while the angle of the articulated joint is zero and the dyn_footprint_node.py is running.
+footprint: [[-0.383, 0.001], [-0.243, 0.168], [0.277, 0.168], [0.277, -0.168], [-0.243, -0.168], [-0.383, -0.001], [-0.5220832041563334, -0.16874389248407287], [-1.042004025696086, -0.1715156883100159], [-1.0437949828279014, 0.16447959121339129], [-0.5238741612881488, 0.16725138703933431]]
