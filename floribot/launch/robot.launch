@@ -8,6 +8,9 @@
 		<!--Running laserscan merger-->
 		<include file="$(find floribot)/launch/own_laserscan_multi_merger.launch"/>
 		
+		<!--Running dynamic footprint node-->
+		<include file="$(find dynamic_footprint)/launch/dynamic_footprint.launch"/>
+		
 
 		<!--Running kinematic-->
 		<include file="$(find base)/launch/base_node.launch"/>
