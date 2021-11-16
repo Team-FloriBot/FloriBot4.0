@@ -76,15 +76,31 @@ if __name__ == "__main__":
 
         try:
             tf_src_targ = tf_buffer.lookup_transform(target_frame, source_frame, rospy.Time(0), rospy.Duration(0.1))
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-            rospy.logerr('Unable to find the transformation from {:s} to {:s}'.format(source_frame, target_frame))
+        except tf2_ros.ConnectivityException:
+            rospy.logerr('Tf tree between {:s} and {:s} is not connected'.format(source_frame, target_frame))
             rate.sleep
             continue
-
-        footprint_rear_wrt_front = transform_point_arr(footprint_rear, tf_src_targ)
-        footprint = np.concatenate((footprint_front, footprint_rear_wrt_front))
-        footprint_2d = footprint[:,:2] 
-        footprint_2d_str = footprint_2d.tolist()
-        client1.update_configuration({"footprint":footprint_2d_str, "footprint_padding":footprint_padding})
-        client2.update_configuration({"footprint":footprint_2d_str, "footprint_padding":footprint_padding})
-        rate.sleep()
+        except tf2_ros.ExtrapolationException:
+            rospy.logerr('Requested tf value from {:s} to {:s} is beyond extrapolation limits'.format(source_frame, target_frame))
+            rate.sleep
+            continue
+        except tf2_ros.InvalidArgumentException:
+            rospy.logerr('Invalid arguments')
+            rate.sleep
+            continue
+        except tf2_ros.LookupException:
+            rospy.logerr('Name of required frame is not available or broken tf tree')
+            rate.sleep
+            continue
+        except tf2_ros.TimoutException:
+            rospy.logerr('Timeout has occured')
+            rate.sleep
+            continue
+        else:
+            footprint_rear_wrt_front = transform_point_arr(footprint_rear, tf_src_targ)
+            footprint = np.concatenate((footprint_front, footprint_rear_wrt_front))
+            footprint_2d = footprint[:,:2] 
+            footprint_2d_str = footprint_2d.tolist()
+            client1.update_configuration({"footprint":footprint_2d_str, "footprint_padding":footprint_padding})
+            client2.update_configuration({"footprint":footprint_2d_str, "footprint_padding":footprint_padding})
+            rate.sleep()
