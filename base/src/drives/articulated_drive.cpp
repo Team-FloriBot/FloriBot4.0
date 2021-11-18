@@ -30,6 +30,8 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
     tf2::Vector3 TranslationFront, TranslationRear;
     tf2::Quaternion Rotation;
 
+    
+    Base_= (cmdVelMsg.linear.x < 0.0) ? coordinate::Rear : coordinate::Front;
 
     //Calculate Speeds for the two differential drives regarding the base frame
     try

@@ -13,7 +13,7 @@ int main(int argc, char** argv)
         KinematicsPublisher Pub(&Nh, kinematics::coordinate::Front);
         ros::spin();
     }
-    catch( std::runtime_error* e)
+    catch(std::runtime_error* e)
     {
         ROS_ERROR("Exiting with error:\n%s\n", e->what());
         exit(1);
