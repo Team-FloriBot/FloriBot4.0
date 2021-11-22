@@ -6,8 +6,10 @@
 		<param name="frame_id" value="map" />
 	</node> 
 
-	<!--Running dynamic footprint node-->
+	<!--Running dynamic footprint node>
 	<include file="$(find dynamic_footprint)/launch/dynamic_footprint.launch"/>
+		<param name="rate" value="20"/>
+		<param name="footprint_padding" value="0.0"/-->
 
 	<!--- Run AMCL --> 
  <arg name="use_map_topic" default="false"/>
