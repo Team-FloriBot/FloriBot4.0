@@ -92,7 +92,7 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
 
             //Get Data from the Messages, since the tf2::fromMsg-Function returns Linking-Errors with workaround
             SpeedAxesRear.setValue(cmdVelMsg.linear.x,cmdVelMsg.linear.y,cmdVelMsg.linear.z);
-            OmegaRear.setValue(cmdVelMsg.angular.x,cmdVelMsg.angular.y,cmdVelMsg.angular.z);
+            OmegaRear.setValue(cmdVelMsg.angular.x,cmdVelMsg.angular.y,-cmdVelMsg.angular.z);
             TranslationRear.setValue(-Axes2Joint.transform.translation.x, -Axes2Joint.transform.translation.y, -Axes2Joint.transform.translation.z);
             TranslationFront.setValue(-Joint2Axes.transform.translation.x, -Joint2Axes.transform.translation.y, -Joint2Axes.transform.translation.z);
             Rotation.setValue(Joint2Joint.transform.rotation.x,Joint2Joint.transform.rotation.y, Joint2Joint.transform.rotation.z, Joint2Joint.transform.rotation.w);
@@ -164,23 +164,30 @@ kinematics::articulatedWheelSpeed kinematics::ArticulatedDrive::inverseKinematic
 }
 
 geometry_msgs::Pose2D kinematics::ArticulatedDrive::forwardKinematics(articulatedWheelSpeed WheelSpeed, ros::Time Timestamp)
-{
+{   
+    // Since frame base_link is fixed to frame axesFront, we always want the odometry frame to to be at axesFront,
+    // which is why it is set independent of the driving direction (see commened lines below).
+    // If the odometry frame was dependent on the frame of the current leading carriage (e.g., Front, Rear), 
+    // the odometry pose would jump between forward and backward driving (has been tested).
+
     geometry_msgs::Pose2D FrontPose=frontDrive_.forwardKinematics(WheelSpeed.Front, Timestamp);
-    geometry_msgs::Pose2D RearPose=rearDrive_.forwardKinematics(WheelSpeed.Rear, Timestamp);
+    //geometry_msgs::Pose2D RearPose=rearDrive_.forwardKinematics(WheelSpeed.Rear, Timestamp);
 
-    switch (Base_)
-    {
-        case coordinate::Front:
-            return FrontPose;
-            break;
+    return FrontPose;
+    
+    // switch (Base_)
+    // {
+    //     case coordinate::Front:
+    //         return FrontPose;
+    //         break;
 
-        case coordinate::Rear:
-            return RearPose;
-            break;
+    //     case coordinate::Rear:
+    //         return RearPose;
+    //         break;
 
-        default:
-            throw new std::runtime_error("Can not calculate forward kinematics for given Frame");
-    }
+    //     default:
+    //         throw new std::runtime_error("Can not calculate forward kinematics for given Frame");
+    // }
 }
 
 void kinematics::ArticulatedDrive::setParam(double AxesLength, double WheelDiameter, coordinate Base)
