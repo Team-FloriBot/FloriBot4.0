@@ -17,7 +17,7 @@
 class KinematicsPublisher
 {
 public:
-    KinematicsPublisher(ros::NodeHandle* pnh, kinematics::coordinate Base);
+    KinematicsPublisher(ros::NodeHandle* pnh);//, kinematics::coordinate Base);
     ~KinematicsPublisher();
 
 private:

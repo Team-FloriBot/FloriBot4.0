@@ -1,11 +1,13 @@
 #include <base_node/base_publisher.h>
 
-KinematicsPublisher::KinematicsPublisher(ros::NodeHandle* pNh, kinematics::coordinate Base)
+KinematicsPublisher::KinematicsPublisher(ros::NodeHandle* pNh)
 {
     seq_=0;
     pNh_=pNh;
     getParam();
-    Drive_.setParam(AxesLength_, WheelDiameter_, Base);
+    // initial Base (leading carriage) is set to coordinate::Front, 
+    // it is switched automatically when driving backwards/ forwards
+    Drive_.setParam(AxesLength_, WheelDiameter_, kinematics::coordinate::Front);
     createPublisherSubscriber();
     CmdVelTimer_=pNh_->createTimer(ros::Duration(0.1), &KinematicsPublisher::PublishSpeed, this);
 }

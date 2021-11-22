@@ -10,7 +10,7 @@ int main(int argc, char** argv)
     try
     {
         ros::NodeHandle Nh;
-        KinematicsPublisher Pub(&Nh, kinematics::coordinate::Front);
+        KinematicsPublisher Pub(&Nh);
         ros::spin();
     }
     catch(std::runtime_error* e)
