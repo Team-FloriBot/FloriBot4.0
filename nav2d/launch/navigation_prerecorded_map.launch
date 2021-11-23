@@ -1,15 +1,17 @@
 <launch>
 	<master auto="start"/>
 
+	<node pkg="rosservice" type="rosservice" name="rosservice" args="call /reset_odom"/>
+
 	<!-- Run the map server --> 
 	<node name="map_server" pkg="map_server" type="map_server" args="$(find mapping)/map_data/playground.yaml">
 		<param name="frame_id" value="map" />
 	</node> 
 
-	<!--Running dynamic footprint node>
+	<!--Running dynamic footprint node-->
 	<include file="$(find dynamic_footprint)/launch/dynamic_footprint.launch"/>
-		<param name="rate" value="20"/>
-		<param name="footprint_padding" value="0.0"/-->
+		<param name="rate" value="10.0"/>
+		<param name="footprint_padding" value="0.1"/>
 
 	<!--- Run AMCL --> 
  <arg name="use_map_topic" default="false"/>
