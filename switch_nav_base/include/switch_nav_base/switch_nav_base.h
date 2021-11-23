@@ -1,5 +1,5 @@
-#ifndef SWITCH_BASE_LINK_H
-#define SWITCH_BASE_LINK_H
+#ifndef SWITCH_NAV_BASE_H
+#define SWITCH_NAV_BASE_H
 
 #include <ros/time.h>
 #include <ros/ros.h>
@@ -10,11 +10,11 @@
 
 #include <ros/console.h>
 
-class SwitchBaseLink
+class SwitchNavBase
 {
     public:
-        SwitchBaseLink(ros::NodeHandle* nh);
-        ~SwitchBaseLink();
+        SwitchNavBase(ros::NodeHandle* nh);
+        ~SwitchNavBase();
 
     private:
         void create_sub_pub_();

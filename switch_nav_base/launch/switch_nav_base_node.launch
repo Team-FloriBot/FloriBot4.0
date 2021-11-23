@@ -4,7 +4,7 @@
     <arg name="frame_id_input2" default="axesRear"/>
     <arg name="frame_id_output" default="nav_base"/>
 
-    <node name="switch_base_link_node" pkg="switch_base_link" type="switch_base_link_node" output="screen">
+    <node name="switch_nav_base_node" pkg="switch_nav_base" type="switch_nav_base_node" output="screen">
         <param name="topic_subscriber"       value="$(arg topic_subscriber)"/>
         <param name="frame_id_input1"        value="$(arg frame_id_input1)"/>
         <param name="frame_id_input2"        value="$(arg frame_id_input2)"/>

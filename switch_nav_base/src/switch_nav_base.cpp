@@ -1,6 +1,6 @@
-#include <switch_base_link/switch_base_link.h>
+#include <switch_nav_base/switch_nav_base.h>
 
-SwitchBaseLink::SwitchBaseLink(ros::NodeHandle* nh)
+SwitchNavBase::SwitchNavBase(ros::NodeHandle* nh)
 {
     nh_ = nh;
     seq_=0;
@@ -19,21 +19,21 @@ SwitchBaseLink::SwitchBaseLink(ros::NodeHandle* nh)
     tf_stamped_.transform.rotation.w = 1.0;
     create_sub_pub_();
 }
-SwitchBaseLink::~SwitchBaseLink(){};
+SwitchNavBase::~SwitchNavBase(){};
 
-void SwitchBaseLink::create_sub_pub_()
+void SwitchNavBase::create_sub_pub_()
 {
-    cmd_vel_subscriber_=nh_->subscribe(topic_sub_, 1, &SwitchBaseLink::cmd_vel_callback_, this);
-    tf_timer_=nh_->createTimer(ros::Duration(0.05), &SwitchBaseLink::tf_callback, this);
+    cmd_vel_subscriber_=nh_->subscribe(topic_sub_, 1, &SwitchNavBase::cmd_vel_callback_, this);
+    tf_timer_=nh_->createTimer(ros::Duration(0.05), &SwitchNavBase::tf_callback, this);
 }
 
-void SwitchBaseLink::cmd_vel_callback_(const geometry_msgs::Twist::ConstPtr& msg)
+void SwitchNavBase::cmd_vel_callback_(const geometry_msgs::Twist::ConstPtr& msg)
 {
     linear_speed_ = msg->linear.x;
     frame_id_parent_ = (linear_speed_ < 0.0) ? frame_id_input2_ : frame_id_input1_;
 }
 
-void SwitchBaseLink::tf_callback(const ros::TimerEvent& e)
+void SwitchNavBase::tf_callback(const ros::TimerEvent& e)
 {
     tf_stamped_.header.stamp = ros::Time::now();
     tf_stamped_.header.seq = seq_++;
