@@ -1,10 +1,15 @@
 <launch>
 	<master auto="start"/>
+	<arg name="global_planner" default="global_planner/GlobalPlanner" />
+	<arg name="local_planner" default="dwa_local_planner/DWAPlannerROS" />
+ 	<arg name="amcl_scan_topic" default="/sensors/scanMulti"/>
+	<arg name="map_name" default="playground"/>
 
+	<!-- Call the reset_odom service of base node when starting navigation stack to start with zero odometry-->
 	<node pkg="rosservice" type="rosservice" name="rosservice" args="call /reset_odom"/>
 
 	<!-- Run the map server --> 
-	<node name="map_server" pkg="map_server" type="map_server" args="$(find mapping)/map_data/playground.yaml">
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find mapping)/map_data/$(arg map_name).yaml">
 		<param name="frame_id" value="map" />
 	</node> 
 
@@ -13,11 +18,9 @@
 		<param name="rate" value="10.0"/>
 		<param name="footprint_padding" value="0.1"/>
 
-	<!--- Run AMCL --> 
- <arg name="use_map_topic" default="false"/>
- <arg name="scan_topic" default="/sensors/scanMulti"/>
+	<!--- Run AMCL -->
 	<node pkg="amcl" type="amcl" name="amcl" output="screen">
-		<remap from="scan" to="$(arg scan_topic)"/>	
+		<remap from="scan" to="$(arg amcl_scan_topic)"/>	
 
 		<!-- Overall filter parameters -->		
 		<param name="min_particles" value="100"/>
@@ -38,7 +41,7 @@
 		<param name="initial_cov_aa" value="0.07"/>
 		<param name="gui_publish_rate" value="4.0"/>
 		<param name="save_pose_rate" value="0.5"/>
-		<param name="use_map_topic" value="$(arg use_map_topic)"/>
+		<param name="use_map_topic" value="false"/>
 		<param name="first_map_only" value="true"/>
 		<param name="selective_resampling" value="true"/>
 		
@@ -72,10 +75,14 @@
 		<rosparam file="$(find nav2d)/param/costmap_common_params.yaml" command="load" ns="global_costmap" />
 		<rosparam file="$(find nav2d)/param/costmap_common_params.yaml" command="load" ns="local_costmap" /> 
 		<rosparam file="$(find nav2d)/param/local_costmap_params.yaml" command="load" />
-		<rosparam file="$(find nav2d)/param/global_costmap_params.yaml" command="load" /> 
-		<rosparam file="$(find nav2d)/param/base_local_planner_params.yaml" command="load" />
-		<rosparam file="$(find nav2d)/param/base_global_planner_params.yaml" command="load" />
-		<rosparam file="$(find nav2d)/param/move_base_params.yaml" command="load" />
+		<rosparam file="$(find nav2d)/param/global_costmap_params.yaml" command="load" />
+		
+		<!-- move_base is given access to the arguments at the top-->
+		<rosparam file="$(find nav2d)/param/move_base_params.yaml" command="load" subst_value="true" />	
+
+		<!-- Decide what local and global planner configuration file to load-->
+		<rosparam file="$(find nav2d)/param/local_planner_params_dwa.yaml" command="load" if="$(eval arg('local_planner') == 'dwa_local_planner/DWAPlannerROS')" /> 			
+		<rosparam file="$(find nav2d)/param/global_planner_params_global.yaml" command="load" if="$(eval arg('global_planner') == 'global_planner/GlobalPlanner')" />
 	</node>
 
 	<!-- Run rviz -->
