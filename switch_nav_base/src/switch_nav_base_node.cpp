@@ -4,7 +4,7 @@ int main(int argc, char** argv)
 { 
     ros::init(argc, argv, "switch_nav_base_node");
     ros::NodeHandle nh("~");
-    SwitchBaseLink sbl = SwitchBaseLink(&nh);
+    SwitchNavBase sbl = SwitchNavBase(&nh);
     ros::spin();
 }
 
