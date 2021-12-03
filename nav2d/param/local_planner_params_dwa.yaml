@@ -13,7 +13,7 @@ DWAPlannerROS:
     max_vel_y: 0.0 # (double, default: 0.1) The maximum y velocity for the robot in m/s 
     min_vel_y: 0.0 # (double, default: -0.1) The minimum y velocity for the robot in m/s 
 
-    max_vel_theta: 3.1415 # (double, default: 1.0) The absolute value of the maximum rotational velocity for the robot in radians/sec 
+    max_vel_theta: 1.0 # (double, default: 1.0) The absolute value of the maximum rotational velocity for the robot in radians/sec 
     min_vel_theta: 0.1 # (double, default: 0.4) The absolute value of the minimum rotational velocity for the robot in radians/sec
 
     trans_stopped_vel: 0.1 # Below what maximum translational velocity we consider the robot to be stopped in translation in meters/sec

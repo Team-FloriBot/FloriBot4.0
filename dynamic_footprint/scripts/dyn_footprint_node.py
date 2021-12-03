@@ -11,7 +11,9 @@ import tf2_ros
 import tf2_geometry_msgs
 import numpy as np
 from enum import Enum
-import dynamic_reconfigure.client
+import dynamic_reconfigure.client # for sending modified footprint
+from dynamic_reconfigure.server import Server # for choosing between dynamic and static footprint
+from dynamic_footprint.cfg import DynamicFootprintConfig
 
 """ 
 Updates the dynamic footprint of the floribot's front and rear carriage according to the
@@ -37,6 +39,11 @@ def transform_point_arr(point_arr, transform):
         tf_point_arr.append(point_wrt_target)
     return np.array(tf_point_arr)
 
+
+def srv_cb(config, level):
+    rospy.loginfo("""Reconfigure Request: {footprint_type}""".format(**config))
+    return config
+
 if __name__ == "__main__":
 
     class LeadingCar(Enum):
@@ -59,11 +66,12 @@ if __name__ == "__main__":
                         [0.243,0.168, 0.0]]
     footprint_rear = np.array(footprint_rear)
 
-    rospy.init_node("dynamic_footprint_client", anonymous=True)
+    rospy.init_node("dynamic_footprint", anonymous=True)
 
     tfBuffer = tf2_ros.Buffer()
     listener_tf = tf2_ros.TransformListener(tfBuffer)
 
+    srv = Server(DynamicFootprintConfig, srv_cb)
     client1 = dynamic_reconfigure.client.Client("/move_base/local_costmap", timeout=30)#, config_callback=dyn_cb)
     client2 = dynamic_reconfigure.client.Client("/move_base/global_costmap", timeout=30)#, config_callback=dyn_cb)
 

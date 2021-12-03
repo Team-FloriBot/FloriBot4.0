@@ -6,4 +6,4 @@ transform_tolerance: 1.0  # [s] Specifies the delay in transform (tf) data that 
 # This more accurate footprint has been determined by reading the corresponding dynamic reconfigure variable
 # while the angle of the articulated joint is zero and the dyn_footprint_node.py is running.
 #footprint: [[0.3, -0.2], [-0.3, -0.2], [-0.3, 0.2], [0.3, 0.2]]
-footprint: [[-0.383, 0.001], [-0.243, 0.168], [0.277, 0.168], [0.277, -0.168], [-0.243, -0.168], [-0.383, -0.001], [-0.5220832041563334, -0.16874389248407287], [-1.042004025696086, -0.1715156883100159], [-1.0437949828279014, 0.16447959121339129], [-0.5238741612881488, 0.16725138703933431]]
+footprint: [[-0.383, 0.001], [-0.243, 0.168], [0.277, 0.168], [0.277, -0.168], [-0.243, -0.168], [-0.383, -0.001]]

@@ -1,7 +1,8 @@
 <launch>
 	<master auto="start"/>
+	<!--arg name="local_planner" default="dwa_local_planner/DWAPlannerROS" /-->
+	<arg name="local_planner" default="teb_local_planner/TebLocalPlannerROS" />
 	<arg name="global_planner" default="global_planner/GlobalPlanner" />
-	<arg name="local_planner" default="dwa_local_planner/DWAPlannerROS" />
  	<arg name="amcl_scan_topic" default="/sensors/scanMulti"/>
 	<arg name="map_name" default="playground"/>
 
@@ -81,10 +82,14 @@
 		<rosparam file="$(find nav2d)/param/move_base_params.yaml" command="load" subst_value="true" />	
 
 		<!-- Decide what local and global planner configuration file to load-->
-		<rosparam file="$(find nav2d)/param/local_planner_params_dwa.yaml" command="load" if="$(eval arg('local_planner') == 'dwa_local_planner/DWAPlannerROS')" /> 			
+		<rosparam file="$(find nav2d)/param/local_planner_params_dwa.yaml" command="load" if="$(eval arg('local_planner') == 'dwa_local_planner/DWAPlannerROS')" />		
+		<rosparam file="$(find nav2d)/param/local_planner_params_teb.yaml" command="load" if="$(eval arg('local_planner') == 'teb_local_planner/TebLocalPlannerROS')" />
+
 		<rosparam file="$(find nav2d)/param/global_planner_params_global.yaml" command="load" if="$(eval arg('global_planner') == 'global_planner/GlobalPlanner')" />
 	</node>
 
 	<!-- Run rviz -->
-	<node pkg="rviz" type="rviz" name="rviz" args="-d $(find nav2d)/rviz_cfg/navigation.rviz"/>
+
+	<node pkg="rviz" type="rviz" name="rviz" args="-d $(find nav2d)/rviz_cfg/navigation_dwa.rviz" if="$(eval arg('local_planner') == 'dwa_local_planner/DWAPlannerROS')"/>
+	<node pkg="rviz" type="rviz" name="rviz" args="-d $(find nav2d)/rviz_cfg/navigation_teb.rviz" if="$(eval arg('local_planner') == 'teb_local_planner/TebLocalPlannerROS')"/>
 </launch>
