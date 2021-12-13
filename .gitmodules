@@ -10,3 +10,6 @@
 [submodule "costmap_converter"]
 	path = costmap_converter
 	url = https://github.com/rst-tu-dortmund/costmap_converter.git
+[submodule "navigation"]
+	path = navigation
+	url = https://github.com/ros-planning/navigation.git
