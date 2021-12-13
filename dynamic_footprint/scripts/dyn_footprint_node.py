@@ -61,22 +61,21 @@ class FootprintMode():
         self.driving_direction = DRIVING_DIRECTION.FORWARD
         self.update_local_footprint = True
         self.update_global_footprint = False
-
         # constant footprint vertices of front carriage in frame 'axesFront'
         footprint_front = [[-0.383,0.001, 0.0],
-                            [-0.243,0.168, 0.0],
-                            [0.277,0.168, 0.0],
-                            [0.277,-0.168, 0.0],
-                            [-0.243,-0.168, 0.0],
+                            [-0.3,0.225, 0.0],
+                            [0.5,0.225, 0.0],
+                            [0.5,-0.225, 0.0],
+                            [-0.3,-0.225, 0.0],
                             [-0.383,-0.001, 0.0]]
         self.footprint_front = np.array(footprint_front)
 
         # constant footprint vertices of rear carriage in frame 'axesRear'
         footprint_rear = [[0.383,-0.001, 0.0],
-                            [0.243,-0.168, 0.0],
-                            [-0.277,-0.168, 0.0],
-                            [-0.277,0.168, 0.0],
-                            [0.243,0.168, 0.0],
+                            [0.3,-0.225, 0.0],
+                            [-0.5,-0.225, 0.0],
+                            [-0.5,0.225, 0.0],
+                            [0.3,0.225, 0.0],
                             [0.383,0.001, 0.0]]
         self.footprint_rear = np.array(footprint_rear)
         
@@ -147,7 +146,10 @@ class FootprintMode():
             tf_point_arr.append(point_wrt_target)
         return np.array(tf_point_arr)
 
-    def main(self):    
+    def main(self):
+        t_last_switch = rospy.Time.now()
+        t_no_switch = rospy.Duration(0.5)
+        switching_allowed = True
         while not rospy.is_shutdown():
             try:
                 tf_src_targ = self.tfBuffer.lookup_transform(self.target_frame, self.source_frame, rospy.Time(0), rospy.Duration(self.period))
@@ -173,10 +175,15 @@ class FootprintMode():
                     # if rear car leads: transform front footprint into rear frame and concatenate with rear footprint
                     footprint = np.concatenate((self.footprint_lead, footprint_follow_wrt_lead))
                     self.update_footprint(footprint)
-                elif self.footprint_mode == FOOTPRINT_MODE.SEMI_STATIC and self.driving_direction == DRIVING_DIRECTION.BACKWARD:
+                elif self.footprint_mode == FOOTPRINT_MODE.SEMI_STATIC and (self.driving_direction == DRIVING_DIRECTION.BACKWARD or not switching_allowed):
                     # if front car leads: transform rear footprint into front frame and only use this new rear footprint
                     # if rear car leads: transform front footprint into rear frame and only use this new front footprint
                     self.update_footprint(footprint_follow_wrt_lead)
+                    if switching_allowed:
+                        t_last_switch = rospy.Time.now()
+                        switching_allowed = not switching_allowed
+                    elif not switching_allowed and rospy.Time.now() - t_last_switch > t_no_switch:
+                        switching_allowed = True
                 else:
                     self.update_footprint(self.footprint_lead)
             finally:

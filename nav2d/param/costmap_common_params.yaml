@@ -17,7 +17,7 @@ static_layer:
     
 small_inflation_layer:
     enabled: true
-    inflation_radius: 0.2 # inflate obstacle of above layers by this radius
+    inflation_radius: 0.25 # inflate obstacle of above layers by this radius
     cost_scaling_factor: 12.0 # the higher, the quicker the exp. cost function declines
     inflate_unknown: false # inflate cells whose type is neither occupied nor free
 
