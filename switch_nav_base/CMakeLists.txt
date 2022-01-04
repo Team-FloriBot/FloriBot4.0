@@ -12,11 +12,14 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   geometry_msgs
+  actionlib_msgs
+  tf2
   tf2_ros
+  tf2_geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -107,7 +110,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
 # LIBRARIES switch_nav_base
-  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs tf2_ros
+  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs tf2 tf2_ros actionlib_msgs tf2_geometry_msgs
 #  DEPENDS system_lib
 )
 
@@ -123,7 +126,7 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(switchBaseLink
+add_library(switchNavBase
   src/switch_nav_base.cpp
 )
 
@@ -148,12 +151,12 @@ add_executable(${PROJECT_NAME}_node src/${PROJECT_NAME}_node.cpp)
 add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(switchBaseLink
+target_link_libraries(switchNavBase
   ${catkin_LIBRARIES}
 )
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
-  switchBaseLink
+  switchNavBase
 )
 
 #############
