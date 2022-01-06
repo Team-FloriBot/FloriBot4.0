@@ -6,7 +6,8 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TransformStamped.h>
-#include <actionlib_msgs/GoalStatus.h>
+#include <nav_msgs/Path.h>
+#include <actionlib_msgs/GoalStatusArray.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
@@ -24,11 +25,11 @@ class SwitchNavBase
     private:
         void create_sub_pub_();
         void cmd_vel_callback_(const geometry_msgs::Twist::ConstPtr& msg);
-        void goal_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr& msg);
-        void goal_status_callback_(const actionlib_msgs::GoalStatus::ConstPtr& msg);
+        void local_plan_callback_(const nav_msgs::Path::ConstPtr& msg);
+        void global_goal_status_callback_(const actionlib_msgs::GoalStatusArray::ConstPtr& msg);
         void tf_callback(const ros::TimerEvent& e);
         uint32_t seq_;
-        uint8_t goal_status_;
+        uint8_t global_goal_status_;
         
         double linear_speed_;
         std::string frame_id_front_;
@@ -39,8 +40,10 @@ class SwitchNavBase
         ros::NodeHandle* nh_;
         ros::Timer tf_timer_;
         ros::Subscriber cmd_vel_subscriber_;
-        geometry_msgs::PoseStamped goal_pose_in_map_;
-        geometry_msgs::PoseStamped goal_pose_in_front_;
+        ros::Subscriber local_plan_subscriber_;
+        ros::Subscriber global_goal_status_subscriber_;
+        geometry_msgs::PoseStamped local_goal_pose_in_map_;
+        geometry_msgs::PoseStamped local_goal_pose_in_front_;
         geometry_msgs::TransformStamped tf_nav_base_default_;
         geometry_msgs::TransformStamped tf_nav_base_;
         geometry_msgs::TransformStamped tf_rear2front_;

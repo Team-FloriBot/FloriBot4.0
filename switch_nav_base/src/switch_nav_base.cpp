@@ -43,6 +43,8 @@ void SwitchNavBase::create_sub_pub_()
 {   
     // setup /cmd_vel subscriber and timer calling a callback at 20 Hz
     cmd_vel_subscriber_ = nh_->subscribe("/cmd_vel", 1, &SwitchNavBase::cmd_vel_callback_, this);
+    local_plan_subscriber_ = nh_->subscribe("/move_base/TebLocalPlannerROS/local_plan", 1, &SwitchNavBase::local_plan_callback_, this);
+    //global_goal_status_subscriber_ = nh_->subscribe("/move_base/status", 1, &SwitchNavBase::global_goal_status_callback_, this);
     tf_timer_ = nh_->createTimer(ros::Duration(0.05), &SwitchNavBase::tf_callback, this);
 }
 
@@ -52,16 +54,16 @@ void SwitchNavBase::cmd_vel_callback_(const geometry_msgs::Twist::ConstPtr &msg)
     linear_speed_ = msg->linear.x;
 }
 
-void SwitchNavBase::goal_pose_callback_(const geometry_msgs::PoseStamped::ConstPtr &msg)
-{
-    // assign latest goal message to pose variable
-    goal_pose_in_map_.pose = msg->pose;
+void SwitchNavBase::local_plan_callback_(const nav_msgs::Path::ConstPtr& msg)
+{   
+    // assign local goal (last pose of global path) to pose variable
+    local_goal_pose_in_map_.pose = msg->poses.back().pose;
 }
 
-void SwitchNavBase::goal_status_callback_(const actionlib_msgs::GoalStatus::ConstPtr &msg)
+void SwitchNavBase::global_goal_status_callback_(const actionlib_msgs::GoalStatusArray::ConstPtr &msg)
 {
     // assign latest goal status to goal status variable
-    goal_status_ = msg->status;
+    global_goal_status_ = msg->status_list.back().status;
 }
 
 void SwitchNavBase::tf_callback(const ros::TimerEvent &e)
@@ -83,10 +85,10 @@ void SwitchNavBase::tf_callback(const ros::TimerEvent &e)
     if (!exception_caught)
     {
         // transform goal pose from map frame to front carriage frame
-        tf2::doTransform(goal_pose_in_map_, goal_pose_in_front_, tf_map2front_);
+        tf2::doTransform(local_goal_pose_in_map_, local_goal_pose_in_front_, tf_map2front_);
         // determine y-coordinates of goal position and rear carriage position
         // w.r.t front carriage frame
-        double_t y_goal_in_front = goal_pose_in_front_.pose.position.y;
+        double_t y_goal_in_front = local_goal_pose_in_front_.pose.position.y;
         double_t y_rear_in_front = tf_rear2front_.transform.translation.y;
         // nav_base frame will only be modified, if the following three conditions are true
         // 1. the goal and the rear carriage frame must always lie on different sides of front carriage
@@ -94,9 +96,11 @@ void SwitchNavBase::tf_callback(const ros::TimerEvent &e)
         // 3. the goal is not yet reached and the robot is still moving
         bool y_neg_sign = y_rear_in_front * y_goal_in_front < 0.0;
         bool backward_motion = linear_speed_ < 0.0;
-        bool still_moving = goal_status_ != actionlib_msgs::GoalStatus::SUCCEEDED;
-        bool activate_switch_nav_base = y_neg_sign && backward_motion && still_moving;
-        ROS_INFO("negative sign: %d\t backwards: %d\t moving: %d", y_neg_sign, backward_motion, still_moving);
+        //bool still_moving = global_goal_status_ != actionlib_msgs::GoalStatus::SUCCEEDED;
+        bool activate_switch_nav_base = y_neg_sign && backward_motion;// && still_moving;
+        //ROS_INFO("negative sign: %d\t backwards: %d\t moving: %d", y_neg_sign, backward_motion, still_moving);
+
+        ROS_INFO("negative sign: %d\t backwards: %d", y_neg_sign, backward_motion);
         // reset nav_base from to be identical to frame of front carriage
         tf_nav_base_ = tf_nav_base_default_;
         if (activate_switch_nav_base)
