@@ -91,8 +91,8 @@ class FootprintMode():
         self.tfBuffer = tf2_ros.Buffer()
         self.listener_tf = tf2_ros.TransformListener(self.tfBuffer)
         self.cmd_sub = rospy.Subscriber('/cmd_vel', Twist, callback=self.cmd_cb)
-        self.client_local = dynamic_reconfigure.client.Client("/move_base/local_costmap", timeout=30)#, config_callback=dyn_cb)
-        self.client_global = dynamic_reconfigure.client.Client("/move_base/global_costmap", timeout=30)#, config_callback=dyn_cb)
+        self.client_local = dynamic_reconfigure.client.Client("/move_base/local_costmap", timeout=None)#, config_callback=dyn_cb) # infinite timeout
+        self.client_global = dynamic_reconfigure.client.Client("/move_base/global_costmap", timeout=None)#, config_callback=dyn_cb) # infinite timeout
         self.srv = Server(FootprintModeConfig, self.srv_cb)
 
     def cmd_cb(self, cmd_vel):
@@ -154,19 +154,19 @@ class FootprintMode():
             try:
                 tf_src_targ = self.tfBuffer.lookup_transform(self.target_frame, self.source_frame, rospy.Time(0), rospy.Duration(self.period))
             except tf2_ros.ConnectivityException:
-                rospy.logerr('Tf tree between {:s} and {:s} is not connected'.format(self.source_frame, self.target_frame))
+                rospy.logwarn('Tf tree between {:s} and {:s} is not connected'.format(self.source_frame, self.target_frame))
                 continue
             except tf2_ros.ExtrapolationException:
-                rospy.logerr('Requested tf value from {:s} to {:s} is beyond extrapolation limits'.format(self.source_frame, self.target_frame))
+                rospy.logwarn('Requested tf value from {:s} to {:s} is beyond extrapolation limits'.format(self.source_frame, self.target_frame))
                 continue
             except tf2_ros.InvalidArgumentException:
-                rospy.logerr('Invalid arguments')
+                rospy.logwarn('Invalid arguments')
                 continue
             except tf2_ros.LookupException:
-                rospy.logerr('Name of required frame is not available or broken tf tree')
+                rospy.logwarn('Name of required frame is not available or broken tf tree')
                 continue
             except tf2_ros.TimoutException:
-                rospy.logerr('Timeout has occured')
+                rospy.logwarn('Timeout has occured')
                 continue
             else:
                 footprint_follow_wrt_lead = self.transform_point_arr(self.footprint_follow, tf_src_targ)                    
@@ -185,7 +185,11 @@ class FootprintMode():
                     elif not switching_allowed and rospy.Time.now() - t_last_switch > t_no_switch:
                         switching_allowed = True
                 else:
-                    self.update_footprint(self.footprint_lead)
+                    try:
+                        self.update_footprint(self.footprint_lead)
+                    except dynamic_reconfigure.DynamicReconfigureCallbackException:
+                        rospy.logwarn('Dynamic Reconfigure server is down. Latest footprint could not be transmitted via callback.')
+                        continue
             finally:
                 self.rate.sleep()
 
