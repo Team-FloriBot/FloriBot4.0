@@ -3,10 +3,12 @@
 
 #include "drives/articulated_drive.h"
 #include <ros/ros.h>
+#include <ros/console.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <geometry_msgs/PoseStamped.h>
+
 #include <base/Angle.h>
 #include <nav_msgs/Odometry.h>
 
