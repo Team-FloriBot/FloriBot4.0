@@ -8,7 +8,6 @@ TebLocalPlannerROS:
  teb_autosize: True # Enable the automatic resizing of the trajectory during optimization (based on the temporal resolution of the trajectory, recommended
  dt_ref: 0.3 # Temporal resolution of the planned trajectory (usually it is set to the magnitude of the 1/control_rate)
  dt_hysteresis: 0.1 # Hysteresis that is utilized for automatic resizing depending on the current temporal resolution (dt): usually 10% of dt_ref
- # max_samples: 500 # deprecated
  global_plan_overwrite_orientation: True # Some global planners are not considering the orientation at local subgoals between start and global goal, therefore determine it automatically
  allow_init_with_backwards_motion: True # If true, the underlying trajectories might be initialized with backwards motions in case the goal is behind the start within the local costmap (this is only recommended if the robot is equipped with rear sensors)
  max_global_plan_lookahead_dist: 3.0 # Specify maximum length (cumulative Euclidean distances) of the subset of the global plan taken into account for optimization [if 0 or negative: disabled; the length is also bounded by the local costmap size]
@@ -27,7 +26,7 @@ TebLocalPlannerROS:
  
  # Robot
          
- max_vel_x: 0.75 # Maximum translational velocity of the robot
+ max_vel_x: 0.25 # Maximum translational velocity of the robot
  max_vel_x_backwards: 0.25 # Maximum translational velocity of the robot for driving backwards
  max_vel_theta: 0.3 # Maximum angular velocity of the robot
  acc_lim_x: 0.5 # Maximum translational acceleration of the robot
@@ -139,12 +138,15 @@ TebLocalPlannerROS:
 
  shrink_horizon_backup: True # Allows the planner to shrink the horizon temporarily (50%) in case of automatically detected issues.
  oscillation_recovery: True # Try to detect and resolve oscillations between multiple solutions in the same equivalence class (robot frequently switches between left/right/forward/backwards).
- #shrink_horizon_min_duration: 10 # deprecated
- #oscillation_v_eps: 0.1 # deprecated
- #oscillation_omega_eps: 0.1 # deprecated
- #oscillation_recovery_min_duration: 10 # deprecated
-# oscillation_filter_duration: 10 # deprecated
 
 # Divergence Detection
-#divergence_detection_enable: False # True to enable divergence detection.
-#divergence_detection_max_chi_squared: 10.0 # Maximum acceptable Mahalanobis distance above which it is assumed that the optimization diverged.
+ divergence_detection_enable: False # True to enable divergence detection.
+ divergence_detection_max_chi_squared: 10.0 # Maximum acceptable Mahalanobis distance above which it is assumed that the optimization diverged.
+
+# Deprecated Parameters
+#  shrink_horizon_min_duration: 10        # deprecated
+#  oscillation_v_eps: 0.1                 # deprecated
+#  oscillation_omega_eps: 0.1             # deprecated
+#  oscillation_recovery_min_duration: 10  # deprecated
+#  oscillation_filter_duration: 10        # deprecated
+#  max_samples: 500                       # deprecated

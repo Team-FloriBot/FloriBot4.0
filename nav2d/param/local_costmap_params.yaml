@@ -1,8 +1,8 @@
 local_costmap:
   global_frame: map
   robot_base_frame: base_link
-  update_frequency: 5.0 # [Hz]
-  publish_frequency: 2.0 # [Hz]
+  update_frequency: 10.0 # [Hz]
+  publish_frequency: 5.0 # [Hz]
   static_map: false # true --> intialize costmap based on a map served by the map_server
   rolling_window: true # true --> costmap will remain centered around the robot as the robot moves through the world
   width: 5.0 # The width of the map in meters. 
@@ -12,7 +12,6 @@ local_costmap:
   footprint: [[-0.4, 0.225], [0.5, 0.225], [0.5, -0.225], [-0.4, -0.225]] # slightly larger, w.r.t. base_link at front carriage, covering only front carriage
   #footprint: [[-0.243, 0.2125], [0.277, 0.2125], [0.277, -0.2125], [-0.243, -0.2125]] # exact
   
-
   plugins:
     - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
     - {name: small_inflation_layer, type: "costmap_2d::InflationLayer"}
