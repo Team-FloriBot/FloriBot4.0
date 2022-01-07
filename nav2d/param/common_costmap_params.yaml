@@ -27,8 +27,8 @@ big_inflation_layer:
 
 obstacle_layer:
     enabled: true
-    obstacle_range: 4.5       # The default maximum distance from the robot at which an obstacle will be inserted into the cost map in meters
-    raytrace_range: 5.0       # The default range in meters at which to raytrace out obstacles from the map using sensor data
+    obstacle_range: 5.0       # The default maximum distance from the robot at which an obstacle will be inserted into the cost map in meters
+    raytrace_range: 7.5       # The default range in meters at which to raytrace out obstacles from the map using sensor data
     observation_sources: laser_scan_sensor
     laser_scan_sensor: {sensor_frame: laserFront, data_type: LaserScan, topic: /sensors/scanMulti, marking: true, clearing: true, expected_update_rate: 0.0, inf_is_valid: true}
     track_unknown_space: true
