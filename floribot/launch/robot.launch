@@ -1,6 +1,8 @@
 <launch>
 	<arg name="use_sim" default="true" />
 	<arg name="PI" default="3.14159265359"/>
+	
+	<!-- SIMULATION-->
 	<group if="$(arg use_sim)">
 		<node pkg="tf2_ros" type="static_transform_publisher" name="axesFront2laserFront" args=" 0.387 0 0 1.0 0 0 0 axesFront laserFront"/>
 		<node pkg="tf2_ros" type="static_transform_publisher" name="axesRear2laserRear" args=" -0.387 0 0 0 1.0 0 0 axesRear laserRear" />
@@ -12,6 +14,8 @@
 		<include file="$(find base)/launch/base_node.launch"/>
 
 	</group>
+
+	<!-- REAL ROBOT-->
 	<group unless="$(arg use_sim)">
 		<!--Adding TF publisher for angle-->
 		<!--node pkg="base" type="angle2tf" name="angle2tf"/-->
