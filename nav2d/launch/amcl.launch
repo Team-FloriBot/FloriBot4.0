@@ -1,8 +1,9 @@
 <launch>
 	<master auto="start"/>
+	<arg name="amcl_scan_topic"/>
 	<!--- Run AMCL -->
 	<node pkg="amcl" type="amcl" name="amcl" output="screen">
-		<remap from="scan" to="$(arg amcl_scan_topic)"/>	
+		<remap from="/scan" to="$(arg amcl_scan_topic)"/>	
 
 		<!-- Overall filter parameters -->		
 		<param name="min_particles" value="500"/>
@@ -23,8 +24,8 @@
 		<param name="initial_cov_aa" value="0.07"/>
 		<param name="gui_publish_rate" value="10.0"/>
 		<param name="save_pose_rate" value="0.5"/>
-		<param name="use_map_topic" value="true"/>
-		<param name="first_map_only" value="false"/>
+		<param name="use_map_topic" value="false"/>
+		<param name="first_map_only" value="true"/>
 		<param name="selective_resampling" value="true"/>
 		
 		<!-- Laser model parameters -->	

@@ -26,12 +26,12 @@ TebLocalPlannerROS:
  
  # Robot
          
- max_vel_x: 0.5 # Maximum translational velocity of the robot
- max_vel_x_backwards: 0.5 # Maximum translational velocity of the robot for driving backwards
- max_vel_theta: 0.3 # Maximum angular velocity of the robot
+ max_vel_x: 0.75 # Maximum translational velocity of the robot
+ max_vel_x_backwards: 0.75 # Maximum translational velocity of the robot for driving backwards
+ max_vel_theta: 0.5 # Maximum angular velocity of the robot
  acc_lim_x: 0.5 # Maximum translational acceleration of the robot
  acc_lim_theta: 0.5 # Maximum angular acceleration of the robot
- is_footprint_dynamic: True # If true, updated the footprint before checking trajectory feasibility
+ is_footprint_dynamic: False # If true, updated the footprint before checking trajectory feasibility
  use_proportional_saturation: True # If true, reduce all twists components (linear x and y, and angular z) proportionally if any exceed its corresponding bounds, instead of saturating each one individually
  transform_tolerance: 0.5 # Tolerance when querying the TF Tree for a transformation (seconds)
  footprint_model: # types: "point", "circular", "two_circles", "line", "polygon"
@@ -59,7 +59,7 @@ TebLocalPlannerROS:
     
  xy_goal_tolerance: 0.2 # Allowed final euclidean distance to the goal position
  yaw_goal_tolerance: 0.1 # Allowed final orientation error to the goal orientation
- free_goal_vel: False # Allow the robot's velocity to be nonzero for planning purposes (the robot can arrive at the goal with max speed)
+ free_goal_vel: True # Allow the robot's velocity to be nonzero for planning purposes (the robot can arrive at the goal with max speed)
     
  # Obstacles
     
@@ -85,19 +85,19 @@ TebLocalPlannerROS:
 
  # Optimization
     
- no_inner_iterations: 5 # Number of solver iterations called in each outerloop iteration
- no_outer_iterations: 4 # Each outerloop iteration automatically resizes the trajectory and invokes the internal optimizer with no_inner_iterations
+ no_inner_iterations: 4 # Number of solver iterations called in each outerloop iteration
+ no_outer_iterations: 3 # Each outerloop iteration automatically resizes the trajectory and invokes the internal optimizer with no_inner_iterations
  optimization_activate: True # Activate the optimization
  optimization_verbose: False # Print verbose information
  penalty_epsilon: 0.1 # Add a small safty margin to penalty functions for hard-constraint approximations
- weight_max_vel_x: 2 # Optimization weight for satisfying the maximum allowed translational velocity
+ weight_max_vel_x: 10 # Optimization weight for satisfying the maximum allowed translational velocity
  weight_max_vel_y: 0 # Optimization weight for satisfying the maximum allowed strafing velocity (in use only for holonomic robots)
  weight_max_vel_theta: 2 # Optimization weight for satisfying the maximum allowed angular velocity
  weight_acc_lim_x: 1 # Optimization weight for satisfying the maximum allowed translational acceleration
  weight_acc_lim_y: 0 # Optimization weight for satisfying the maximum allowed strafing acceleration (in use only for holonomic robots)
  weight_acc_lim_theta: 1 # Optimization weight for satisfying the maximum allowed angular acceleration
  weight_kinematics_nh: 1000 # Optimization weight for satisfying the non-holonomic kinematics
- weight_kinematics_forward_drive: 10 # (ignored, if min_turning_radius!=0) Optimization weight for forcing the robot to choose only forward directions (positive transl. velocities, only diffdrive robot)
+ weight_kinematics_forward_drive: 0 # (ignored, if min_turning_radius!=0) Optimization weight for forcing the robot to choose only forward directions (positive transl. velocities, only diffdrive robot)
  weight_kinematics_turning_radius: 2 # Optimization weight for enforcing a minimum turning radius (carlike robots)
  weight_optimaltime: 1 # Optimization weight for contracting the trajectory w.r.t. transition time
  weight_shortest_path: 0 # Optimization weight for contracting the trajectory w.r.t. path length
@@ -135,9 +135,8 @@ TebLocalPlannerROS:
  simple_exploration: False # deprecated, If true, distinctive trajectories are explored using a simple left-right approach (pass each obstacle on the left or right side) for path generation, otherwise sample possible roadmaps randomly in a specified region between start and goal. 
 
  # Recovery
-
- shrink_horizon_backup: True # Allows the planner to shrink the horizon temporarily (50%) in case of automatically detected issues.
- oscillation_recovery: True # Try to detect and resolve oscillations between multiple solutions in the same equivalence class (robot frequently switches between left/right/forward/backwards).
+ shrink_horizon_backup: False # Allows the planner to shrink the horizon temporarily (50%) in case of automatically detected issues.
+ oscillation_recovery: False # Try to detect and resolve oscillations between multiple solutions in the same equivalence class (robot frequently switches between left/right/forward/backwards).
 
 # Divergence Detection
  divergence_detection_enable: False # True to enable divergence detection.

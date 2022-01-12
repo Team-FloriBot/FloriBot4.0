@@ -9,7 +9,7 @@
 	<param name="angle_min" value="-3.14159265359"/>
 	<param name="angle_max" value="3.14159265359"/>
 	<param name="angle_increment" value="0.005817763973027468"/>
-	<param name="scan_time" value="0.05"/> <!-- set to scan_tim of input topics, changing this does not affect scan_time of laserscan_multi_merger, real scan_time is roughly the scan time of the input topics -->
+	<param name="scan_time" value="0.1"/> <!-- set to scan_tim of input topics, changing this does not affect scan_time of laserscan_multi_merger, real scan_time is roughly the scan time of the input topics -->
 	<param name="range_min" value="0.05"/>
 	<param name="range_max" value="25.0"/>
 	</node>
