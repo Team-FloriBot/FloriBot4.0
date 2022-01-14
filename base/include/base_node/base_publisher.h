@@ -39,7 +39,7 @@ private:
     ros::Subscriber CmdVelSubscriber_, SpeedSubscriber_;
     ros::ServiceServer ResetOdometryService_;
     tf2_ros::TransformBroadcaster TFBroadaster_;
-    double AxesLength_, WheelDiameter_, PubFrequency_, StopTolerance_;
+    double AxesLength_, WheelDiameter_, PubFrequency_, StopTimeout_;
     unsigned int seq_;
     
 };

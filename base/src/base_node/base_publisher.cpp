@@ -18,7 +18,7 @@ void KinematicsPublisher::PublishSpeed(const ros::TimerEvent& e)
     base::Wheels tmp;
     tmp.header.stamp=ros::Time::now();
     tmp.header.seq=seq_++;
-    if (tmp.header.stamp - Speedmsg_.header.stamp < ros::Duration(StopTolerance_)){
+    if (tmp.header.stamp - Speedmsg_.header.stamp < ros::Duration(StopTimeout_)){
         tmp.frontLeft=Speedmsg_.frontLeft;
         tmp.frontRight=Speedmsg_.frontRight;
         tmp.rearLeft=Speedmsg_.rearLeft;
@@ -38,7 +38,7 @@ void KinematicsPublisher::getParam()
     pNh_->getParam("/"+ros::this_node::getName()+"/axesLength", this->AxesLength_);
     pNh_->getParam("/"+ros::this_node::getName()+"/wheelDiameter", this->WheelDiameter_);
     pNh_->getParam("/"+ros::this_node::getName()+"/pubFrequency", this->PubFrequency_);
-    pNh_->getParam("/"+ros::this_node::getName()+"/stopTolerance", this->StopTolerance_);
+    pNh_->getParam("/"+ros::this_node::getName()+"/stopTimeout", this->StopTimeout_);
 }
 
 void KinematicsPublisher::createPublisherSubscriber()
