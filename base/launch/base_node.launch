@@ -1,6 +1,5 @@
-<launch>
-
-<!--Parameters for Kinematics -->
+<launch>    
+    <!--Parameters for Kinematics -->
     <arg name="frontLength"         default="-0.383"/>          <!-- distance from front axle to joint w.r.t. frame in front axle -->
     <arg name="frontLaserLength"         default="0.387"/>      <!-- distance from front axle to front laser w.r.t. frame in front axle -->
     <arg name="rearLength"          default="-0.383"/>          <!-- distance from joint to rear axle w.r.t. frame in rear axle -->

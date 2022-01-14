@@ -16,7 +16,6 @@ KinematicsPublisher::~KinematicsPublisher(){};
 void KinematicsPublisher::PublishSpeed(const ros::TimerEvent& e)
 {
     base::Wheels tmp;
-
     tmp.header.stamp=ros::Time::now();
     tmp.header.seq=seq_++;
     tmp.frontLeft=Speedmsg_.frontLeft;
@@ -24,8 +23,7 @@ void KinematicsPublisher::PublishSpeed(const ros::TimerEvent& e)
     tmp.rearLeft=Speedmsg_.rearLeft;
     tmp.rearLeft=Speedmsg_.rearRight;
 
-
-    SpeedPublisher_.publish(Speedmsg_);
+    SpeedPublisher_.publish(tmp);
 
     Speedmsg_.frontLeft=0;
     Speedmsg_.frontRight=0;    
