@@ -9,7 +9,7 @@ KinematicsPublisher::KinematicsPublisher(ros::NodeHandle* pNh)
     // it is switched automatically when driving backwards/ forwards
     Drive_.setParam(AxesLength_, WheelDiameter_, kinematics::coordinate::Front);
     createPublisherSubscriber();
-    CmdVelTimer_=pNh_->createTimer(ros::Duration(0.1), &KinematicsPublisher::PublishSpeed, this);
+    CmdVelTimer_=pNh_->createTimer(ros::Duration(1.0/PubFrequency_), &KinematicsPublisher::PublishSpeed, this);
 }
 KinematicsPublisher::~KinematicsPublisher(){};
 
@@ -18,23 +18,27 @@ void KinematicsPublisher::PublishSpeed(const ros::TimerEvent& e)
     base::Wheels tmp;
     tmp.header.stamp=ros::Time::now();
     tmp.header.seq=seq_++;
-    tmp.frontLeft=Speedmsg_.frontLeft;
-    tmp.frontRight=Speedmsg_.frontRight;
-    tmp.rearLeft=Speedmsg_.rearLeft;
-    tmp.rearLeft=Speedmsg_.rearRight;
-
+    if (tmp.header.stamp - Speedmsg_.header.stamp < ros::Duration(StopTolerance_)){
+        tmp.frontLeft=Speedmsg_.frontLeft;
+        tmp.frontRight=Speedmsg_.frontRight;
+        tmp.rearLeft=Speedmsg_.rearLeft;
+        tmp.rearRight=Speedmsg_.rearRight;
+    }
+    else{
+        tmp.frontLeft=0;
+        tmp.frontRight=0;    
+        tmp.rearRight=0;
+        tmp.rearLeft=0;
+    }
     SpeedPublisher_.publish(tmp);
-
-    Speedmsg_.frontLeft=0;
-    Speedmsg_.frontRight=0;    
-    Speedmsg_.rearRight=0;
-    Speedmsg_.rearLeft=0;
 }
 
 void KinematicsPublisher::getParam()
 {
-    pNh_->param<double>("/"+ros::this_node::getName()+"/axesLength", AxesLength_, 0.335);
-    pNh_->param<double>("/"+ros::this_node::getName()+"/wheelDiameter", WheelDiameter_, 0.28);
+    pNh_->getParam("/"+ros::this_node::getName()+"/axesLength", this->AxesLength_);
+    pNh_->getParam("/"+ros::this_node::getName()+"/wheelDiameter", this->WheelDiameter_);
+    pNh_->getParam("/"+ros::this_node::getName()+"/pubFrequency", this->PubFrequency_);
+    pNh_->getParam("/"+ros::this_node::getName()+"/stopTolerance", this->StopTolerance_);
 }
 
 void KinematicsPublisher::createPublisherSubscriber()
@@ -62,6 +66,7 @@ void KinematicsPublisher::CmdVelCallback(const geometry_msgs::Twist::ConstPtr& m
 
     Wheelspeed=Drive_.inverseKinematics(*msg);
 
+    Speedmsg_.header.stamp=ros::Time::now();
     Speedmsg_.frontLeft=Wheelspeed.Front.leftWheel;
     Speedmsg_.frontRight=Wheelspeed.Front.rightWheel;
 
