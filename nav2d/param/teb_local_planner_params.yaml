@@ -3,8 +3,7 @@ TebLocalPlannerROS:
  odom_topic: odom
  map_frame: /map
     
- # Trajectory
-  
+ # Trajectory  
  teb_autosize: True # Enable the automatic resizing of the trajectory during optimization (based on the temporal resolution of the trajectory, recommended
  dt_ref: 0.3 # Temporal resolution of the planned trajectory (usually it is set to the magnitude of the 1/control_rate)
  dt_hysteresis: 0.1 # Hysteresis that is utilized for automatic resizing depending on the current temporal resolution (dt): usually 10% of dt_ref
@@ -13,25 +12,23 @@ TebLocalPlannerROS:
  max_global_plan_lookahead_dist: 3.0 # Specify maximum length (cumulative Euclidean distances) of the subset of the global plan taken into account for optimization [if 0 or negative: disabled; the length is also bounded by the local costmap size]
  force_reinit_new_goal_dist: 1.0 # Force the planner to reinitialize the trajectory if a previous goal is updated with a seperation of more than the specified value in meters (skip hot-starting)
  force_reinit_new_goal_angular: 0.78 # Force the planner to reinitialize the trajectory if a previous goal is updated with a rotational difference of more than the specified value in radians (skip hot-starting)
- feasibility_check_no_poses: 2 # Specify up to which pose (under the feasibility_check_lookahead_distance) on the predicted plan the feasibility should be checked each sampling interval; if -1, all poses up to feasibility_check_lookahead_distance are checked.
+ feasibility_check_no_poses: -1. # Specify up to which pose (under the feasibility_check_lookahead_distance) on the predicted plan the feasibility should be checked each sampling interval; if -1, all poses up to feasibility_check_lookahead_distance are checked.
  feasibility_check_lookahead_distance: 0.5 # Specify up to which distance (and with an index below feasibility_check_no_poses) from the robot the feasibility should be checked each sampling interval; if -1, all poses up to feasibility_check_no_poses are checked.
  exact_arc_length: False # If true, the planner uses the exact arc length in velocity, acceleration and turning rate computations [-> increased cpu time], otherwise the euclidean approximation is used.
- publish_feedback: False # Publish planner feedback containing the full trajectory and a list of active obstacles (should be enabled only for evaluation or debugging purposes)
+ publish_feedback: True # Publish planner feedback containing the full trajectory and a list of active obstacles (should be enabled only for evaluation or debugging purposes)
  visualize_with_time_as_z_axis_scale: 0 # If this value is bigger than 0, the trajectory and obstacles are visualized in 3d using the time as the z-axis scaled by this value. Most useful for dynamic obstacles.
  
  # ViaPoints
-
  global_plan_viapoint_sep: -0.1 # Min. separation between each two consecutive via-points extracted from the global plan [if negative: disabled]
  via_points_ordered: False # If true, the planner adheres to the order of via-points in the storage container
  
- # Robot
-         
- max_vel_x: 0.75 # Maximum translational velocity of the robot
- max_vel_x_backwards: 0.75 # Maximum translational velocity of the robot for driving backwards
+ # Robot         
+ max_vel_x: 1.0 # Maximum translational velocity of the robot
+ max_vel_x_backwards: 1.0 # Maximum translational velocity of the robot for driving backwards
  max_vel_theta: 0.5 # Maximum angular velocity of the robot
- acc_lim_x: 0.5 # Maximum translational acceleration of the robot
- acc_lim_theta: 0.5 # Maximum angular acceleration of the robot
- is_footprint_dynamic: False # If true, updated the footprint before checking trajectory feasibility
+ acc_lim_x: 1.0 # Maximum translational acceleration of the robot
+ acc_lim_theta: 0.25 # Maximum angular acceleration of the robot
+ is_footprint_dynamic: True # If true, updated the footprint before checking trajectory feasibility
  use_proportional_saturation: True # If true, reduce all twists components (linear x and y, and angular z) proportionally if any exceed its corresponding bounds, instead of saturating each one individually
  transform_tolerance: 0.5 # Tolerance when querying the TF Tree for a transformation (seconds)
  footprint_model: # types: "point", "circular", "two_circles", "line", "polygon"
@@ -47,7 +44,7 @@ TebLocalPlannerROS:
 
  # Robot/Car-like
  min_turning_radius: 0.5 # Minimum turning radius of a carlike robot (diff-drive robot: zero)
- wheelbase: 0.766 # The distance between the drive shaft and steering axle (only required for a carlike robot with 'cmd_angle_instead_rotvel' enabled); The value might be negative for back-wheeled robots!
+ wheelbase: 0.0 # The distance between the drive shaft and steering axle (only required for a carlike robot with 'cmd_angle_instead_rotvel' enabled); The value might be negative for back-wheeled robots!
  cmd_angle_instead_rotvel: False # Substitute the rotational velocity in the commanded velocity message by the corresponding steering angle (check 'axles_distance')
  
 
@@ -55,15 +52,13 @@ TebLocalPlannerROS:
  max_vel_y: 0.0 # Maximum strafing velocity of the robot (should be zero for non-holonomic robots!)
  acc_lim_y: 0.0 # Maximum strafing acceleration of the robot
 
- # GoalTolerance
-    
+ # GoalTolerance    
  xy_goal_tolerance: 0.2 # Allowed final euclidean distance to the goal position
  yaw_goal_tolerance: 0.1 # Allowed final orientation error to the goal orientation
  free_goal_vel: True # Allow the robot's velocity to be nonzero for planning purposes (the robot can arrive at the goal with max speed)
     
- # Obstacles
-    
- min_obstacle_dist: 0.25 # Minimum desired separation from obstacles
+ # Obstacles    
+ min_obstacle_dist: 0.3 # Minimum desired separation from obstacles
  inflation_dist: 0.45 # Buffer zone around obstacles with non-zero penalty costs (should be larger than min_obstacle_dist in order to take effect)
  dynamic_obstacle_inflation_dist: 0.8 # Buffer zone around predicted locations of dynamic obstacles with non-zero penalty costs (should be larger than min_obstacle_dist in order to take effect)
  include_dynamic_obstacles: False # Specify whether the movement of dynamic obstacles should be predicted by a constant velocity model (this also changes the homotopy class search). If false, all obstacles are considered to be static.
@@ -72,19 +67,18 @@ TebLocalPlannerROS:
  obstacle_association_force_inclusion_factor: 1.5 # The non-legacy obstacle association technique tries to connect only relevant obstacles with the discretized trajectory during optimization, all obstacles within a specifed distance are forced to be included (as a multiple of min_obstacle_dist), e.g. choose 2.0 in order to consider obstacles within a radius of 2.0*min_obstacle_dist.
  obstacle_association_cutoff_factor: 5.0 # See obstacle_association_force_inclusion_factor, but beyond a multiple of [value]*min_obstacle_dist all obstacles are ignored during optimization. obstacle_association_force_inclusion_factor is processed first.
  costmap_obstacles_behind_robot_dist: 1.0 # Limit the occupied local costmap obstacles taken into account for planning behind the robot (specify distance in meters)
- obstacle_poses_affected: 5 # The obstacle position is attached to the closest pose on the trajectory to reduce computational effort, but take a number of neighbors into account as well
+ obstacle_poses_affected: 10 # The obstacle position is attached to the closest pose on the trajectory to reduce computational effort, but take a number of neighbors into account as well
  costmap_converter_plugin: ""
  costmap_converter_spin_thread: True
- costmap_converter_rate: 5
+ costmap_converter_rate: 5.0
 
  # Obstacles/Velocity Ratio Parameters
  obstacle_proximity_ratio_max_vel: 0.75 # Ratio of the maximum velocities used as an upper bound when reducing the speed due to the proximity to static obstacles
- obstacle_proximity_lower_bound: 0 # Distance to a static obstacle for which the velocity should be lower
+ obstacle_proximity_lower_bound: 0.0 # Distance to a static obstacle for which the velocity should be lower
  obstacle_proximity_upper_bound: 0.5 # Distance to a static obstacle for which the velocity should be higher
 
 
- # Optimization
-    
+ # Optimization    
  no_inner_iterations: 4 # Number of solver iterations called in each outerloop iteration
  no_outer_iterations: 3 # Each outerloop iteration automatically resizes the trajectory and invokes the internal optimizer with no_inner_iterations
  optimization_activate: True # Activate the optimization
@@ -93,7 +87,7 @@ TebLocalPlannerROS:
  weight_max_vel_x: 10 # Optimization weight for satisfying the maximum allowed translational velocity
  weight_max_vel_y: 0 # Optimization weight for satisfying the maximum allowed strafing velocity (in use only for holonomic robots)
  weight_max_vel_theta: 2 # Optimization weight for satisfying the maximum allowed angular velocity
- weight_acc_lim_x: 1 # Optimization weight for satisfying the maximum allowed translational acceleration
+ weight_acc_lim_x: 5 # Optimization weight for satisfying the maximum allowed translational acceleration
  weight_acc_lim_y: 0 # Optimization weight for satisfying the maximum allowed strafing acceleration (in use only for holonomic robots)
  weight_acc_lim_theta: 1 # Optimization weight for satisfying the maximum allowed angular acceleration
  weight_kinematics_nh: 1000 # Optimization weight for satisfying the non-holonomic kinematics
@@ -111,7 +105,6 @@ TebLocalPlannerROS:
  obstacle_cost_exponent: 1 # Exponent for nonlinear obstacle cost (cost = linear_cost * obstacle_cost_exponent). Set to 1 to disable nonlinear cost (default)
  
  # Homotopy Class Planner
-
  enable_homotopy_class_planning: True
  enable_multithreading: True # Activate multiple threading for planning multiple trajectories in parallel
  max_number_classes: 3 # Specify the maximum number of allowed alternative homotopy classes (limits computational effort)

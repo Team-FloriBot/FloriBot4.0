@@ -1,8 +1,8 @@
 global_costmap:
   global_frame: map
   robot_base_frame: base_link
-  update_frequency: 0.1 # [Hz] since our prerecorded map does not change, this is set low
-  publish_frequency: 0.05 # [Hz] since our prerecorded map does not change, this is set low
+  update_frequency: 1.0 # [Hz] since our prerecorded map does not change, this is set low
+  publish_frequency: 1.0 # [Hz] since our prerecorded map does not change, this is set low
   static_map: true # true --> intialize costmap based on a map served by the map_server
   rolling_window: false # true --> costmap will remain centered around the robot as the robot moves through the world
   width: 10.0 # The width of the map in meters. 
