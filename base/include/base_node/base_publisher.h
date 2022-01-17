@@ -26,7 +26,6 @@ private:
 
     void getParam();
     void createPublisherSubscriber();    
-    void PublishSpeed(const ros::TimerEvent& e);
     void CmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
     void SpeedCallback(const base::Wheels::ConstPtr& msg);
     bool ResetOdometryCallback(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
@@ -39,7 +38,7 @@ private:
     ros::Subscriber CmdVelSubscriber_, SpeedSubscriber_;
     ros::ServiceServer ResetOdometryService_;
     tf2_ros::TransformBroadcaster TFBroadaster_;
-    double AxesLength_, WheelDiameter_, PubFrequency_, StopTimeout_;
+    double AxesLength_, WheelDiameter_;
     unsigned int seq_;
     
 };

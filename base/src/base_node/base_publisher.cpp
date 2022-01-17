@@ -9,36 +9,13 @@ KinematicsPublisher::KinematicsPublisher(ros::NodeHandle* pNh)
     // it is switched automatically when driving backwards/ forwards
     Drive_.setParam(AxesLength_, WheelDiameter_, kinematics::coordinate::Front);
     createPublisherSubscriber();
-    CmdVelTimer_=pNh_->createTimer(ros::Duration(1.0/PubFrequency_), &KinematicsPublisher::PublishSpeed, this);
 }
 KinematicsPublisher::~KinematicsPublisher(){};
-
-void KinematicsPublisher::PublishSpeed(const ros::TimerEvent& e)
-{
-    base::Wheels tmp;
-    tmp.header.stamp=ros::Time::now();
-    tmp.header.seq=seq_++;
-    if (tmp.header.stamp - Speedmsg_.header.stamp < ros::Duration(StopTimeout_)){
-        tmp.frontLeft=Speedmsg_.frontLeft;
-        tmp.frontRight=Speedmsg_.frontRight;
-        tmp.rearLeft=Speedmsg_.rearLeft;
-        tmp.rearRight=Speedmsg_.rearRight;
-    }
-    else{
-        tmp.frontLeft=0;
-        tmp.frontRight=0;    
-        tmp.rearRight=0;
-        tmp.rearLeft=0;
-    }
-    SpeedPublisher_.publish(tmp);
-}
 
 void KinematicsPublisher::getParam()
 {
     pNh_->getParam("/"+ros::this_node::getName()+"/axesLength", this->AxesLength_);
     pNh_->getParam("/"+ros::this_node::getName()+"/wheelDiameter", this->WheelDiameter_);
-    pNh_->getParam("/"+ros::this_node::getName()+"/pubFrequency", this->PubFrequency_);
-    pNh_->getParam("/"+ros::this_node::getName()+"/stopTimeout", this->StopTimeout_);
 }
 
 void KinematicsPublisher::createPublisherSubscriber()
@@ -56,6 +33,7 @@ bool KinematicsPublisher::ResetOdometryCallback(std_srvs::Empty::Request& reques
 {
     Drive_.frontDrive_.reset();
     Drive_.rearDrive_.reset();
+    seq_=0;
     ROS_WARN("Service called. Reset robot odometry.");
     return true;
 }
@@ -67,11 +45,13 @@ void KinematicsPublisher::CmdVelCallback(const geometry_msgs::Twist::ConstPtr& m
     Wheelspeed=Drive_.inverseKinematics(*msg);
 
     Speedmsg_.header.stamp=ros::Time::now();
+    Speedmsg_.header.seq=seq_++;
     Speedmsg_.frontLeft=Wheelspeed.Front.leftWheel;
     Speedmsg_.frontRight=Wheelspeed.Front.rightWheel;
-
     Speedmsg_.rearLeft=Wheelspeed.Rear.leftWheel;
     Speedmsg_.rearRight=Wheelspeed.Rear.rightWheel;
+
+    SpeedPublisher_.publish(Speedmsg_);
 }
 
 void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
