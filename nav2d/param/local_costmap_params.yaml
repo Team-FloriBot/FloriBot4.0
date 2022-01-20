@@ -1,6 +1,6 @@
 local_costmap:
   global_frame: map
-  robot_base_frame: base_link
+  robot_base_frame: nav_base
   update_frequency: 5.0 # [Hz]
   publish_frequency: 2.5 # [Hz]
   static_map: false # true --> intialize costmap based on a map served by the map_server

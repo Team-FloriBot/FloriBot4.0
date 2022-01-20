@@ -4,11 +4,12 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /TF1
         - /TF1/Frames1
         - /GlobalPlanner1/GlobalFootprint1
         - /LocalPlanner1
       Splitter Ratio: 0.5363984704017639
-    Tree Height: 270
+    Tree Height: 1520
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -104,9 +105,9 @@ Visualization Manager:
         axesFront:
           Value: false
         axesRear:
-          Value: true
+          Value: false
         base_link:
-          Value: true
+          Value: false
         jointFront:
           Value: true
         jointRear:
@@ -115,6 +116,12 @@ Visualization Manager:
           Value: true
         laserRear:
           Value: true
+        map:
+          Value: true
+        nav_base:
+          Value: true
+        odom:
+          Value: true
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -122,7 +129,19 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        map:
+          odom:
+            base_link:
+              axesFront:
+                jointFront:
+                  jointRear:
+                    axesRear:
+                      laserRear:
+                        {}
+                laserFront:
+                  {}
+                nav_base:
+                  {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -250,7 +269,9 @@ Visualization Manager:
           Marker Topic: /move_base/TebLocalPlannerROS/teb_markers
           Name: TEBMarker
           Namespaces:
-            {}
+            PointObstacles: true
+            RobotFootprintModel: true
+            TebContainer: true
           Queue Size: 100
           Value: true
       Enabled: true
@@ -283,7 +304,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 29.497760772705078
+      Distance: 9.78643798828125
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -291,9 +312,9 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 1.1228314638137817
-        Y: 0.21636587381362915
-        Z: -1.635623574256897
+        X: 8.36910343170166
+        Y: 4.123331546783447
+        Z: -1.4964241981506348
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -301,7 +322,7 @@ Visualization Manager:
       Near Clip Distance: 0.009999999776482582
       Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
-      Yaw: 3.142209053039551
+      Yaw: 2.23721981048584
     Saved: ~
 Window Geometry:
   Displays:

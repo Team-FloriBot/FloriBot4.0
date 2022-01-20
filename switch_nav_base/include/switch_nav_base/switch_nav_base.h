@@ -12,6 +12,7 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
+#include <base/Angle.h>
 
 #include <ros/console.h>
 
@@ -25,6 +26,7 @@ class SwitchNavBase
     private:
         void create_sub_pub_();
         void cmd_vel_callback_(const geometry_msgs::Twist::ConstPtr& msg);
+        void body_angle_callback_(const base::Angle::ConstPtr& msg);
         void local_plan_callback_(const nav_msgs::Path::ConstPtr& msg);
         void global_goal_status_callback_(const actionlib_msgs::GoalStatusArray::ConstPtr& msg);
         void tf_callback(const ros::TimerEvent& e);
@@ -40,6 +42,7 @@ class SwitchNavBase
         ros::NodeHandle* nh_;
         ros::Timer tf_timer_;
         ros::Subscriber cmd_vel_subscriber_;
+        ros::Subscriber body_angle_subscriber_;
         ros::Subscriber local_plan_subscriber_;
         ros::Subscriber global_goal_status_subscriber_;
         geometry_msgs::PoseStamped local_goal_pose_in_map_;
