@@ -1,6 +1,6 @@
 global_costmap:
   global_frame: map
-  robot_base_frame: jointFront
+  robot_base_frame: nav_base
   update_frequency: 1.0 # [Hz] since our prerecorded map does not change, this is set low
   publish_frequency: 1.0 # [Hz] since our prerecorded map does not change, this is set low
   static_map: true # true --> intialize costmap based on a map served by the map_server
