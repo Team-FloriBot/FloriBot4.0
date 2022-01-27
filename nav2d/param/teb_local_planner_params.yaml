@@ -12,10 +12,12 @@ TebLocalPlannerROS:
  max_global_plan_lookahead_dist: 3.0 # Specify maximum length (cumulative Euclidean distances) of the subset of the global plan taken into account for optimization [if 0 or negative: disabled; the length is also bounded by the local costmap size]
  force_reinit_new_goal_dist: 1.0 # Force the planner to reinitialize the trajectory if a previous goal is updated with a seperation of more than the specified value in meters (skip hot-starting)
  force_reinit_new_goal_angular: 0.78 # Force the planner to reinitialize the trajectory if a previous goal is updated with a rotational difference of more than the specified value in radians (skip hot-starting)
- feasibility_check_no_poses: -1. # Specify up to which pose (under the feasibility_check_lookahead_distance) on the predicted plan the feasibility should be checked each sampling interval; if -1, all poses up to feasibility_check_lookahead_distance are checked.
- feasibility_check_lookahead_distance: 0.5 # Specify up to which distance (and with an index below feasibility_check_no_poses) from the robot the feasibility should be checked each sampling interval; if -1, all poses up to feasibility_check_no_poses are checked.
+ feasibility_check_no_poses: 10. # Specify up to which pose (under the feasibility_check_lookahead_distance) on the predicted plan the feasibility should be checked each sampling interval; if -1, all poses up to feasibility_check_lookahead_distance are checked.
+ feasibility_check_lookahead_distance: -1 # Specify up to which distance (and with an index below feasibility_check_no_poses) from the robot the feasibility should be checked each sampling interval; if -1, all poses up to feasibility_check_no_poses are checked.
  exact_arc_length: False # If true, the planner uses the exact arc length in velocity, acceleration and turning rate computations [-> increased cpu time], otherwise the euclidean approximation is used.
  publish_feedback: True # Publish planner feedback containing the full trajectory and a list of active obstacles (should be enabled only for evaluation or debugging purposes)
+ control_look_ahead_poses: 1 # Index of the pose used to extract the velocity command
+ prevent_look_ahead_poses_near_goal: 0 # Prevents control_look_ahead_poses to look within this many poses of the goal in order to prevent overshoot & oscillation when xy_goal_tolerance is very small
  visualize_with_time_as_z_axis_scale: 0 # If this value is bigger than 0, the trajectory and obstacles are visualized in 3d using the time as the z-axis scaled by this value. Most useful for dynamic obstacles.
  
  # ViaPoints
@@ -43,7 +45,7 @@ TebLocalPlannerROS:
    vertices: [[-1.2, 0.25], [0.5, 0.25], [0.5, -0.25], [-1.2, -0.25]] # for type "polygon"
 
  # Robot/Car-like
- min_turning_radius: 0.5 # Minimum turning radius of a carlike robot (diff-drive robot: zero)
+ min_turning_radius: 0.5 # Minimum turning radius of a carlike robot, for the Floribot4.0 actually 0.383 (diff-drive robot: zero)
  wheelbase: 0.0 # The distance between the drive shaft and steering axle (only required for a carlike robot with 'cmd_angle_instead_rotvel' enabled); The value might be negative for back-wheeled robots!
  cmd_angle_instead_rotvel: False # Substitute the rotational velocity in the commanded velocity message by the corresponding steering angle (check 'axles_distance')
  
@@ -66,7 +68,7 @@ TebLocalPlannerROS:
  legacy_obstacle_association: False # If true, the old association strategy is used (for each obstacle, find the nearest TEB pose), otherwise the new one (for each teb pose, find only 'relevant' obstacles).
  obstacle_association_force_inclusion_factor: 1.5 # The non-legacy obstacle association technique tries to connect only relevant obstacles with the discretized trajectory during optimization, all obstacles within a specifed distance are forced to be included (as a multiple of min_obstacle_dist), e.g. choose 2.0 in order to consider obstacles within a radius of 2.0*min_obstacle_dist.
  obstacle_association_cutoff_factor: 5.0 # See obstacle_association_force_inclusion_factor, but beyond a multiple of [value]*min_obstacle_dist all obstacles are ignored during optimization. obstacle_association_force_inclusion_factor is processed first.
- costmap_obstacles_behind_robot_dist: 1.0 # Limit the occupied local costmap obstacles taken into account for planning behind the robot (specify distance in meters)
+ costmap_obstacles_behind_robot_dist: 2.0 # Limit the occupied local costmap obstacles taken into account for planning behind the robot (specify distance in meters)
  obstacle_poses_affected: 10 # The obstacle position is attached to the closest pose on the trajectory to reduce computational effort, but take a number of neighbors into account as well
  costmap_converter_plugin: ""
  costmap_converter_spin_thread: True
@@ -100,7 +102,7 @@ TebLocalPlannerROS:
  weight_dynamic_obstacle: 0 # Optimization weight for satisfying a minimum seperation from dynamic obstacles
  weight_dynamic_obstacle_inflation: 0 # Optimization weight for the inflation penalty of dynamic obstacles (should be small)
  weight_velocity_obstacle_ratio: 0 # Optimization weight for satisfying a maximum allowed velocity with respect to the distance to a static obstacle
- weight_viapoint: 1 # Optimization weight for minimizing the distance to via-points
+ weight_viapoint: 0 # Optimization weight for minimizing the distance to via-points
  weight_adapt_factor: 2 # Some special weights (currently 'weight_obstacle') are repeatedly scaled by this factor in each outer TEB iteration (weight_new: weight_old * factor); Increasing weights iteratively instead of setting a huge value a-priori leads to better numerical conditions of the underlying optimization problem.
  obstacle_cost_exponent: 1 # Exponent for nonlinear obstacle cost (cost = linear_cost * obstacle_cost_exponent). Set to 1 to disable nonlinear cost (default)
  
