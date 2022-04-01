@@ -1,4 +1,4 @@
-image: /home/moritz/floribot_ws/src/FloriBot4.0/mapping/map_data/playground.pgm
+image: /home/moritz/floribot_ws/src/FloriBot4/mapping/map_data/playground.pgm
 resolution: 0.050000
 origin: [-10.000000, -10.000000, 0.000000]
 negate: 0

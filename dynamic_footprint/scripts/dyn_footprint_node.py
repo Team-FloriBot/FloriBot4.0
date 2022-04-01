@@ -147,9 +147,6 @@ class FootprintMode():
         return np.array(tf_point_arr)
 
     def main(self):
-        t_last_switch = rospy.Time.now()
-        t_no_switch = rospy.Duration(0.5)
-        switching_allowed = True
         while not rospy.is_shutdown():
             try:
                 tf_src_targ = self.tfBuffer.lookup_transform(self.target_frame, self.source_frame, rospy.Time(0), rospy.Duration(self.period))
@@ -175,15 +172,10 @@ class FootprintMode():
                     # if rear car leads: transform front footprint into rear frame and concatenate with rear footprint
                     footprint = np.concatenate((self.footprint_lead, footprint_follow_wrt_lead))
                     self.update_footprint(footprint)
-                elif self.footprint_mode == FOOTPRINT_MODE.SEMI_STATIC and (self.driving_direction == DRIVING_DIRECTION.BACKWARD or not switching_allowed):
+                elif self.footprint_mode == FOOTPRINT_MODE.SEMI_STATIC and (self.driving_direction == DRIVING_DIRECTION.BACKWARD):
                     # if front car leads: transform rear footprint into front frame and only use this new rear footprint
                     # if rear car leads: transform front footprint into rear frame and only use this new front footprint
                     self.update_footprint(footprint_follow_wrt_lead)
-                    if switching_allowed:
-                        t_last_switch = rospy.Time.now()
-                        switching_allowed = not switching_allowed
-                    elif not switching_allowed and rospy.Time.now() - t_last_switch > t_no_switch:
-                        switching_allowed = True
                 else:
                     try:
                         self.update_footprint(self.footprint_lead)

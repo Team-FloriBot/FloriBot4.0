@@ -9,6 +9,15 @@
 		<!--Running kinematic-->
 		<include file="$(find base)/launch/base_node.launch">
 			<param name="/use_sim_time" value="true"/>
+			<!--Parameters for Kinematics -->
+			<arg name="frontLength"         default="-0.383"/>                          <!-- distance from front axle to joint w.r.t. frame in front axle -->
+			<arg name="frontLaserLength"    default="0.387"/>                           <!-- distance from front axle to front laser w.r.t. frame in front axle -->
+			<arg name="rearLength"          default="-0.383"/>                          <!-- distance from joint to rear axle w.r.t. frame in rear axle -->
+			<arg name="rearLaserLength"     default="-0.387"/>                          <!-- distance from joint to rear laser w.r.t. frame in rear axle -->
+			<arg name="wheelDiameter"       default="0.280"/>                           <!-- diameter of wheel of Floribot4.0-->
+			<arg name="axesLength"          default="0.335"/>                           <!-- distance between center of left wheel to center of right wheel -->
+			<arg name="pubFrequency"        default="10.0"/>                            <!-- frequency to publish wheel speeds with in Hz -->
+			<arg name="stopTimeout"         default="0.5"/>                             <!-- if no /cmd_vel callback is invoked, robot will stop moving after this duration  -->
 		</include>
 		
 		<!--Running laserscan merger-->
