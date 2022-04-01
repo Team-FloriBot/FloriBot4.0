@@ -1,6 +1,6 @@
 global_costmap:
   global_frame: map
-  robot_base_frame: nav_base
+  robot_base_frame: base_link
   update_frequency: 1.0 # [Hz] since our prerecorded map does not change, this is set low
   publish_frequency: 1.0 # [Hz] since our prerecorded map does not change, this is set low
   static_map: true # true --> intialize costmap based on a map served by the map_server
@@ -9,8 +9,10 @@ global_costmap:
   height: 10.0 # The height of the map in meters. 
   resolution: 0.05 # The resolution of the map in meters/cell.
   # initialize footprint local costmap (can be configured with dynamic_footprint package)
-  footprint: [[-0.4, 0.225], [0.5, 0.225], [0.5, -0.225], [-0.4, -0.225]] # slightly larger, w.r.t. base_link at front carriage, covering front and rear carriage
+  #footprint: [[-0.4, 0.225], [0.5, 0.225], [0.5, -0.225], [-0.4, -0.225]] # slightly larger, w.r.t. base_link at front carriage, covering front and rear carriage
   #footprint: [[-0.243, 0.2125], [0.277, 0.2125], [0.277, -0.2125], [-0.243, -0.2125]] # exact
+  footprint: [[-0.4, 0.2125], [0.4, 0.2125], [0.4, -0.2125], [-0.4, -0.2125]] # exact
+
 
   plugins:
     - {name: static_layer, type: "costmap_2d::StaticLayer"}
