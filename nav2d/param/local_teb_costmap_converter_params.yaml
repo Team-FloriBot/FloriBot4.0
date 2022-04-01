@@ -12,7 +12,7 @@ TebLocalPlannerROS:
   ## Configure plugins (namespace move_base/TebLocalPlannerROS/PLUGINNAME)
   ## The parameters must be added for each plugin separately
   costmap_converter/CostmapToLinesDBSRANSAC:
-    cluster_max_distance: 1.0
+    cluster_max_distance: 0.4
     cluster_min_pts: 2
     cluster_max_pts: 50
     ransac_inlier_distance: 0.15
