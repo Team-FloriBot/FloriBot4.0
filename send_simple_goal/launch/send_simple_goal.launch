@@ -1,0 +1,36 @@
+<launch>
+   <master auto="start"/>
+   <!-- scenario: row entry -->
+   <!-- <arg name="goal_pos_x" default="2.0"/>
+   <arg name="goal_pos_y" default="0.1"/>
+   <arg name="goal_rot_z" default="0.0"/> -->
+
+   <!-- scenario: row exit -->
+   <!-- <arg name="goal_pos_x" default="1.0"/>
+   <arg name="goal_pos_y" default="0.75"/>
+   <arg name="goal_rot_z" default="90.0"/> -->
+
+   <!-- row entry 2 -->
+   <!-- <arg name="goal_pos_x" default="1.5"/>
+   <arg name="goal_pos_y" default="1.0"/>
+   <arg name="goal_rot_z" default="90.0"/> -->
+
+   <!-- row u turn second row -->
+   <!-- <arg name="goal_pos_x" default="-0.05"/>
+   <arg name="goal_pos_y" default="1.5"/>
+   <arg name="goal_rot_z" default="180.0"/>
+   <arg name="ref_frame_id" default="map"/> -->
+   
+   <arg name="goal_pos_x" default="-0.05"/>
+   <arg name="goal_pos_y" default="1.5"/>
+   <arg name="goal_rot_z" default="180.0"/>
+   <arg name="ref_frame_id" default="map"/>
+
+   <!-- Run node to send goals -->
+   <node pkg="send_simple_goal" type="send_simple_goal" name="send_simple_goal" output="screen">
+      <param name="goal_pos_x"        value="$(arg goal_pos_x)"/>
+      <param name="goal_pos_y"        value="$(arg goal_pos_y)"/>
+      <param name="goal_rot_z"        value="$(arg goal_rot_z)"/>
+      <param name="ref_frame_id"      value="$(arg ref_frame_id)"/>
+   </node>
+</launch>
