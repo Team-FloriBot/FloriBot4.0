@@ -7,7 +7,7 @@
     <arg name="wheelDiameter"       default="0.280"/>                           <!-- diameter of wheel of Floribot4.0-->
     <arg name="axesLength"          default="0.335"/>                           <!-- distance between center of left wheel to center of right wheel -->
     <arg name="pubFrequency"        default="10.0"/>                            <!-- frequency to publish wheel speeds with in Hz -->
-    <arg name="stopTimeout"         default="0.1"/>                             <!-- if no /cmd_vel callback is invoked, robot will stop moving after this duration  -->
+    <arg name="stopTimeout"         default="0.2"/>                             <!-- if no /cmd_vel callback is invoked, robot will stop moving after this duration  -->
 
     <node name="base" pkg="base" type="base_node">
         <param name="wheelDiameter"     value="$(arg wheelDiameter)"/>
