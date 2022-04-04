@@ -193,8 +193,8 @@ class PlotNavigation():
         # self.ax_plot.set_xlim([-1.5, 2.5])
         # self.ax_plot.set_ylim([-0.4, 0.6]) 
         # 
-        # row exit       
-        # self.ax_plot.set_xlim([-0.5, 2.0])
+        # row exit  
+        # self.ax_plot.set_xlim([-1.0, 1.5])
         # self.ax_plot.set_ylim([-0.5, 1.5]) 
         # 
         # row uturn second row
