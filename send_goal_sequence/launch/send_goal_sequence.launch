@@ -1,0 +1,14 @@
+<launch>
+
+<!-- MoveBaseSeq node launch and Points Sequence ROS Parameters Loading -->
+
+    <!--Run move_base_seqs node-->
+        <node pkg="send_goal_sequence" type="move_base_client.py" name="send_goal_sequence" output="screen">
+        
+        <!-- Load Sequence of Points (Cartesian Coordinates wrt "map" RF, in meters) -->
+        <!-- Load Sequence of Desired Yaw Angles (no rotations around x and y axes) in degrees-->
+            <rosparam file="$(find send_goal_sequence)/param/goal_poses.yaml" command="load" /> 
+
+        </node>
+
+</launch>
