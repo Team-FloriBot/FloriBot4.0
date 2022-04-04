@@ -26,7 +26,7 @@ TebLocalPlannerROS:
  
  # Robot         
  max_vel_x: 0.5 # Maximum translational velocity of the robot
- max_vel_x_backwards: 0.1 # Maximum translational velocity of the robot for driving backwards
+ max_vel_x_backwards: 0.05 # Maximum translational velocity of the robot for driving backwards
  max_vel_theta: 0.20 # Maximum angular velocity of the robot
  acc_lim_x: 1.0 # Maximum translational acceleration of the robot
  acc_lim_theta: 0.20 # Maximum angular acceleration of the robot
@@ -124,7 +124,6 @@ TebLocalPlannerROS:
  h_signature_threshold: 0.1 # Two h-signuteres are assumed to be equal, if both the difference of real parts and complex parts are below the specified threshold
  obstacle_heading_threshold: 0.45 # Specify the value of the normalized scalar product between obstacle heading and goal heading in order to take them (obstacles) into account for exploration
  viapoints_all_candidates: True # If true, all trajectories of different topologies are attached to the set of via-points, otherwise only the trajectory sharing the same one as the initial/global plan is attached (no effect in test_optim_node).
- delete_detours_backwards: True
  max_ratio_detours_duration_best_duration: 3.0 # Detours are discarted if their execution time / the execution time of the best teb is > this. 
  visualize_hc_graph: False # Visualize the graph that is created for exploring new homotopy classes
  
