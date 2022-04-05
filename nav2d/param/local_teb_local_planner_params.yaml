@@ -8,7 +8,7 @@ TebLocalPlannerROS:
  dt_ref: 0.3 # Temporal resolution of the planned trajectory (usually it is set to the magnitude of the 1/control_rate)
  dt_hysteresis: 0.1 # Hysteresis that is utilized for automatic resizing depending on the current temporal resolution (dt): usually 10% of dt_ref
  global_plan_overwrite_orientation: True # Some global planners are not considering the orientation at local subgoals between start and global goal, therefore determine it automatically
- allow_init_with_backwards_motion: True # If true, the underlying trajectories might be initialized with backwards motions in case the goal is behind the start within the local costmap (this is only recommended if the robot is equipped with rear sensors)
+ allow_init_with_backwards_motion: False # If true, the underlying trajectories might be initialized with backwards motions in case the goal is behind the start within the local costmap (this is only recommended if the robot is equipped with rear sensors)
  max_global_plan_lookahead_dist: 3.0 # Specify maximum length (cumulative Euclidean distances) of the subset of the global plan taken into account for optimization [if 0 or negative: disabled; the length is also bounded by the local costmap size]
  force_reinit_new_goal_dist: 1.0 # Force the planner to reinitialize the trajectory if a previous goal is updated with a seperation of more than the specified value in meters (skip hot-starting)
  force_reinit_new_goal_angular: 0.78 # Force the planner to reinitialize the trajectory if a previous goal is updated with a rotational difference of more than the specified value in radians (skip hot-starting)
@@ -16,8 +16,8 @@ TebLocalPlannerROS:
  feasibility_check_lookahead_distance: -1 # Specify up to which distance (and with an index below feasibility_check_no_poses) from the robot the feasibility should be checked each sampling interval; if -1, all poses up to feasibility_check_no_poses are checked.
  exact_arc_length: False # If true, the planner uses the exact arc length in velocity, acceleration and turning rate computations [-> increased cpu time], otherwise the euclidean approximation is used.
  publish_feedback: True # Publish planner feedback containing the full trajectory and a list of active obstacles (should be enabled only for evaluation or debugging purposes)
- control_look_ahead_poses: 1 # Index of the pose used to extract the velocity command
- prevent_look_ahead_poses_near_goal: 0 # Prevents control_look_ahead_poses to look within this many poses of the goal in order to prevent overshoot & oscillation when xy_goal_tolerance is very small
+ control_look_ahead_poses: 3 # Index of the pose used to extract the velocity command
+ prevent_look_ahead_poses_near_goal: 2 # Prevents control_look_ahead_poses to look within this many poses of the goal in order to prevent overshoot & oscillation when xy_goal_tolerance is very small
  visualize_with_time_as_z_axis_scale: 0 # If this value is bigger than 0, the trajectory and obstacles are visualized in 3d using the time as the z-axis scaled by this value. Most useful for dynamic obstacles.
  
  # ViaPoints
@@ -27,9 +27,9 @@ TebLocalPlannerROS:
  # Robot         
  max_vel_x: 0.5 # Maximum translational velocity of the robot
  max_vel_x_backwards: 0.05 # Maximum translational velocity of the robot for driving backwards
- max_vel_theta: 0.20 # Maximum angular velocity of the robot
+ max_vel_theta: 0.5 # Maximum angular velocity of the robot
  acc_lim_x: 1.0 # Maximum translational acceleration of the robot
- acc_lim_theta: 0.20 # Maximum angular acceleration of the robot
+ acc_lim_theta: 1.0 # Maximum angular acceleration of the robot
  is_footprint_dynamic: False # If true, updated the footprint before checking trajectory feasibility
  use_proportional_saturation: True # If true, reduce all twists components (linear x and y, and angular z) proportionally if any exceed its corresponding bounds, instead of saturating each one individually
  transform_tolerance: 0.5 # Tolerance when querying the TF Tree for a transformation (seconds)
