@@ -188,16 +188,23 @@ class PlotNavigation():
             
     def save_plot(self):
         self.ax_plot.clear()
-        # self.ax_plot.autoscale(enable=False)
         # row entry
+        # self.ax_plot.autoscale(enable=False)
         # self.ax_plot.set_xlim([-1.5, 2.5])
         # self.ax_plot.set_ylim([-0.4, 0.6]) 
         # 
         # row exit  
+        # self.ax_plot.autoscale(enable=False)
         # self.ax_plot.set_xlim([-1.0, 1.5])
         # self.ax_plot.set_ylim([-0.5, 1.5]) 
+        #
+        # row entry 2
+        # self.ax_plot.autoscale(enable=False)
+        # self.ax_plot.set_xlim([-1.0, 2.0])
+        # self.ax_plot.set_ylim([-0.5, 2.0])
         # 
         # row uturn second row
+        # self.ax_plot.autoscale(enable=False)
         # self.ax_plot.set_xlim([-1.5, 1.5])
         # self.ax_plot.set_ylim([-0.5, 2.0])
 
