@@ -3,20 +3,23 @@
 
 #include "drives/articulated_drive.h"
 #include <ros/ros.h>
+#include <ros/console.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <geometry_msgs/PoseStamped.h>
+
 #include <base/Angle.h>
 #include <nav_msgs/Odometry.h>
 
 #include <base/Wheels.h>
+#include <std_srvs/Empty.h>
 
 
 class KinematicsPublisher
 {
 public:
-    KinematicsPublisher(ros::NodeHandle* pnh, kinematics::coordinate Base);
+    KinematicsPublisher(ros::NodeHandle* pnh);//, kinematics::coordinate Base);
     ~KinematicsPublisher();
 
 private:
@@ -26,6 +29,7 @@ private:
     void PublishSpeed(const ros::TimerEvent& e);
     void CmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg);
     void SpeedCallback(const base::Wheels::ConstPtr& msg);
+    bool ResetOdometryCallback(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response);
 
     kinematics::ArticulatedDrive Drive_;
     base::Wheels Speedmsg_;
@@ -33,8 +37,9 @@ private:
     ros::Timer CmdVelTimer_;
     ros::Publisher SpeedPublisher_, OdometryPublisher_;
     ros::Subscriber CmdVelSubscriber_, SpeedSubscriber_;
+    ros::ServiceServer ResetOdometryService_;
     tf2_ros::TransformBroadcaster TFBroadaster_;
-    double AxesLength_, WheelDiameter_;
+    double AxesLength_, WheelDiameter_, PubFrequency_, StopTimeout_;
     unsigned int seq_;
     
 };

@@ -11,10 +11,9 @@
   <arg name="RZ"            default="0"/>
   <arg name="RW"            default="1"/>
   <arg name="IPAddress"     default="192.168.0.1" />
-  <arg name="dummy"         default="false"/>
 
   <node pkg="tf2_ros" type="static_transform_publisher" name="scanner_$(arg PositionID)_TF" args="$(arg TX) $(arg TY) $(arg TZ) 0 0 0 1 $(arg ParentFrame) scanner_$(arg PositionID)" />
-  <group if="$(arg dummy)">
+  <group if="$(arg use_sim)">
     
   
     <node name="scanner_$(arg PositionID)" pkg="sick_scan" type="sick_generic_caller"  respawn="false" output="screen">

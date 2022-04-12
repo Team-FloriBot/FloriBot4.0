@@ -1,0 +1,42 @@
+transform_tolerance: 1.0  # [s] Specifies the delay in transform (tf) data that is tolerable
+map_type: costmap
+
+static_layer:
+    enabled: true
+    unknown_cost_value: -1
+    lethal_cost_threshold: 253
+    map_topic: "/map"
+    first_map_only: true
+    subscribe_to_updates: false
+    track_unknown_space: false
+    use_maximum: false
+    trinary_costmap: false
+    
+small_inflation_layer:
+    enabled: true
+    inflation_radius: 0.05 # inflate obstacle of above layers by this radius
+    cost_scaling_factor: 20.0 # the higher, the quicker the exp. cost function declines
+    inflate_unknown: false # inflate cells whose type is neither occupied nor free
+
+big_inflation_layer:
+    enabled: true
+    inflation_radius: 0.5 # inflate obstacle of above layers by this radius
+    cost_scaling_factor: 20.0 # the higher, the quicker the exp. cost function declines
+    inflate_unknown: false # inflate cells whose type is neither occupied nor free
+
+obstacle_layer:
+    enabled: true
+    obstacle_range: 5.0       # The default maximum distance from the robot at which an obstacle will be inserted into the cost map in meters
+    raytrace_range: 7.5       # The default range in meters at which to raytrace out obstacles from the map using sensor data
+    max_obstacle_height: 0.5  # The maximum height of any obstacle to be inserted into the costmap in meters
+    observation_sources: laser_scan_sensor
+    laser_scan_sensor: {sensor_frame: laserFront, data_type: LaserScan, topic: /sensors/scanMulti, marking: true, clearing: true, expected_update_rate: 0.0, inf_is_valid: true}
+    track_unknown_space: true
+    footprint_clearing_enabled: true
+    combination_method: 1 # "Overwrite" (0), "Maximum" (1) and "Nothing" (99)
+    # origin_z: 0.0 # The z origin of the map in meters.
+    # z_resolution: 0.05 # The z resolution of the map in meters/cell.
+    # z_voxels: 10 # The number of voxels in each vertical column, the height of the grid is z resolution * z voxels.
+    # unknown_threshold: 10 # The number of unknown cells allowed in a column considered to be ”known”
+    # mark_threshold: 0 # The maximum number of marked cells allowed in a column considered to be ”free”
+    # publish_voxel_map: false

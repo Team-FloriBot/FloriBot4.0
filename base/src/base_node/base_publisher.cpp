@@ -1,49 +1,63 @@
 #include <base_node/base_publisher.h>
 
-KinematicsPublisher::KinematicsPublisher(ros::NodeHandle* pNh, kinematics::coordinate Base)
+KinematicsPublisher::KinematicsPublisher(ros::NodeHandle* pNh)
 {
     seq_=0;
     pNh_=pNh;
     getParam();
-    Drive_.setParam(AxesLength_, WheelDiameter_, Base);
+    // initial Base (leading carriage) is set to coordinate::Front, 
+    // it is switched automatically when driving backwards/ forwards
+    Drive_.setParam(AxesLength_, WheelDiameter_, kinematics::coordinate::Front);
     createPublisherSubscriber();
-    CmdVelTimer_=pNh_->createTimer(ros::Duration(0.1), &KinematicsPublisher::PublishSpeed, this);
+    CmdVelTimer_=pNh_->createTimer(ros::Duration(1.0/PubFrequency_), &KinematicsPublisher::PublishSpeed, this);
 }
 KinematicsPublisher::~KinematicsPublisher(){};
 
 void KinematicsPublisher::PublishSpeed(const ros::TimerEvent& e)
 {
     base::Wheels tmp;
-
     tmp.header.stamp=ros::Time::now();
     tmp.header.seq=seq_++;
-    tmp.frontLeft=Speedmsg_.frontLeft;
-    tmp.frontRight=Speedmsg_.frontRight;
-    tmp.rearLeft=Speedmsg_.rearLeft;
-    tmp.rearLeft=Speedmsg_.rearRight;
-
-
-    SpeedPublisher_.publish(Speedmsg_);
-
-    Speedmsg_.frontLeft=0;
-    Speedmsg_.frontRight=0;    
-    Speedmsg_.rearRight=0;
-    Speedmsg_.rearLeft=0;
+    if (tmp.header.stamp - Speedmsg_.header.stamp < ros::Duration(StopTimeout_)){
+        tmp.frontLeft=Speedmsg_.frontLeft;
+        tmp.frontRight=Speedmsg_.frontRight;
+        tmp.rearLeft=Speedmsg_.rearLeft;
+        tmp.rearRight=Speedmsg_.rearRight;
+    }
+    else{
+        tmp.frontLeft=0;
+        tmp.frontRight=0;    
+        tmp.rearRight=0;
+        tmp.rearLeft=0;
+    }
+    SpeedPublisher_.publish(tmp);
 }
 
 void KinematicsPublisher::getParam()
 {
-    pNh_->param<double>("/"+ros::this_node::getName()+"/axesLength", AxesLength_, 0.4);
-    pNh_->param<double>("/"+ros::this_node::getName()+"/wheelDiameter", WheelDiameter_, 0.4);
+    pNh_->getParam("/"+ros::this_node::getName()+"/axesLength", this->AxesLength_);
+    pNh_->getParam("/"+ros::this_node::getName()+"/wheelDiameter", this->WheelDiameter_);
+    pNh_->getParam("/"+ros::this_node::getName()+"/pubFrequency", this->PubFrequency_);
+    pNh_->getParam("/"+ros::this_node::getName()+"/stopTimeout", this->StopTimeout_);
 }
 
 void KinematicsPublisher::createPublisherSubscriber()
 {
-    OdometryPublisher_=pNh_->advertise<nav_msgs::Odometry>("/odom", 1);
-    SpeedPublisher_=pNh_->advertise<base::Wheels>("engine/targetSpeed", 1);
+    ResetOdometryService_=pNh_->advertiseService("/reset_odom", &KinematicsPublisher::ResetOdometryCallback, this);
 
-    CmdVelSubscriber_=pNh_->subscribe("cmd_vel", 1, &KinematicsPublisher::CmdVelCallback, this);
-    SpeedSubscriber_=pNh_->subscribe("engine/actualSpeed", 1, &KinematicsPublisher::SpeedCallback, this);    
+    OdometryPublisher_=pNh_->advertise<nav_msgs::Odometry>("/odom", 1);
+    SpeedPublisher_=pNh_->advertise<base::Wheels>("/engine/targetSpeed", 1);
+
+    CmdVelSubscriber_=pNh_->subscribe("/cmd_vel", 1, &KinematicsPublisher::CmdVelCallback, this);
+    SpeedSubscriber_=pNh_->subscribe("/engine/actualSpeed", 1, &KinematicsPublisher::SpeedCallback, this);    
+}
+
+bool KinematicsPublisher::ResetOdometryCallback(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
+{
+    Drive_.frontDrive_.reset();
+    Drive_.rearDrive_.reset();
+    ROS_WARN("Service called. Reset robot odometry.");
+    return true;
 }
 
 void KinematicsPublisher::CmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
@@ -52,6 +66,7 @@ void KinematicsPublisher::CmdVelCallback(const geometry_msgs::Twist::ConstPtr& m
 
     Wheelspeed=Drive_.inverseKinematics(*msg);
 
+    Speedmsg_.header.stamp=ros::Time::now();
     Speedmsg_.frontLeft=Wheelspeed.Front.leftWheel;
     Speedmsg_.frontRight=Wheelspeed.Front.rightWheel;
 
@@ -112,6 +127,7 @@ void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
 
     //According to http://wiki.ros.org/navigation/Tutorials/RobotSetup/Odom the speed has to be in the child_frame
     //in our case base_link which means the robot itself
+    //But now odom links to nav_base which changes between axesFront (forwards driving) and axesRear (backards driving)
 
     OdomMsg.twist.twist=Drive_.getSpeed();    
 

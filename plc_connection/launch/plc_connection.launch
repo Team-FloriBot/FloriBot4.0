@@ -9,11 +9,11 @@
     <arg name="count_per_rotation_encoder"      default="4096"/>
     <arg name="engine_acceleration"             default="1000"/>
     <arg name="engine_jerk"                     default="10000"/>
-    <arg name="period_Send_Read"               default="0.05"/>
+    <arg name="period_Send_Read"                default="0.05"/>
 
 
 
-    <node name="PLC_Connection" pkg="plc_connection" type="plc_connection_node">
+    <node name="PLC_Connection"             pkg="plc_connection" type="plc_connection_node">
     <param name="PLC_IP"                    value="$(arg plc_ip)"/>
     <param name="PLC_Port"                  value="$(arg plc_port)"/>
     <param name="PLC_Timeout"               value="$(arg plc_timeout)"/>
@@ -23,7 +23,7 @@
     <param name="CountPerRotation_Encoder"  value="$(arg count_per_rotation_encoder)"/>
     <param name="Engine_Acceleration"       value="$(arg engine_acceleration)"/>
     <param name="Engine_Jerk"               value="$(arg engine_jerk)"/>
-    <param name="Period_Send_Read"         value="$(arg period_Send_Read)"/>
+    <param name="Period_Send_Read"          value="$(arg period_Send_Read)"/>
     
     <!--remap from="/engine/actualSpeed"         to="/engine/actualSpeed"/-->
     <!--remap from="/engine/targetSpeed"         to="/engine/targetSpeed"/-->

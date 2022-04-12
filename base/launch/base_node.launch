@@ -1,15 +1,19 @@
-<launch>
-
-<!--Parameters for Kinematics -->
-    <arg name="frontLength"         default="-0.38"/>
-    <arg name="rearLength"          default="-0.38"/>
-    <arg name="wheelDiameter"       default="0.280"/>
-    <arg name="axesLength"          default="0.335"/>
-
+<launch>    
+    <!--Parameters for Kinematics -->
+    <arg name="frontLength"         default="-0.383"/>                          <!-- distance from front axle to joint w.r.t. frame in front axle -->
+    <arg name="frontLaserLength"    default="0.387"/>                           <!-- distance from front axle to front laser w.r.t. frame in front axle -->
+    <arg name="rearLength"          default="-0.383"/>                          <!-- distance from joint to rear axle w.r.t. frame in rear axle -->
+    <arg name="rearLaserLength"     default="-0.387"/>                          <!-- distance from joint to rear laser w.r.t. frame in rear axle -->
+    <arg name="wheelDiameter"       default="0.280"/>                           <!-- diameter of wheel of Floribot4.0-->
+    <arg name="axesLength"          default="0.335"/>                           <!-- distance between center of left wheel to center of right wheel -->
+    <arg name="pubFrequency"        default="10.0"/>                            <!-- frequency to publish wheel speeds with in Hz -->
+    <arg name="stopTimeout"         default="0.2"/>                             <!-- if no /cmd_vel callback is invoked, robot will stop moving after this duration  -->
 
     <node name="base" pkg="base" type="base_node">
         <param name="wheelDiameter"     value="$(arg wheelDiameter)"/>
         <param name="axesLength"        value="$(arg axesLength)"/>
+        <param name="pubFrequency"        value="$(arg pubFrequency)"/>
+        <param name="stopTimeout"        value="$(arg stopTimeout)"/>
 
         <!--remap from="/engine/actualSpeed"            to="/Engine/ActualSpeed"/-->
         <!--remap from="/engine/targetTorque"           to=""/-->
@@ -19,9 +23,11 @@
 
    
     <!--args="tx ty tz rx ry rz rw" Translation kartesisch Rotation quaternion-->
-    <node pkg="tf2_ros" type="static_transform_publisher" name="AxesFront2JointFront"   args="$(arg frontLength) 0 0 0 0 0 1 axesFront jointFront" />
-    <node pkg="tf2_ros" type="static_transform_publisher" name="AxesRear2JointRear"     args="$(arg rearLength) 0 0 0 0 0 1  jointRear axesRear" />
-    <node pkg="tf2_ros" type="static_transform_publisher" name="Front"                  args="0 0 0 0 0 0 1 base_link axesFront" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="axesFront2jointFront"   args="$(arg frontLength) 0 0 0 0 0 1 axesFront jointFront" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="jointRear2axesRear"     args="$(arg rearLength) 0 0 0 0 0 1  jointRear axesRear" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_link2axesFront"    args="0 0 0 0 0 0 1 base_link axesFront" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="axesFront2laserFront" args=" $(arg frontLaserLength) 0 0 1.0 0 0 0 axesFront laserFront"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="axesRear2laserRear" args=" $(arg rearLaserLength) 0 0 0 1.0 0 0 axesRear laserRear" />
 
     <!--include file="$(find sick_scan)/launch/own_scanner.launch">
         <arg name="ParentFrame" value="AxesFront" />

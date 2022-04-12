@@ -1,0 +1,10 @@
+<launch>
+	<node pkg="plot_navigation" name="plot_navigation" type="plot_navigation.py" output="screen"> 
+		<param name="rate" value="10.0"/>
+		<param name="robot_front_frame" value="axesFront"/>
+		<param name="robot_rear_frame" value="axesRear"/>
+		<param name="reference_frame" value="map"/>
+		<param name="plot_title" value="Row entry"/>
+		<param name="xy_goal_tolererance" value="0.1"/>
+	</node>
+</launch>

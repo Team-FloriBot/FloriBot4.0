@@ -1,0 +1,42 @@
+<launch>
+	<master auto="start"/>
+	<arg name="map_name" default="playground"/>	
+
+	<!-- Call the reset_odom service of base node when starting navigation stack to start with zero odometry-->
+	<node pkg="rosservice" type="rosservice" name="rosservice" args="call /reset_odom"/>
+
+	<!-- Run the map server --> 
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find mapping)/map_data/$(arg map_name).yaml">
+		<param name="frame_id" value="map" />
+	</node> 
+
+	<!--- Run amcl -->
+	<include file="$(find nav2d)/launch/amcl.launch">
+		<arg name="amcl_scan_topic" default="/sensors/scanMulti"/>
+	</include>
+
+	<!-- delete old parameters -->
+	<rosparam command="delete" param="/move_base"/>
+	<!--- Run move_base --> 
+	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+		<param name="base_global_planner" value="global_planner/GlobalPlanner" />
+		<param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+
+		<rosparam file="$(find nav2d)/param/common_costmap_params.yaml" command="load" ns="global_costmap" />
+		<rosparam file="$(find nav2d)/param/common_costmap_params.yaml" command="load" ns="local_costmap" /> 
+		<rosparam file="$(find nav2d)/param/local_costmap_params.yaml" command="load" />
+		<rosparam file="$(find nav2d)/param/global_costmap_params.yaml" command="load" />	
+		<rosparam file="$(find nav2d)/param/move_base_params.yaml" command="load" />
+		<rosparam file="$(find nav2d)/param/local_teb_costmap_converter_params.yaml" command="load" />
+		<rosparam file="$(find nav2d)/param/local_teb_local_planner_params.yaml" command="load" />
+		<rosparam file="$(find nav2d)/param/global_global_planner_params.yaml" command="load" />
+	</node>
+
+	<!--Run dynamic_footprint node-->
+	<!-- <include file="$(find dynamic_footprint)/launch/dynamic_footprint.launch"/>
+		<param name="rate" value="10.0"/>
+		<param name="footprint_padding" value="0.0"/> -->
+
+	<!-- Run rviz -->
+	<node pkg="rviz" type="rviz" name="rviz" args="-d $(find nav2d)/rviz_cfg/navigation_global_teb.rviz" />
+</launch>
