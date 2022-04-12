@@ -1,19 +1,17 @@
 <launch>	
-	<arg name="use_sim" default="true" />
-	<arg name="PI" default="3.14159265359"/>
+	<arg name="use_sim" default="false" />
 		
 	<!-- SIMULATION-->
 	<group if="$(arg use_sim)">
-		<param name="/use_sim_time" value="true"/>
+		<param name="/use_sim_time" value="(arg use_sim)"/>
 		
 		<!--Running kinematic-->
 		<include file="$(find base)/launch/base_node.launch">
-			<param name="/use_sim_time" value="true"/>
 			<!--Parameters for Kinematics -->
-			<arg name="frontLength"         default="-0.383"/>                          <!-- distance from front axle to joint w.r.t. frame in front axle -->
-			<arg name="frontLaserLength"    default="0.387"/>                           <!-- distance from front axle to front laser w.r.t. frame in front axle -->
-			<arg name="rearLength"          default="-0.383"/>                          <!-- distance from joint to rear axle w.r.t. frame in rear axle -->
-			<arg name="rearLaserLength"     default="-0.387"/>                          <!-- distance from joint to rear laser w.r.t. frame in rear axle -->
+			<arg name="frontLength"         default="-0.383"/>                          <!-- distance from front axle to joint w.r.t. front axle -->
+			<arg name="frontLaserLength"    default="0.387"/>                           <!-- distance from front axle to front laser w.r.t. front axle -->
+			<arg name="rearLength"          default="-0.383"/>                          <!-- distance from joint to rear axle w.r.t. joint -->
+			<arg name="rearLaserLength"     default="-0.387"/>                          <!-- distance from rear axle to rear laser w.r.t. rear axle -->
 			<arg name="wheelDiameter"       default="0.280"/>                           <!-- diameter of wheel of Floribot4.0-->
 			<arg name="axesLength"          default="0.335"/>                           <!-- distance between center of left wheel to center of right wheel -->
 			<arg name="pubFrequency"        default="10.0"/>                            <!-- frequency to publish wheel speeds with in Hz -->
@@ -29,32 +27,32 @@
 
 	<!-- REAL ROBOT-->
 	<group unless="$(arg use_sim)">
-		<param name="/use_sim_time" value="false"/>
+		<param name="/use_sim_time" value="(arg use_sim)"/>
+		<!--Running kinematic-->
+		<include file="$(find base)/launch/base_node.launch">
+			<!--Parameters for Kinematics -->
+			<arg name="frontLength"         default="-0.383"/>                          <!-- distance from front axle to joint w.r.t. front axle -->
+			<arg name="frontLaserLength"    default="0.327"/>                           <!-- distance from front axle to front laser w.r.t. front axle -->
+			<arg name="rearLength"          default="-0.383"/>                          <!-- distance from joint to rear axle w.r.t. joint -->
+			<arg name="rearLaserLength"     default="-0.327"/>                          <!-- distance from rear axle to rear laser w.r.t. rear axle -->
+			<arg name="wheelDiameter"       default="0.280"/>                           <!-- diameter of wheel of Floribot4.0-->
+			<arg name="axesLength"          default="0.335"/>                           <!-- distance between center of left wheel to center of right wheel -->
+			<arg name="pubFrequency"        default="10.0"/>                            <!-- frequency to publish wheel speeds with in Hz -->
+			<arg name="stopTimeout"         default="0.2"/>                             <!-- if no /cmd_vel callback is invoked, robot will stop moving after this duration  -->
+		</include>
 		<!--Adding TF publisher for angle-->
-		<!--node pkg="base" type="angle2tf" name="angle2tf"/-->
+		<node pkg="base" type="angle2tf" name="angle2tf"/>
 		
 		<!--Availible soon-->
-		<!--include file="$(find floribot)/launch/own_scanner.launch" >
-			<rosparam file="$(find floribot)/paramFiles/scanner_front_param.yaml" command="load" />
-			<arg name="use_sim" value="$(arg use_sim)"/>
-		</include>
-
 		<include file="$(find floribot)/launch/own_scanner.launch" >
-			<rosparam file="$(find floribot)/paramFiles/scanner_rear_param.yaml" command="load" />
-			<arg name="use_sim" value="$(arg use_sim)"/>
-		</include-->
-		
-		<include file="$(find base)/launch/base_node.launch"/>
-
-		<!--include file="$(find floribot)/launch/own_scanner.launch" >
 			<rosparam file="$(find floribot)/param/scanner_front_param.yaml" command="load" />
 		</include>
 
 		<include file="$(find floribot)/launch/own_scanner.launch" >
 			<rosparam file="$(find floribot)/param/scanner_rear_param.yaml" command="load" />
-		</include-->
+		</include>
 	
-		<!--include file="$(find plc_connection)/launch/plc_connection.launch" /-->
+		<include file="$(find plc_connection)/launch/plc_connection.launch" />
 	</group>	
 
 </launch>
