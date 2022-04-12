@@ -1,6 +1,0 @@
-<launch>
-	<node pkg="dynamic_footprint" name="dynamic_footprint_client" type="dyn_footprint_node.py" output="screen"> 
-		<param name="rate" value="5.0"/>
-		<param name="footprint_padding" value="0.0"/>
-	</node>
-</launch>

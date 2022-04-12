@@ -1,5 +1,0 @@
-<launch>
-	 <!-- Save map -->
-	 <arg name="map_name" default="new_map"/>
-	 <node pkg="map_server" type="map_saver" name="map_saver" args="-f $(find mapping)/map_data/$(arg map_name)" />
-</launch>
