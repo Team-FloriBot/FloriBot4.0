@@ -5,7 +5,7 @@
     <arg name="xavier_ip"                       default="192.168.0.42"/>
     <arg name="xavier_port"                     default="50000"/>
     <arg name="plc_timeout"                     default="1.5"/>
-    <arg name="zero_count_encoder"              default="44377"/>
+    <arg name="zero_count_encoder"              default="41229"/>
     <arg name="count_per_rotation_encoder"      default="4096"/>
     <arg name="engine_acceleration"             default="1000"/>
     <arg name="engine_jerk"                     default="10000"/>

@@ -2,21 +2,22 @@
 
 <launch>
   <arg name="ParentFrame"   default="odom" />
-  <arg name="PositionID"    default="front" />
+  <arg name="LaserFrame"    default="laserFront" />
+  <arg name="LaserTopic"    default="scanFront" />
   <arg name="TX"            default="0" />
   <arg name="TY"            default="0" />
   <arg name="TZ"            default="-0.1" />
   <arg name="RX"            default="0"/>
   <arg name="RY"            default="0"/>
+
   <arg name="RZ"            default="0"/>
   <arg name="RW"            default="1"/>
   <arg name="IPAddress"     default="192.168.0.1" />
 
-  <node pkg="tf2_ros" type="static_transform_publisher" name="scanner_$(arg PositionID)_TF" args="$(arg TX) $(arg TY) $(arg TZ) 0 0 0 1 $(arg ParentFrame) scanner_$(arg PositionID)" />
-  <group if="$(arg use_sim)">
-    
-  
-    <node name="scanner_$(arg PositionID)" pkg="sick_scan" type="sick_generic_caller"  respawn="false" output="screen">
+  <node pkg="tf2_ros" type="static_transform_publisher" name="$(arg LaserTopic)" args="$(arg TX) $(arg TY) $(arg TZ) 0 0 0 1 $(arg ParentFrame) $(arg LaserFrame)" />
+
+
+    <node name="$(arg LaserTopic)_node" pkg="sick_scan" type="sick_generic_caller"  respawn="false" output="screen">
 
     <!--<param name="robot_description" command="$(find xacro)/xacro.py '$(find sick_scan)/urdf/example.urdf.xacro'" />-->
 
@@ -49,14 +50,13 @@
       <param name="intensity" type="bool" value="True" />
 
       <param name="hostname" type="string" value="$(arg IPAddress)" />
-      <param name="cloud_topic" type="string" value="sensors/$(arg PositionID)/laserScan/cloud"/>
-      <remap from="scan" to="sensors/$(arg PositionID)/laserScan"/>
-      <param name="frame_id" type="str" value="scanner_$(arg PositionID)" />
+      <param name="cloud_topic" type="string" value="sensors/$(arg LaserTopic)/cloud"/>
+      <remap from="scan" to="sensors/$(arg LaserTopic)"/>
+      <param name="frame_id" type="str" value="$(arg LaserFrame)" />
       <param name="port" type="string" value="2112" />
       <param name="timelimit" type="int" value="5" />
       <param name="sw_pll_only_publish" type="bool" value="true" />
     </node>
-  </group>
 </launch>
 <!--
 Conversion between degree and rad	

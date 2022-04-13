@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>	
 	<arg name="use_sim" default="false" />
 		
@@ -44,12 +45,32 @@
 		<node pkg="base" type="angle2tf" name="angle2tf"/>
 		
 		<!--Availible soon-->
-		<include file="$(find floribot)/launch/own_scanner.launch" >
-			<rosparam file="$(find floribot)/param/scanner_front_param.yaml" command="load" />
+		<include file="$(find floribot)/launch/own_scanner.launch" > 
+			<arg name="ParentFrame"   default="axesFront" />
+			<arg name="LaserFrame"    default="laserFront" />
+			<arg name="LaserTopic"    default="scanFront" />
+			<arg name="TX"            default="0.327" />
+			<arg name="TY"            default="0" />
+			<arg name="TZ"            default="0" />
+			<arg name="RX"            default="0"/>
+			<arg name="RY"            default="0"/>
+			<arg name="RZ"            default="0"/>
+			<arg name="RW"            default="1"/>
+			<arg name="IPAddress"     default="192.168.0.52" />
 		</include>
 
 		<include file="$(find floribot)/launch/own_scanner.launch" >
-			<rosparam file="$(find floribot)/param/scanner_rear_param.yaml" command="load" />
+			<arg name="ParentFrame"   default="axesRear" />
+			<arg name="LaserFrame"    default="laserRear" />
+			<arg name="LaserTopic"    default="scanRear" />
+			<arg name="TX"            default="-0.334" />
+			<arg name="TY"            default="0" />
+			<arg name="TZ"            default="0" />
+			<arg name="RX"            default="0"/>
+			<arg name="RY"            default="0"/>
+			<arg name="RZ"            default="0"/>
+			<arg name="RW"            default="1"/>
+			<arg name="IPAddress"     default="192.168.0.51" />
 		</include>
 	
 		<include file="$(find plc_connection)/launch/plc_connection.launch" />
