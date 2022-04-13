@@ -4,7 +4,7 @@
 		
 	<!-- SIMULATION-->
 	<group if="$(arg use_sim)">
-		<param name="/use_sim_time" value="(arg use_sim)"/>
+		<param name="/use_sim_time" value="$(arg use_sim)"/>
 		
 		<!--Running kinematic-->
 		<include file="$(find base)/launch/base_node.launch">
@@ -28,7 +28,7 @@
 
 	<!-- REAL ROBOT-->
 	<group unless="$(arg use_sim)">
-		<param name="/use_sim_time" value="(arg use_sim)"/>
+		<param name="/use_sim_time" value="$(arg use_sim)"/>
 		<!--Running kinematic-->
 		<include file="$(find base)/launch/base_node.launch">
 			<!--Parameters for Kinematics -->
@@ -43,6 +43,11 @@
 		</include>
 		<!--Adding TF publisher for angle-->
 		<node pkg="base" type="angle2tf" name="angle2tf"/>
+
+		<!--Running laserscan merger-->
+		<include file="$(find floribot)/launch/own_laserscan_multi_merger.launch">
+			<param name="/use_sim_time" value="$(arg use_sim)"/>
+		</include>
 		
 		<!--Availible soon-->
 		<include file="$(find floribot)/launch/own_scanner.launch" > 
@@ -52,10 +57,10 @@
 			<arg name="TX"            default="0.327" />
 			<arg name="TY"            default="0" />
 			<arg name="TZ"            default="0" />
-			<arg name="RX"            default="0"/>
+			<arg name="RX"            default="1"/>
 			<arg name="RY"            default="0"/>
 			<arg name="RZ"            default="0"/>
-			<arg name="RW"            default="1"/>
+			<arg name="RW"            default="0"/>
 			<arg name="IPAddress"     default="192.168.0.52" />
 		</include>
 
@@ -67,9 +72,9 @@
 			<arg name="TY"            default="0" />
 			<arg name="TZ"            default="0" />
 			<arg name="RX"            default="0"/>
-			<arg name="RY"            default="0"/>
+			<arg name="RY"            default="-1"/>
 			<arg name="RZ"            default="0"/>
-			<arg name="RW"            default="1"/>
+			<arg name="RW"            default="0"/>
 			<arg name="IPAddress"     default="192.168.0.51" />
 		</include>
 	

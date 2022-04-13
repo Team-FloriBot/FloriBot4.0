@@ -14,7 +14,7 @@
   <arg name="RW"            default="1"/>
   <arg name="IPAddress"     default="192.168.0.1" />
 
-  <node pkg="tf2_ros" type="static_transform_publisher" name="$(arg LaserTopic)" args="$(arg TX) $(arg TY) $(arg TZ) 0 0 0 1 $(arg ParentFrame) $(arg LaserFrame)" />
+  <node pkg="tf2_ros" type="static_transform_publisher" name="$(arg LaserTopic)" args="$(arg TX) $(arg TY) $(arg TZ) $(arg RX) $(arg RY) $(arg RZ) $(arg RW) $(arg ParentFrame) $(arg LaserFrame)" />
 
 
     <node name="$(arg LaserTopic)_node" pkg="sick_scan" type="sick_generic_caller"  respawn="false" output="screen">
