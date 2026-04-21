@@ -12,7 +12,7 @@
 			<arg name="frontLength"         default="-0.383"/>                          <!-- distance from front axle to joint w.r.t. front axle -->
 			<arg name="frontLaserLength"    default="0.387"/>                           <!-- distance from front axle to front laser w.r.t. front axle -->
 			<arg name="rearLength"          default="-0.383"/>                          <!-- distance from joint to rear axle w.r.t. joint -->
-			<arg name="rearLaserLength"     default="-0.387"/>                          <!-- distance from rear axle to rear laser w.r.t. rear axle -->
+			<arg name="rearLaserLength"     default="-0.402"/>                          <!-- distance from rear axle to rear laser w.r.t. rear axle -->
 			<arg name="wheelDiameter"       default="0.280"/>                           <!-- diameter of wheel of Floribot4.0-->
 			<arg name="axesLength"          default="0.335"/>                           <!-- distance between center of left wheel to center of right wheel -->
 			<arg name="pubFrequency"        default="10.0"/>                            <!-- frequency to publish wheel speeds with in Hz -->
@@ -29,14 +29,17 @@
 	<!-- REAL ROBOT-->
 	<group unless="$(arg use_sim)">
 		<param name="/use_sim_time" value="$(arg use_sim)"/>
+		  <!--include Laserscanners -->
+		  <!--include file="$(find sick_scan)/launch/sick_tim_5xx.launch"></include-->
+		  
 		<!--Running kinematic-->
 		<include file="$(find base)/launch/base_node.launch">
 			<!--Parameters for Kinematics -->
 			<arg name="frontLength"         default="-0.383"/>                          <!-- distance from front axle to joint w.r.t. front axle -->
-			<arg name="frontLaserLength"    default="0.327"/>                           <!-- distance from front axle to front laser w.r.t. front axle -->
+			<arg name="frontLaserLength"    default="0.372"/>                           <!-- distance from front axle to front laser w.r.t. front axle -->
 			<arg name="rearLength"          default="-0.383"/>                          <!-- distance from joint to rear axle w.r.t. joint -->
-			<arg name="rearLaserLength"     default="-0.327"/>                          <!-- distance from rear axle to rear laser w.r.t. rear axle -->
-			<arg name="wheelDiameter"       default="0.280"/>                           <!-- diameter of wheel of Floribot4.0-->
+			<arg name="rearLaserLength"     default="-0.342"/>                          <!-- distance from rear axle to rear laser w.r.t. rear axle -->
+			<arg name="wheelDiameter"       default="0.265"/>                           <!-- diameter of wheel of Floribot4.0-->
 			<arg name="axesLength"          default="0.335"/>                           <!-- distance between center of left wheel to center of right wheel -->
 			<arg name="pubFrequency"        default="10.0"/>                            <!-- frequency to publish wheel speeds with in Hz -->
 			<arg name="stopTimeout"         default="0.2"/>                             <!-- if no /cmd_vel callback is invoked, robot will stop moving after this duration  -->
@@ -45,16 +48,16 @@
 		<node pkg="base" type="angle2tf" name="angle2tf"/>
 
 		<!--Running laserscan merger-->
-		<include file="$(find floribot)/launch/own_laserscan_multi_merger.launch">
+		<!--include file="$(find floribot)/launch/own_laserscan_multi_merger.launch">
 			<param name="/use_sim_time" value="$(arg use_sim)"/>
-		</include>
+		</include-->
 		
 		<!--Availible soon-->
 		<include file="$(find floribot)/launch/own_scanner.launch" > 
 			<arg name="ParentFrame"   default="axesFront" />
 			<arg name="LaserFrame"    default="laserFront" />
 			<arg name="LaserTopic"    default="scanFront" />
-			<arg name="TX"            default="0.327" />
+			<arg name="TX"            default="0.372" />
 			<arg name="TY"            default="0" />
 			<arg name="TZ"            default="0" />
 			<arg name="RX"            default="1"/>
@@ -68,7 +71,7 @@
 			<arg name="ParentFrame"   default="axesRear" />
 			<arg name="LaserFrame"    default="laserRear" />
 			<arg name="LaserTopic"    default="scanRear" />
-			<arg name="TX"            default="-0.334" />
+			<arg name="TX"            default="-0.342" />
 			<arg name="TY"            default="0" />
 			<arg name="TZ"            default="0" />
 			<arg name="RX"            default="0"/>

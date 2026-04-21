@@ -45,6 +45,9 @@ geometry_msgs::Pose2D kinematics::differentialDrive::forwardKinematics(Different
     Speed_.angular.z=(WheelSpeed_.rightWheel-WheelSpeed_.leftWheel)*wheelRadius_/axesLength_;
 
     //from Papers and Books e.g. "Mobile Roboter", JoachimHertzberg, 2012, p. 113
+//    Pose_.theta+=Speed_.angular.z*deltaTime;   
+//    Pose_.x+=Speed_.linear.x*cos(Pose_.theta)*deltaTime;
+//    Pose_.y+=Speed_.linear.x*sin(Pose_.theta)*deltaTime;
     Pose_.x+=Speed_.linear.x*deltaTime*cos(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
     Pose_.y+=Speed_.linear.x*deltaTime*sin(Pose_.theta+0.5*Speed_.angular.z*deltaTime);
     Pose_.theta+=Speed_.angular.z*deltaTime;   

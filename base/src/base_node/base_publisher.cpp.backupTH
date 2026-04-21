@@ -1,0 +1,182 @@
+#include <base_node/base_publisher.h>
+
+KinematicsPublisher::KinematicsPublisher(ros::NodeHandle* pNh):tfBuffer(ros::Duration(10)),listener(tfBuffer)
+{
+    seq_=0;
+    pNh_=pNh;
+    getParam();
+    // initial Base (leading carriage) is set to coordinate::Front, 
+    // it is switched automatically when driving backwards/ forwards
+    Drive_.setParam(AxesLength_, WheelDiameter_, kinematics::coordinate::Front);
+    createPublisherSubscriber();
+    CmdVelTimer_=pNh_->createTimer(ros::Duration(1.0/PubFrequency_), &KinematicsPublisher::PublishSpeed, this);
+    tfBuffer.setUsingDedicatedThread(true);
+}
+KinematicsPublisher::~KinematicsPublisher(){};
+
+void KinematicsPublisher::PublishSpeed(const ros::TimerEvent& e)
+{
+    base::Wheels tmp;
+    tmp.header.stamp=ros::Time::now();
+    tmp.header.seq=seq_++;
+    if (tmp.header.stamp - Speedmsg_.header.stamp < ros::Duration(StopTimeout_)){
+        tmp.frontLeft=Speedmsg_.frontLeft;
+        tmp.frontRight=Speedmsg_.frontRight;
+        tmp.rearLeft=Speedmsg_.rearLeft;
+        tmp.rearRight=Speedmsg_.rearRight;
+    }
+    else{
+        tmp.frontLeft=0;
+        tmp.frontRight=0;    
+        tmp.rearRight=0;
+        tmp.rearLeft=0;
+    }
+    SpeedPublisher_.publish(tmp);
+}
+
+void KinematicsPublisher::getParam()
+{
+    pNh_->getParam("/"+ros::this_node::getName()+"/axesLength", this->AxesLength_);
+    pNh_->getParam("/"+ros::this_node::getName()+"/wheelDiameter", this->WheelDiameter_);
+    pNh_->getParam("/"+ros::this_node::getName()+"/pubFrequency", this->PubFrequency_);
+    pNh_->getParam("/"+ros::this_node::getName()+"/stopTimeout", this->StopTimeout_);
+}
+
+void KinematicsPublisher::createPublisherSubscriber()
+{
+    ResetOdometryService_=pNh_->advertiseService("/reset_odom", &KinematicsPublisher::ResetOdometryCallback, this);
+
+    OdometryPublisher_=pNh_->advertise<nav_msgs::Odometry>("/odom", 1);
+    SpeedPublisher_=pNh_->advertise<base::Wheels>("/engine/targetSpeed", 1);
+
+    CmdVelSubscriber_=pNh_->subscribe("/cmd_vel", 1, &KinematicsPublisher::CmdVelCallback, this);
+    SpeedSubscriber_=pNh_->subscribe("/engine/actualSpeed", 1, &KinematicsPublisher::SpeedCallback, this);    
+}
+
+bool KinematicsPublisher::ResetOdometryCallback(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
+{
+    Drive_.frontDrive_.reset();
+    Drive_.rearDrive_.reset();
+    ROS_WARN("Service called. Reset robot odometry.");
+    return true;
+}
+
+void KinematicsPublisher::CmdVelCallback(const geometry_msgs::Twist::ConstPtr& msg)
+{
+    kinematics::articulatedWheelSpeed Wheelspeed;
+
+    Wheelspeed=Drive_.inverseKinematics(*msg);
+
+    Speedmsg_.header.stamp=ros::Time::now();
+    Speedmsg_.frontLeft=Wheelspeed.Front.leftWheel;
+    Speedmsg_.frontRight=Wheelspeed.Front.rightWheel;
+
+    Speedmsg_.rearLeft=Wheelspeed.Rear.leftWheel;
+    Speedmsg_.rearRight=Wheelspeed.Rear.rightWheel;
+}
+
+void KinematicsPublisher::SpeedCallback(const base::Wheels::ConstPtr &msg)
+{
+    kinematics::articulatedWheelSpeed ActualSpeed;
+    geometry_msgs::Pose2D OdomPose;
+    geometry_msgs::TransformStamped Transform;
+    nav_msgs::Odometry OdomMsg;
+    tf2::Quaternion q;
+
+    ActualSpeed.Front.leftWheel=msg->frontLeft;
+    ActualSpeed.Front.rightWheel=msg->frontRight;
+    ActualSpeed.Rear.leftWheel=msg->rearLeft;
+    ActualSpeed.Rear.rightWheel=msg->rearRight;
+
+    OdomPose=Drive_.forwardKinematics(ActualSpeed, msg->header.stamp );
+
+     
+    //Front Msg
+    q.setRPY(0, 0, OdomPose.theta);
+
+    //TF Msg
+    Transform.child_frame_id="base_link";
+    Transform.header.frame_id="odom";
+    Transform.header.seq=msg->header.seq;
+    Transform.header.stamp=msg->header.stamp;
+
+    //if using rear, transform from rear to base_link
+    geometry_msgs::PoseStamped ps;
+    ps.pose.position.x=OdomPose.x;
+    ps.pose.position.y=OdomPose.y;
+    ps.pose.position.z=0;
+    ps.pose.orientation.w=q.getW();
+    ps.pose.orientation.x=q.getX();
+    ps.pose.orientation.y=q.getY();
+    ps.pose.orientation.z=q.getZ();
+
+    ps.header.frame_id = "axesRear";
+    ps.header.stamp = msg->header.stamp;
+
+    geometry_msgs::PoseStamped pst = ps;
+    geometry_msgs::TransformStamped tp;
+
+    try {
+        if(tfBuffer.canTransform("axesRear", "base_link", msg->header.stamp, ros::Duration(1.0))) {
+            tp = tfBuffer.lookupTransform("axesRear", "base_link", msg->header.stamp, ros::Duration(1.0));
+        
+            tf2::Quaternion q_rear, q_tf, q_front;
+            tf2::convert(ps.pose.orientation, q_rear);
+            tf2::convert(tp.transform.rotation, q_tf);
+            //ps.pose.position.x += tp.transform.translation.x;
+            //ps.pose.position.y += tp.transform.translation.y;
+            //ps.pose.position.z += tp.transform.translation.z;
+            q_front = q_rear * q_tf/2;
+            q_front.normalize();
+            tf2::convert(q_front, Transform.transform.rotation);
+            //ps.pose.orientation.y *= -1;
+        //ROS_INFO("pose orientation: %f, %f, %f, %f", ps_transformed.pose.orientation.w, ps_transformed.pose.orientation.x,
+        //	ps_transformed.pose.orientation.y, ps_transformed.pose.orientation.z);
+         }
+
+    }
+    catch(tf2::TransformException ex) {
+        ROS_INFO("Fehler: %s", ex.what());
+    }
+
+    //printf("pose orientation: %f, %f, %f, %f", ps_transformed.pose.orientation.w, ps_transformed.pose.orientation.x,
+    //    ps_transformed.pose.orientation.y, ps_transformed.pose.orientation.z);
+
+    Transform.transform.translation.x=pst.pose.position.x;
+    Transform.transform.translation.y=pst.pose.position.y;
+    Transform.transform.translation.z=0;
+
+//    Transform.transform.rotation.w=ps.pose.orientation.w;
+//    Transform.transform.rotation.x=ps.pose.orientation.x;
+//    Transform.transform.rotation.y=ps.pose.orientation.y;
+//    Transform.transform.rotation.z=ps.pose.orientation.z;
+   
+    TFBroadaster_.sendTransform(Transform);
+
+    //ToDo: Add Covariance
+    //Odom Msg
+    OdomMsg.child_frame_id="axesRear";
+    OdomMsg.header.frame_id="odom";
+    OdomMsg.header.seq=msg->header.seq;
+    OdomMsg.header.stamp=msg->header.stamp;
+
+    OdomMsg.pose.pose.orientation.w=ps.pose.orientation.w;
+    OdomMsg.pose.pose.orientation.x=ps.pose.orientation.x;
+    OdomMsg.pose.pose.orientation.y=ps.pose.orientation.y;
+    OdomMsg.pose.pose.orientation.z=ps.pose.orientation.z;
+
+    OdomMsg.pose.pose.position.x=ps.pose.position.x;
+    OdomMsg.pose.pose.position.y=ps.pose.position.y;
+    OdomMsg.pose.pose.position.z=ps.pose.position.z;
+
+
+    //According to http://wiki.ros.org/navigation/Tutorials/RobotSetup/Odom the speed has to be in the child_frame
+    //in our case base_link which means the robot itself
+    //But now odom links to nav_base which changes between axesFront (forwards driving) and axesRear (backards driving)
+
+    OdomMsg.twist.twist=Drive_.getSpeed();    
+
+    //publish
+    OdometryPublisher_.publish(OdomMsg);
+
+}

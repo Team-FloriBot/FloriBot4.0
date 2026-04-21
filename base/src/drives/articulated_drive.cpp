@@ -174,6 +174,7 @@ geometry_msgs::Pose2D kinematics::ArticulatedDrive::forwardKinematics(articulate
     //geometry_msgs::Pose2D RearPose=rearDrive_.forwardKinematics(WheelSpeed.Rear, Timestamp);
 
     return FrontPose;
+    //return RearPose;
     
     // switch (Base_)
     // {
