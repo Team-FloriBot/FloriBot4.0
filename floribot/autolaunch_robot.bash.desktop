@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=/home/user/catkin_ws/autolaunch_robot.bash
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name[de_DE]=autolaunch_robot.bash
+Name=autolaunch_robot.bash
+Comment[de_DE]=
+Comment=
